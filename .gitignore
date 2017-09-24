@@ -1,0 +1,7 @@
+.git
+.vscode
+cfg
+obj
+Makefile
+*.cdt
+*.dsk
