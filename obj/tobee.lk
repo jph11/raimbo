@@ -8,5 +8,7 @@
 -l /home/Robert/cpctelera/cpctelera/cpctelera.lib
 -l z80
 obj/main.rel
+obj/hero.rel
+obj/hero.h.rel
 
 -e
