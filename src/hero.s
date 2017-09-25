@@ -1,15 +1,17 @@
 .area _DATA
 .area _CODE
 
-;;====================
-;;====================
+;;===========================================
+;;===========================================
 ;;PRIVATE DATA
-;;====================
-;;====================
+;;===========================================
+;;===========================================
 
 ;;Hero Data
 hero_x: .db #39
 hero_y:	.db #80
+hero_w:	.db #2
+hero_h:	.db #4
 hero_jump: .db #-1
 
 ;;Jump Table
@@ -19,24 +21,17 @@ jumptable:
 	.db #01, #01, #02, #03
 	.db #0x80
 
-;;CPCtelera Symbols
-.globl cpct_drawSolidBox_asm
-.globl cpct_getScreenPtr_asm
-.globl cpct_scanKeyboard_asm
-.globl cpct_isKeyPressed_asm
-
+.include "cpctelera.h.s"
 .include "keyboard/keyboard.s"
 
-;;====================
-;;====================
+;;===========================================
+;;===========================================
 ;;PUBLIC FUNTIONS
-;;====================
-;;====================
-
-
+;;===========================================
+;;===========================================
 
 ;; ======================
-;;	Controls Jump movements
+;;	Hero Update
 ;; ======================
 hero_update::
 	call jumpControl
@@ -45,7 +40,7 @@ hero_update::
 
 
 ;; ======================
-;;	Controls Jump movements
+;;	Hero Draw
 ;; ======================
 hero_draw::
 	ld a, #0xFF
@@ -53,18 +48,29 @@ hero_draw::
 	ret
 
 ;; ======================
-;;	Controls Jump movements
+;;	Hero Erase
 ;; ======================
 hero_erase::
 	ld a, #0x00
 	call drawHero
 	ret
 
-;;====================
-;;====================
+;; ======================
+;;	Gets a pointer to hero data 
+;;	
+;;	RETURNS:
+;; 		HL:Pointer to hero data
+;; ======================
+hero_getPointer::
+	ld hl, #hero_x;; Hl points to the Hero Data
+	ret
+
+
+;;===========================================
+;;===========================================
 ;;PRIVATE FUNCTIONS
-;;====================
-;;====================
+;;===========================================
+;;===========================================
 
 
 ;; ======================
@@ -130,6 +136,7 @@ startJump:
 
 
 ;; ======================
+;; Move hero to the right
 ;; ======================
 moveHeroRight:
 	ld a, (hero_x)	;;A = hero_x
@@ -145,6 +152,7 @@ moveHeroRight:
 
 
 ;; ======================
+;; Move hero to the left
 ;; ======================
 moveHeroLeft:
 	ld a, (hero_x)	;;A = hero_x

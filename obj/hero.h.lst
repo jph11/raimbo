@@ -3,11 +3,13 @@ Hexadecimal [16-Bits]
 
 
 
-                              1 ;;
-                              2 ;;
-                              3 ;; HERO 
-                              4 ;;
-                              5 ;;
-                              6 .globl hero_erase
-                              7 .globl hero_draw
-                              8 .globl hero_update
+                              1 ;;========================
+                              2 ;;========================
+                              3 ;; HERO PUBLIC FUNCTIONS
+                              4 ;;========================
+                              5 ;;========================
+                              6 
+                              7 .globl hero_erase
+                              8 .globl hero_draw
+                              9 .globl hero_update
+                             10 .globl hero_getPointer

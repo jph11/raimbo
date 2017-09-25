@@ -33,21 +33,22 @@ Symbol Table
     Key_Slas=  4003     |     Key_Spac=  8005     |     Key_T   =  0806 
     Key_Tab =  1008     |     Key_U   =  0405     |     Key_V   =  8006 
     Key_W   =  0807     |     Key_X   =  8007     |     Key_Y   =  0805 
-    Key_Z   =  8008     |   0 _cpct_ke   0010 GR  |   0 a_not_pr   009F R
-  0 checkUse   0082 R   |   0 continue   0053 R   |     cpct_dra   **** GX
+    Key_Z   =  8008     |   0 _cpct_ke   0012 GR  |   0 a_not_pr   00A5 R
+  0 checkUse   0088 R   |   0 continue   0059 R   |     cpct_dra   **** GX
     cpct_get   **** GX  |     cpct_isK   **** GX  |     cpct_sca   **** GX
-  0 d_not_mo   0081 R   |   0 d_not_mo   0075 R   |   0 d_not_pr   0092 R
-  0 drawHero   00AD R   |   0 hero_dra   0021 GR  |   0 hero_era   0027 GR
-  0 hero_jum   0002 R   |   0 hero_upd   001A GR  |   0 hero_x     0000 R
-  0 hero_y     0001 R   |   0 jumpCont   002D R   |   0 jumptabl   0003 R
-  0 moveHero   0076 R   |   0 moveHero   006A R   |   0 reset      0058 R
-  0 startJum   005E R   |   0 w_not_pr   00AC R
+  0 d_not_mo   0087 R   |   0 d_not_mo   007B R   |   0 d_not_pr   0098 R
+  0 drawHero   00B3 R   |   0 hero_dra   0023 GR  |   0 hero_era   002D GR
+  0 hero_get   0029 GR  |   0 hero_h     0003 R   |   0 hero_jum   0004 R
+  0 hero_upd   001C GR  |   0 hero_w     0002 R   |   0 hero_x     0000 R
+  0 hero_y     0001 R   |   0 jumpCont   0033 R   |   0 jumptabl   0005 R
+  0 moveHero   007C R   |   0 moveHero   0070 R   |   0 reset      005E R
+  0 startJum   0064 R   |   0 w_not_pr   00B2 R
 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 2.
 Hexadecimal [16-Bits]
 
 Area Table
 
-   0 _CODE      size   C5   flags    0
+   0 _CODE      size   CB   flags    0
    1 _DATA      size    0   flags    0
 

@@ -15,27 +15,29 @@ Hexadecimal [16-Bits]
                              10 ;;Hero Data
    0000 27                   11 hero_x: .db #39
    0001 50                   12 hero_y:	.db #80
-   0002 FF                   13 hero_jump: .db #-1
-                             14 
-                             15 ;;Jump Table
-   0003                      16 jumptable:
-   0003 FD FE FF FF          17 	.db #-3, #-2, #-1, #-1
-   0007 FF 00 00 01          18 	.db #-1, #00, #00, #01
-   000B 01 01 02 03          19 	.db #01, #01, #02, #03
-   000F 80                   20 	.db #0x80
-                             21 
-                             22 ;;CPCtelera Symbols
-                             23 .globl cpct_drawSolidBox_asm
-                             24 .globl cpct_getScreenPtr_asm
-                             25 .globl cpct_scanKeyboard_asm
-                             26 .globl cpct_isKeyPressed_asm
-                             27 
+   0002 02                   13 hero_w:	.db #2
+   0003 04                   14 hero_h:	.db #4
+   0004 FF                   15 hero_jump: .db #-1
+                             16 
+                             17 ;;Jump Table
+   0005                      18 jumptable:
+   0005 FD FE FF FF          19 	.db #-3, #-2, #-1, #-1
+   0009 FF 00 00 01          20 	.db #-1, #00, #00, #01
+   000D 01 01 02 03          21 	.db #01, #01, #02, #03
+   0011 80                   22 	.db #0x80
+                             23 
+                             24 ;;CPCtelera Symbols
+                             25 .globl cpct_drawSolidBox_asm
+                             26 .globl cpct_getScreenPtr_asm
+                             27 .globl cpct_scanKeyboard_asm
+                             28 .globl cpct_isKeyPressed_asm
+                             29 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 2.
 Hexadecimal [16-Bits]
 
 
 
-                             28 .include "keyboard/keyboard.s"
+                             30 .include "keyboard/keyboard.s"
                               1 ;;-----------------------------LICENSE NOTICE------------------------------------
                               2 ;;  This file is part of CPCtelera: An Amstrad CPC Game Engine 
                               3 ;;  Copyright (C) 2014 ronaldo / Fremos / Cheesetea / ByteRealms (@FranGallegoBR)
@@ -60,7 +62,7 @@ Hexadecimal [16-Bits]
                              22 ;;   16-byte aligned in memory to let functions use 8-bit maths for pointing
                              23 ;;   (alignment not working on user linking)
                              24 
-   0010                      25 _cpct_keyboardStatusBuffer:: .ds 10
+   0012                      25 _cpct_keyboardStatusBuffer:: .ds 10
                              26 
                              27 ;;
                              28 ;; Assembly constant definitions for keyboard mapping
@@ -178,224 +180,234 @@ Hexadecimal [16-Bits]
 
 
 
-                             29 
-                             30 ;;====================
-                             31 ;;====================
-                             32 ;;PUBLIC FUNTIONS
+                             31 
+                             32 ;;====================
                              33 ;;====================
-                             34 ;;====================
-                             35 
-                             36 
+                             34 ;;PUBLIC FUNTIONS
+                             35 ;;====================
+                             36 ;;====================
                              37 
-                             38 ;; ======================
-                             39 ;;	Controls Jump movements
+                             38 
+                             39 
                              40 ;; ======================
-   001A                      41 hero_update::
-   001A CD 2D 00      [17]   42 	call jumpControl
-   001D CD 82 00      [17]   43 	call checkUserInput
-   0020 C9            [10]   44 	ret
-                             45 
-                             46 
-                             47 ;; ======================
-                             48 ;;	Controls Jump movements
+                             41 ;;	Controls Jump movements
+                             42 ;; ======================
+   001C                      43 hero_update::
+   001C CD 33 00      [17]   44 	call jumpControl
+   001F CD 88 00      [17]   45 	call checkUserInput
+   0022 C9            [10]   46 	ret
+                             47 
+                             48 
                              49 ;; ======================
-   0021                      50 hero_draw::
-   0021 3E FF         [ 7]   51 	ld a, #0xFF
-   0023 CD AD 00      [17]   52 	call drawHero
-   0026 C9            [10]   53 	ret
-                             54 
-                             55 ;; ======================
-                             56 ;;	Controls Jump movements
+                             50 ;;	Controls Jump movements
+                             51 ;; ======================
+   0023                      52 hero_draw::
+   0023 3E FF         [ 7]   53 	ld a, #0xFF
+   0025 CD B3 00      [17]   54 	call drawHero
+   0028 C9            [10]   55 	ret
+                             56 
                              57 ;; ======================
-   0027                      58 hero_erase::
-   0027 3E 00         [ 7]   59 	ld a, #0x00
-   0029 CD AD 00      [17]   60 	call drawHero
-   002C C9            [10]   61 	ret
-                             62 
-                             63 ;;====================
-                             64 ;;====================
-                             65 ;;PRIVATE FUNCTIONS
-                             66 ;;====================
-                             67 ;;====================
-                             68 
-                             69 
-                             70 ;; ======================
-                             71 ;;	Controls Jump movements
-                             72 ;; ======================
-   002D                      73 jumpControl:
-   002D 3A 02 00      [13]   74 	ld a, (hero_jump)	;;A = Hero_jump in status
-   0030 FE FF         [ 7]   75 	cp #-1				;;A == -1? (-1 is not jump)
-   0032 C8            [11]   76 	ret z				;;If A == -1, not jump
-                             77 
-                             78 	;;Get Jump Value
-   0033 21 03 00      [10]   79 	ld hl, #jumptable	;;HL Points
-   0036 4F            [ 4]   80 	ld c, a 			;;|
-   0037 06 00         [ 7]   81 	ld b, #0			;;\ BC = A (Offset)
-   0039 09            [11]   82 	add hl, bc			;;HL += BC
-                             83 
+                             58 ;;	Gets a pointer to hero data 
+                             59 ;;	
+                             60 ;;	RETURNS:
+                             61 ;; 		HL:Pointer to hero data
+                             62 ;; ======================
+   0029                      63 hero_getPointer::
+   0029 21 00 00      [10]   64 	ld hl, #hero_x;; Hl points to the Hero Data
+   002C C9            [10]   65 	ret
+                             66 
+                             67 ;; ======================
+                             68 ;;	Controls Jump movements
+                             69 ;; ======================
+   002D                      70 hero_erase::
+   002D 3E 00         [ 7]   71 	ld a, #0x00
+   002F CD B3 00      [17]   72 	call drawHero
+   0032 C9            [10]   73 	ret
+                             74 
+                             75 ;;====================
+                             76 ;;====================
+                             77 ;;PRIVATE FUNCTIONS
+                             78 ;;====================
+                             79 ;;====================
+                             80 
+                             81 
+                             82 ;; ======================
+                             83 ;;	Controls Jump movements
+                             84 ;; ======================
+   0033                      85 jumpControl:
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 6.
 Hexadecimal [16-Bits]
 
 
 
-   003A 3A 02 00      [13]   84 	ld a, (hero_jump)	;;A = Hero_jump
-   003D FE 0C         [ 7]   85 	cp #0x0C
-   003F CA 58 00      [10]   86 	jp z, reset
-                             87 
-                             88 	;;Do Jump Movement
-   0042 46            [ 7]   89 	ld b, (hl)			;;B = Jump Movement
-   0043 3A 01 00      [13]   90 	ld a, (hero_y)		;;A = Hero_y
-   0046 80            [ 4]   91 	add b 				;;A += B (Add jump)
-   0047 32 01 00      [13]   92 	ld (hero_y), a 		;; Update Hero Jump
-                             93 
-                             94 	;;Increment Hero_jump Index
-   004A 3A 02 00      [13]   95 	ld a, (hero_jump)	;;A = Hero_jump
-   004D FE 0C         [ 7]   96 	cp #0x0C 			;;Check if is latest vallue
-   004F 20 02         [12]   97 	jr nz, continue_jump ;;Not latest value, continue
-                             98 
-                             99 		;;End jump
-   0051 3E FE         [ 7]  100 		ld a, #-2
-                            101 
-   0053                     102 	continue_jump:
-   0053 3C            [ 4]  103 	inc a 				;;|
-   0054 32 02 00      [13]  104 	ld (hero_jump), a 	;;\ Hero_jump++
+   0033 3A 04 00      [13]   86 	ld a, (hero_jump)	;;A = Hero_jump in status
+   0036 FE FF         [ 7]   87 	cp #-1				;;A == -1? (-1 is not jump)
+   0038 C8            [11]   88 	ret z				;;If A == -1, not jump
+                             89 
+                             90 	;;Get Jump Value
+   0039 21 05 00      [10]   91 	ld hl, #jumptable	;;HL Points
+   003C 4F            [ 4]   92 	ld c, a 			;;|
+   003D 06 00         [ 7]   93 	ld b, #0			;;\ BC = A (Offset)
+   003F 09            [11]   94 	add hl, bc			;;HL += BC
+                             95 
+   0040 3A 04 00      [13]   96 	ld a, (hero_jump)	;;A = Hero_jump
+   0043 FE 0C         [ 7]   97 	cp #0x0C
+   0045 CA 5E 00      [10]   98 	jp z, reset
+                             99 
+                            100 	;;Do Jump Movement
+   0048 46            [ 7]  101 	ld b, (hl)			;;B = Jump Movement
+   0049 3A 01 00      [13]  102 	ld a, (hero_y)		;;A = Hero_y
+   004C 80            [ 4]  103 	add b 				;;A += B (Add jump)
+   004D 32 01 00      [13]  104 	ld (hero_y), a 		;; Update Hero Jump
                             105 
-   0057 C9            [10]  106 	ret
-                            107 
-   0058                     108 	reset:
-   0058 3E FF         [ 7]  109 	ld a, #-1
-   005A 32 02 00      [13]  110 	ld (hero_jump), a
-   005D C9            [10]  111 	ret
-                            112 
+                            106 	;;Increment Hero_jump Index
+   0050 3A 04 00      [13]  107 	ld a, (hero_jump)	;;A = Hero_jump
+   0053 FE 0C         [ 7]  108 	cp #0x0C 			;;Check if is latest vallue
+   0055 20 02         [12]  109 	jr nz, continue_jump ;;Not latest value, continue
+                            110 
+                            111 		;;End jump
+   0057 3E FE         [ 7]  112 		ld a, #-2
                             113 
-                            114 
-                            115 ;; ======================
-                            116 ;;	Starts Hero Jump
-                            117 ;; ======================
-   005E                     118 startJump:
-   005E 3A 02 00      [13]  119 	ld a, (hero_jump)	;;A = hero_jump
-   0061 FE FF         [ 7]  120 	cp #-1				;;A == -1? Is jump action
-   0063 C0            [11]  121 	ret nz
-                            122 
-                            123 	;;Jump is inactive, activate it
-   0064 3E 00         [ 7]  124 	ld a, #0
-   0066 32 02 00      [13]  125 	ld (hero_jump), a
+   0059                     114 	continue_jump:
+   0059 3C            [ 4]  115 	inc a 				;;|
+   005A 32 04 00      [13]  116 	ld (hero_jump), a 	;;\ Hero_jump++
+                            117 
+   005D C9            [10]  118 	ret
+                            119 
+   005E                     120 	reset:
+   005E 3E FF         [ 7]  121 	ld a, #-1
+   0060 32 04 00      [13]  122 	ld (hero_jump), a
+   0063 C9            [10]  123 	ret
+                            124 
+                            125 
                             126 
-                            127 
-   0069 C9            [10]  128 	ret
-                            129 
-                            130 
-                            131 
-                            132 ;; ======================
-                            133 ;; ======================
-   006A                     134 moveHeroRight:
-   006A 3A 00 00      [13]  135 	ld a, (hero_x)	;;A = hero_x
-   006D FE 4E         [ 7]  136 	cp #80-2		;;Check against right limit (screen size - hero size)
-   006F 28 04         [12]  137 	jr z, d_not_move_right	;;Hero_x == Limit, do not move
+                            127 ;; ======================
+                            128 ;;	Starts Hero Jump
+                            129 ;; ======================
+   0064                     130 startJump:
+   0064 3A 04 00      [13]  131 	ld a, (hero_jump)	;;A = hero_jump
+   0067 FE FF         [ 7]  132 	cp #-1				;;A == -1? Is jump action
+   0069 C0            [11]  133 	ret nz
+                            134 
+                            135 	;;Jump is inactive, activate it
+   006A 3E 00         [ 7]  136 	ld a, #0
+   006C 32 04 00      [13]  137 	ld (hero_jump), a
                             138 
+                            139 
+   006F C9            [10]  140 	ret
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 7.
 Hexadecimal [16-Bits]
 
 
 
-   0071 3C            [ 4]  139 	inc a 			;;A++ (hero_x++)
-   0072 32 00 00      [13]  140 	ld (hero_x), a 	;;Update hero_x
                             141 
-   0075                     142 	d_not_move_right:
-   0075 C9            [10]  143 	ret
-                            144 
-                            145 
-                            146 
-                            147 ;; ======================
-                            148 ;; ======================
-   0076                     149 moveHeroLeft:
-   0076 3A 00 00      [13]  150 	ld a, (hero_x)	;;A = hero_x
-   0079 FE 00         [ 7]  151 	cp #0		;;Check against left limit (screen size - hero size)
-   007B 28 04         [12]  152 	jr z, d_not_move_left	;;Hero_x == Limit, do not move
+                            142 
+                            143 
+                            144 ;; ======================
+                            145 ;; ======================
+   0070                     146 moveHeroRight:
+   0070 3A 00 00      [13]  147 	ld a, (hero_x)	;;A = hero_x
+   0073 FE 4E         [ 7]  148 	cp #80-2		;;Check against right limit (screen size - hero size)
+   0075 28 04         [12]  149 	jr z, d_not_move_right	;;Hero_x == Limit, do not move
+                            150 
+   0077 3C            [ 4]  151 	inc a 			;;A++ (hero_x++)
+   0078 32 00 00      [13]  152 	ld (hero_x), a 	;;Update hero_x
                             153 
-   007D 3D            [ 4]  154 	dec a 			;;A-- (hero_x--)
-   007E 32 00 00      [13]  155 	ld (hero_x), a 	;;Update hero_x
+   007B                     154 	d_not_move_right:
+   007B C9            [10]  155 	ret
                             156 
-   0081                     157 	d_not_move_left:
-   0081 C9            [10]  158 	ret
-                            159 
+                            157 
+                            158 
+                            159 ;; ======================
                             160 ;; ======================
-                            161 ;;	Checks User Input and Reacts
-                            162 ;;	DESTROYS:
-                            163 ;; ======================
-   0082                     164 checkUserInput:
-                            165 	;;Scan the whole keyboard
-   0082 CD 00 00      [17]  166 	call cpct_scanKeyboard_asm ;;keyboard.s
-                            167 
-                            168 	;;Check for key 'D' being presed
-   0085 21 07 20      [10]  169 	ld hl, #Key_D 				;;HL = Key_D
-   0088 CD 00 00      [17]  170 	call cpct_isKeyPressed_asm	;;Check if Key_D is presed
-   008B FE 00         [ 7]  171 	cp #0						;;Check A == 0
-   008D 28 03         [12]  172 	jr z, d_not_pressed			;;Jump if A==0 (d_not_pressed)
-                            173 
-                            174 	;;D is pressed
-   008F CD 6A 00      [17]  175 	call moveHeroRight
-                            176 
-   0092                     177 	d_not_pressed:
-                            178 
-                            179 	;;Check for key 'A' being presed
-   0092 21 08 20      [10]  180 	ld hl, #Key_A 				;;HL = Key_A
-   0095 CD 00 00      [17]  181 	call cpct_isKeyPressed_asm	;;Check if Key_A is presed
-   0098 FE 00         [ 7]  182 	cp #0						;;Check A == 0
-   009A 28 03         [12]  183 	jr z, a_not_pressed			;;Jump if A==0 (a_not_pressed)
-                            184 
-                            185 	;;A is pressed
-   009C CD 76 00      [17]  186 	call moveHeroLeft
-                            187 
-   009F                     188 	a_not_pressed:
-                            189 
+   007C                     161 moveHeroLeft:
+   007C 3A 00 00      [13]  162 	ld a, (hero_x)	;;A = hero_x
+   007F FE 00         [ 7]  163 	cp #0		;;Check against left limit (screen size - hero size)
+   0081 28 04         [12]  164 	jr z, d_not_move_left	;;Hero_x == Limit, do not move
+                            165 
+   0083 3D            [ 4]  166 	dec a 			;;A-- (hero_x--)
+   0084 32 00 00      [13]  167 	ld (hero_x), a 	;;Update hero_x
+                            168 
+   0087                     169 	d_not_move_left:
+   0087 C9            [10]  170 	ret
+                            171 
+                            172 ;; ======================
+                            173 ;;	Checks User Input and Reacts
+                            174 ;;	DESTROYS:
+                            175 ;; ======================
+   0088                     176 checkUserInput:
+                            177 	;;Scan the whole keyboard
+   0088 CD 00 00      [17]  178 	call cpct_scanKeyboard_asm ;;keyboard.s
+                            179 
+                            180 	;;Check for key 'D' being presed
+   008B 21 07 20      [10]  181 	ld hl, #Key_D 				;;HL = Key_D
+   008E CD 00 00      [17]  182 	call cpct_isKeyPressed_asm	;;Check if Key_D is presed
+   0091 FE 00         [ 7]  183 	cp #0						;;Check A == 0
+   0093 28 03         [12]  184 	jr z, d_not_pressed			;;Jump if A==0 (d_not_pressed)
+                            185 
+                            186 	;;D is pressed
+   0095 CD 70 00      [17]  187 	call moveHeroRight
+                            188 
+   0098                     189 	d_not_pressed:
                             190 
-                            191 	;;Check for key 'W' being presed
-   009F 21 07 08      [10]  192 	ld hl, #Key_W 				;;HL = Key_W
-   00A2 CD 00 00      [17]  193 	call cpct_isKeyPressed_asm	;;Check if Key_W is presed
+                            191 	;;Check for key 'A' being presed
+   0098 21 08 20      [10]  192 	ld hl, #Key_A 				;;HL = Key_A
+   009B CD 00 00      [17]  193 	call cpct_isKeyPressed_asm	;;Check if Key_A is presed
+   009E FE 00         [ 7]  194 	cp #0						;;Check A == 0
+   00A0 28 03         [12]  195 	jr z, a_not_pressed			;;Jump if A==0 (a_not_pressed)
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 8.
 Hexadecimal [16-Bits]
 
 
 
-   00A5 FE 00         [ 7]  194 	cp #0						;;Check W == 0
-   00A7 28 03         [12]  195 	jr z, w_not_pressed			;;Jump if W==0 (w_not_pressed)
                             196 
-                            197 	;;W is pressed
-   00A9 CD 5E 00      [17]  198 	call startJump
+                            197 	;;A is pressed
+   00A2 CD 7C 00      [17]  198 	call moveHeroLeft
                             199 
-   00AC                     200 	w_not_pressed:
+   00A5                     200 	a_not_pressed:
                             201 
-   00AC C9            [10]  202 	ret
-                            203 
-                            204 
-                            205 
-                            206 ;; ======================
-                            207 ;;	Draw the hero
-                            208 ;;	DESTROYS: AF, BC, DE, HL
-                            209 ;;  Parametrer: a
-                            210 ;; ======================
-   00AD                     211 drawHero:
-                            212 
-   00AD F5            [11]  213 	push af 	;;Save A in the stack
-                            214 
-                            215 	;; Calculate Screen position
-   00AE 11 00 C0      [10]  216 	ld de, #0xC000	;;Video memory
+                            202 
+                            203 	;;Check for key 'W' being presed
+   00A5 21 07 08      [10]  204 	ld hl, #Key_W 				;;HL = Key_W
+   00A8 CD 00 00      [17]  205 	call cpct_isKeyPressed_asm	;;Check if Key_W is presed
+   00AB FE 00         [ 7]  206 	cp #0						;;Check W == 0
+   00AD 28 03         [12]  207 	jr z, w_not_pressed			;;Jump if W==0 (w_not_pressed)
+                            208 
+                            209 	;;W is pressed
+   00AF CD 64 00      [17]  210 	call startJump
+                            211 
+   00B2                     212 	w_not_pressed:
+                            213 
+   00B2 C9            [10]  214 	ret
+                            215 
+                            216 
                             217 
-   00B1 3A 00 00      [13]  218 	ld a, (hero_x)	;;|
-   00B4 4F            [ 4]  219 	ld c, a			;;\ C=hero_x
-                            220 
-   00B5 3A 01 00      [13]  221 	ld a, (hero_y)	;;|
-   00B8 47            [ 4]  222 	ld b, a			;;\ B=hero_y
-                            223 
-   00B9 CD 00 00      [17]  224 	call cpct_getScreenPtr_asm	;;Get pointer to screen
-   00BC EB            [ 4]  225 	ex de, hl
+                            218 ;; ======================
+                            219 ;;	Draw the hero
+                            220 ;;	DESTROYS: AF, BC, DE, HL
+                            221 ;;  Parametrer: a
+                            222 ;; ======================
+   00B3                     223 drawHero:
+                            224 
+   00B3 F5            [11]  225 	push af 	;;Save A in the stack
                             226 
-   00BD F1            [10]  227 	pop AF 		;;A = User selected code
-                            228 
-                            229 	;; Draw a box
-   00BE 01 02 08      [10]  230 	ld bc, #0x0802	;;8x8
-   00C1 CD 00 00      [17]  231 	call cpct_drawSolidBox_asm
+                            227 	;; Calculate Screen position
+   00B4 11 00 C0      [10]  228 	ld de, #0xC000	;;Video memory
+                            229 
+   00B7 3A 00 00      [13]  230 	ld a, (hero_x)	;;|
+   00BA 4F            [ 4]  231 	ld c, a			;;\ C=hero_x
                             232 
-   00C4 C9            [10]  233 	ret
-                            234 
+   00BB 3A 01 00      [13]  233 	ld a, (hero_y)	;;|
+   00BE 47            [ 4]  234 	ld b, a			;;\ B=hero_y
+                            235 
+   00BF CD 00 00      [17]  236 	call cpct_getScreenPtr_asm	;;Get pointer to screen
+   00C2 EB            [ 4]  237 	ex de, hl
+                            238 
+   00C3 F1            [10]  239 	pop AF 		;;A = User selected code
+                            240 
+                            241 	;; Draw a box
+   00C4 01 02 08      [10]  242 	ld bc, #0x0802	;;8x8
+   00C7 CD 00 00      [17]  243 	call cpct_drawSolidBox_asm
+                            244 
+   00CA C9            [10]  245 	ret
+                            246 

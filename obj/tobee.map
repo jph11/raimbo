@@ -9,40 +9,46 @@ Area                                    Addr        Size        Decimal Bytes (A
       -----  --------------------------------   ------------------------
      00000000  .__.ABS.                           cpct_keyboard
      00000002  l__DATA                         
-     00000203  l__CODE                         
+     0000029B  l__CODE                         
      00004000  s__CODE                         
-     00004203  s__DATA                         
+     0000429B  s__DATA                         
 
 ASxxxx Linker V03.00 + NoICE + sdld,  page 2.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_CODE                               00004000    00000203 =         515. bytes (REL,CON)
+_CODE                               00004000    0000029B =         667. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
-     00004010  _cpct_keyboardStatusBuffer         cpct_keyboard
-     0000401A  hero_update                        cpct_keyboard
-     00004021  hero_draw                          cpct_keyboard
-     00004027  hero_erase                         cpct_keyboard
-     000040C5  _main                              
-     000040D6  scene_drawFloor                    
-     000040F5  _cpct_isKeyPressed                 cpct_keyboard
-     000040F5  cpct_isKeyPressed_asm              cpct_keyboard
-     00004101  _cpct_waitVSYNC                    cpct_video
-     00004101  cpct_waitVSYNC_asm                 cpct_video
-     00004109  cpct_drawSolidBox_asm              cpct_sprites
-     000041B5  _cpct_mode_rom_status              cpct_firmware
-     000041B6  cpct_getScreenPtr_asm              cpct_video
-     000041D2  _cpct_scanKeyboard                 cpct_keyboard
-     000041D2  cpct_scanKeyboard_asm              cpct_keyboard
+     00004004  obstacle_update                    
+     00004010  obstacle_draw                      
+     00004016  obstacle_erase                     
+     0000401C  obstacle_checkCollision            
+     00004077  scene_drawFloor                    
+     00004096  _main                              
+     000040D4  _cpct_keyboardStatusBuffer         cpct_keyboard
+     000040DE  hero_update                        cpct_keyboard
+     000040E5  hero_draw                          cpct_keyboard
+     000040EB  hero_getPointer                    cpct_keyboard
+     000040EF  hero_erase                         cpct_keyboard
+     0000418D  _cpct_isKeyPressed                 cpct_keyboard
+     0000418D  cpct_isKeyPressed_asm              cpct_keyboard
+     00004199  _cpct_waitVSYNC                    cpct_video
+     00004199  cpct_waitVSYNC_asm                 cpct_video
+     000041A1  cpct_drawSolidBox_asm              cpct_sprites
+     0000424D  _cpct_mode_rom_status              cpct_firmware
+     0000424E  cpct_getScreenPtr_asm              cpct_video
+     0000426A  _cpct_scanKeyboard                 cpct_keyboard
+     0000426A  cpct_scanKeyboard_asm              cpct_keyboard
+
 ASxxxx Linker V03.00 + NoICE + sdld,  page 3.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_DATA                               00004203    00000002 =           2. bytes (REL,CON)
+_DATA                               0000429B    00000002 =           2. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
@@ -50,26 +56,29 @@ _DATA                               00004203    00000002 =           2. bytes (R
 
 Files Linked                              [ module(s) ]
 
-obj/hero.h.rel                            [  ]
-obj/hero.rel                              [ cpct_keyboard ]
-obj/main.rel                              [  ]
+obj/obstacle.rel                          [  ]
 obj/scene.h.rel                           [  ]
 obj/scene.rel                             [  ]
+obj/main.rel                              [  ]
+obj/obstacle.h.rel                        [  ]
+obj/hero.rel                              [ cpct_keyboard ]
+obj/cpctelera.h.rel                       [  ]
+obj/hero.h.rel                            [  ]
 
 
 Libraries Linked                          [ object file ]
 
-/Users/jules/Documents/RA/cpctelera/cpctelera/cpctelera.lib
+/home/Robert/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_isKeyPressed.rel ]
-/Users/jules/Documents/RA/cpctelera/cpctelera/cpctelera.lib
+/home/Robert/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_waitVSYNC.rel ]
-/Users/jules/Documents/RA/cpctelera/cpctelera/cpctelera.lib
+/home/Robert/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_drawSolidBox_asmbindings.re ]
-/Users/jules/Documents/RA/cpctelera/cpctelera/cpctelera.lib
+/home/Robert/cpctelera/cpctelera/cpctelera.lib
                                           [ cpc_mode_rom_status.rel ]
-/Users/jules/Documents/RA/cpctelera/cpctelera/cpctelera.lib
+/home/Robert/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_getScreenPtr_asmbindings.re ]
-/Users/jules/Documents/RA/cpctelera/cpctelera/cpctelera.lib
+/home/Robert/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_scanKeyboard.rel ]
 
 ASxxxx Linker V03.00 + NoICE + sdld,  page 5.
