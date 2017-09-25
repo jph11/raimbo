@@ -3,12 +3,14 @@
 -b _CODE = 0x4000
 -b _DATA = 0x0000
 -u
--k /home/Robert/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80
--k /home/Robert/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/share/sdcc/lib/z80
--l /home/Robert/cpctelera/cpctelera/cpctelera.lib
+-k /Users/jules/Documents/RA/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80
+-k /Users/jules/Documents/RA/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/share/sdcc/lib/z80
+-l /Users/jules/Documents/RA/cpctelera/cpctelera/cpctelera.lib
 -l z80
-obj/main.rel
-obj/hero.rel
 obj/hero.h.rel
+obj/hero.rel
+obj/main.rel
+obj/scene.h.rel
+obj/scene.rel
 
 -e

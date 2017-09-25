@@ -4,14 +4,17 @@ Hexadecimal [16-Bits]
 
 
                               1 .area _DATA
-                              2 .area _CODE
-                              3 
+   0000 00                    2 floor_x: .db #0
+   0001 58                    3 floor_y: .db #88
+                              4 
+                              5 .area _CODE
+                              6 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 2.
 Hexadecimal [16-Bits]
 
 
 
-                              4 .include "hero.h.s"
+                              7 .include "hero.h.s"
                               1 ;;
                               2 ;;
                               3 ;; HERO 
@@ -25,55 +28,35 @@ Hexadecimal [16-Bits]
 
 
 
-                              5 .globl cpct_waitVSYNC_asm
-                              6 
-                              7 ;; ======================
-                              8 ;; Draw
-                              9 ;; Parametrers hl (init position), 
-                             10 ;; ======================
-   0000                      11 drawFloor:
-                             12  
-                             13  
-   0000 11 00 08      [10]   14  ld de, #0x0800
-   0003 0E 10         [ 7]   15  ld c, #16
-   0005                      16  oneFor:
-   0005 06 50         [ 7]   17   ld b, #80
-   0007                      18   twoFor:
-   0007 36 F0         [10]   19    ld (hl), #0xF0
-   0009 23            [ 6]   20    inc hl
-   000A 05            [ 4]   21    dec b
-   000B 20 FA         [12]   22    jr nz, twoFor
-                             23   
-   000D 19            [11]   24   add hl, de
-   000E D5            [11]   25   push de
-   000F 11 B0 FF      [10]   26   ld de, #0xFFB0
-   0012 19            [11]   27   add hl, de
-   0013 D1            [10]   28   pop de
-   0014 0D            [ 4]   29   dec c
-   0015 20 EE         [12]   30   jr nz, oneFor
-   0017 C9            [10]   31  ret
-                             32 
-                             33 
-                             34 ;; ======================
-                             35 ;;	Main program entry
-                             36 ;; ======================
-   0018                      37 _main::
-                             38 
-   0018 21 70 C3      [10]   39 	ld hl, #0xC370
-   001B CD 00 00      [17]   40 	call drawFloor
-                             41 
-                             42 
-   001E                      43 	postStart:
-                             44 
-   001E 3E 00         [ 7]   45 	ld a, #0x00
-   0020 CD 00 00      [17]   46 	call hero_erase
-                             47 
-   0023 CD 00 00      [17]   48 	call hero_update
-                             49 
-   0026 3E FF         [ 7]   50 	ld a, #0xFF
-   0028 CD 00 00      [17]   51 	call hero_draw
-                             52 
-   002B CD 00 00      [17]   53 	call cpct_waitVSYNC_asm
-                             54 
-                             55 	;; posición actual a la que estamos ejecutando
-   002E 18 EE         [12]   56 	jr postStart
+                              8 .include "scene.h.s"
+                              1 .globl scene_drawFloor
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 4.
+Hexadecimal [16-Bits]
+
+
+
+                              9 .globl cpct_waitVSYNC_asm
+                             10 
+                             11 
+                             12 
+                             13 
+                             14 ;; ======================
+                             15 ;;	Main program entry
+                             16 ;; ======================
+   0000                      17 _main::
+                             18 
+                             19 	
+   0000 CD 00 00      [17]   20 	call scene_drawFloor
+                             21 
+                             22 
+   0003                      23 	postStart:
+                             24 
+   0003 CD 00 00      [17]   25 	call hero_erase
+                             26 
+   0006 CD 00 00      [17]   27 	call hero_update
+                             28 
+   0009 CD 00 00      [17]   29 	call hero_draw
+                             30 
+   000C CD 00 00      [17]   31 	call cpct_waitVSYNC_asm
+                             32     
+   000F 18 F2         [12]   33 	jr postStart

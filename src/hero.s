@@ -7,14 +7,10 @@
 ;;====================
 ;;====================
 
-
 ;;Hero Data
 hero_x: .db #39
 hero_y:	.db #80
 hero_jump: .db #-1
-floor_x: .db #0
-floor_y: .db #88
-contador: .db #79
 
 ;;Jump Table
 jumptable:
@@ -52,6 +48,7 @@ hero_update::
 ;;	Controls Jump movements
 ;; ======================
 hero_draw::
+	ld a, #0xFF
 	call drawHero
 	ret
 
@@ -59,6 +56,7 @@ hero_draw::
 ;;	Controls Jump movements
 ;; ======================
 hero_erase::
+	ld a, #0x00
 	call drawHero
 	ret
 
