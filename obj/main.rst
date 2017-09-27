@@ -4,17 +4,14 @@ Hexadecimal [16-Bits]
 
 
                               1 .area _DATA
-   429B 00                    2 floor_x: .db #0
-   429C 58                    3 floor_y: .db #88
-                              4 
-                              5 .area _CODE
-                              6 
+                              2 .area _CODE
+                              3 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 2.
 Hexadecimal [16-Bits]
 
 
 
-                              7 .include "hero.h.s"
+                              4 .include "hero.h.s"
                               1 ;;========================
                               2 ;;========================
                               3 ;; HERO PUBLIC FUNCTIONS
@@ -30,17 +27,39 @@ Hexadecimal [16-Bits]
 
 
 
-                              8 .include "scene.h.s"
-                              1 .globl scene_drawFloor
+                              5 .include "scene.h.s"
+                              1 ;;========================
+                              2 ;;========================
+                              3 ;; SCENE PUBLIC FUNCTIONS
+                              4 ;;========================
+                              5 ;;========================
+                              6 
+                              7 .globl scene_drawFloor
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 4.
 Hexadecimal [16-Bits]
 
 
 
-                              9 .include "obstacle.h.s"
+                              6 .include "bullets.h.s"
                               1 ;;========================
                               2 ;;========================
-                              3 ;; PUBLIC FUNCTIONS
+                              3 ;; BULLETS PUBLIC FUNCTIONS
+                              4 ;;========================
+                              5 ;;========================
+                              6 
+                              7 .globl bullets_update
+                              8 .globl bullets_draw
+                              9 .globl bullets_erase
+                             10 .globl bullets_newBullet
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 5.
+Hexadecimal [16-Bits]
+
+
+
+                              7 .include "obstacle.h.s"
+                              1 ;;========================
+                              2 ;;========================
+                              3 ;; OBSTACLE PUBLIC FUNCTIONS
                               4 ;;========================
                               5 ;;========================
                               6 
@@ -48,49 +67,50 @@ Hexadecimal [16-Bits]
                               8 .globl obstacle_draw
                               9 .globl obstacle_update
                              10 .globl obstacle_checkCollision
-ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 5.
-Hexadecimal [16-Bits]
-
-
-
-                             10 .include "cpctelera.h.s"
-                              1 .globl cpct_drawSolidBox_asm
-                              2 .globl cpct_getScreenPtr_asm
-                              3 .globl cpct_scanKeyboard_asm
-                              4 .globl cpct_isKeyPressed_asm
-                              5 .globl cpct_waitVSYNC_asm
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 6.
 Hexadecimal [16-Bits]
 
 
 
-                             11 
+                              8 .include "cpctelera.h.s"
+                              1 ;;
+                              2 ;;	CPCtelera Symbols
+                              3 ;;
+                              4 
+                              5 .globl cpct_drawSolidBox_asm
+                              6 .globl cpct_getScreenPtr_asm
+                              7 .globl cpct_scanKeyboard_asm
+                              8 .globl cpct_isKeyPressed_asm
+                              9 .globl cpct_waitVSYNC_asm
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 7.
+Hexadecimal [16-Bits]
+
+
+
+                              9 
+                             10 ;; ======================
+                             11 ;;	Main program entry
                              12 ;; ======================
-                             13 ;;	Main program entry
-                             14 ;; ======================
-   4096                      15 _main::
-                             16 
-                             17 	
-   4096 CD 77 40      [17]   18 	call scene_drawFloor
-                             19 
+   4096                      13 _main::
+   4096 CD 77 40      [17]   14 	call scene_drawFloor
+                             15 
+   4099                      16 	postStart:
+   4099 CD E2 41      [17]   17 	call bullets_erase
+   409C CD E8 40      [17]   18 	call hero_erase
+   409F CD 16 40      [17]   19 	call obstacle_erase
                              20 
-   4099                      21 	postStart:
-   4099 CD EF 40      [17]   22 	call hero_erase
-   409C CD 16 40      [17]   23 	call obstacle_erase
-                             24 	
-   409F CD DE 40      [17]   25 	call hero_update
-   40A2 CD 04 40      [17]   26 	call obstacle_update
-                             27 
-   40A5 CD EB 40      [17]   28 	call hero_getPointer
-   40A8 CD 1C 40      [17]   29 	call obstacle_checkCollision 	;; A=1 collision, A=0 not collision
-   40AB 32 00 C0      [13]   30 	ld (0xC000), a 					;; print if collision in the screen
-   40AE 32 01 C0      [13]   31 	ld (0xC001), a
-   40B1 32 02 C0      [13]   32 	ld (0xC002), a
-   40B4 32 03 C0      [13]   33 	ld (0xC003), a 					
-   40B7 CD E5 40      [17]   34 	call hero_draw
-   40BA CD 10 40      [17]   35 	call obstacle_draw
-                             36 
-                             37 
-   40BD CD 99 41      [17]   38 	call cpct_waitVSYNC_asm
-                             39     
-   40C0 18 D7         [12]   40 	jr postStart
+                             21 	
+   40A2 CD DE 41      [17]   22 	call bullets_update
+   40A5 CD DB 40      [17]   23 	call hero_update
+   40A8 CD 04 40      [17]   24 	call obstacle_update
+                             25 
+   40AB CD EE 40      [17]   26 	call hero_getPointer
+   40AE CD 1C 40      [17]   27 	call obstacle_checkCollision
+                             28 
+   40B1 CD E8 41      [17]   29 	call bullets_draw
+   40B4 CD E2 40      [17]   30 	call hero_draw
+   40B7 CD 10 40      [17]   31 	call obstacle_draw
+                             32 
+   40BA CD 5C 42      [17]   33 	call cpct_waitVSYNC_asm
+                             34     
+   40BD 18 DA         [12]   35 	jr postStart

@@ -21,6 +21,7 @@ jumptable:
 	.db #01, #01, #02, #03
 	.db #0x80
 
+.include "bullets.h.s"
 .include "cpctelera.h.s"
 .include "keyboard/keyboard.s"
 
@@ -62,7 +63,7 @@ hero_erase::
 ;; 		HL:Pointer to hero data
 ;; ======================
 hero_getPointer::
-	ld hl, #hero_x;; Hl points to the Hero Data
+	ld hl, #hero_x 		;; Hl points to the Hero Data
 	ret
 
 
@@ -173,7 +174,19 @@ checkUserInput:
 	;;Scan the whole keyboard
 	call cpct_scanKeyboard_asm ;;keyboard.s
 
-	;;Check for key 'D' being presed
+
+	;;Check for key 'Space' being pressed
+	ld hl, #Key_Space
+	call cpct_isKeyPressed_asm	;;Check if Key_Space is presed
+	cp #0						;;Check A == 0
+	jr z, space_not_pressed		;;Jump if A==0 (space_not_pressed)
+
+	;;Space is pressed
+	call bullets_newBullet
+
+	space_not_pressed:
+
+	;;Check for key 'D' being pressed
 	ld hl, #Key_D 				;;HL = Key_D
 	call cpct_isKeyPressed_asm	;;Check if Key_D is presed
 	cp #0						;;Check A == 0
@@ -184,7 +197,7 @@ checkUserInput:
 
 	d_not_pressed:
 
-	;;Check for key 'A' being presed
+	;;Check for key 'A' being pressed
 	ld hl, #Key_A 				;;HL = Key_A
 	call cpct_isKeyPressed_asm	;;Check if Key_A is presed
 	cp #0						;;Check A == 0
@@ -196,7 +209,7 @@ checkUserInput:
 	a_not_pressed:
 
 
-	;;Check for key 'W' being presed
+	;;Check for key 'W' being pressed
 	ld hl, #Key_W 				;;HL = Key_W
 	call cpct_isKeyPressed_asm	;;Check if Key_W is presed
 	cp #0						;;Check W == 0
@@ -239,4 +252,3 @@ drawHero:
 	call cpct_drawSolidBox_asm
 
 	ret
-

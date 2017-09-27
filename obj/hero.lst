@@ -6,11 +6,11 @@ Hexadecimal [16-Bits]
                               1 .area _DATA
                               2 .area _CODE
                               3 
-                              4 ;;====================
-                              5 ;;====================
+                              4 ;;===========================================
+                              5 ;;===========================================
                               6 ;;PRIVATE DATA
-                              7 ;;====================
-                              8 ;;====================
+                              7 ;;===========================================
+                              8 ;;===========================================
                               9 
                              10 ;;Hero Data
    0000 27                   11 hero_x: .db #39
@@ -26,18 +26,43 @@ Hexadecimal [16-Bits]
    000D 01 01 02 03          21 	.db #01, #01, #02, #03
    0011 80                   22 	.db #0x80
                              23 
-                             24 ;;CPCtelera Symbols
-                             25 .globl cpct_drawSolidBox_asm
-                             26 .globl cpct_getScreenPtr_asm
-                             27 .globl cpct_scanKeyboard_asm
-                             28 .globl cpct_isKeyPressed_asm
-                             29 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 2.
 Hexadecimal [16-Bits]
 
 
 
-                             30 .include "keyboard/keyboard.s"
+                             24 .include "bullets.h.s"
+                              1 ;;========================
+                              2 ;;========================
+                              3 ;; BULLETS PUBLIC FUNCTIONS
+                              4 ;;========================
+                              5 ;;========================
+                              6 
+                              7 .globl bullets_update
+                              8 .globl bullets_draw
+                              9 .globl bullets_erase
+                             10 .globl bullets_newBullet
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 3.
+Hexadecimal [16-Bits]
+
+
+
+                             25 .include "cpctelera.h.s"
+                              1 ;;
+                              2 ;;	CPCtelera Symbols
+                              3 ;;
+                              4 
+                              5 .globl cpct_drawSolidBox_asm
+                              6 .globl cpct_getScreenPtr_asm
+                              7 .globl cpct_scanKeyboard_asm
+                              8 .globl cpct_isKeyPressed_asm
+                              9 .globl cpct_waitVSYNC_asm
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 4.
+Hexadecimal [16-Bits]
+
+
+
+                             26 .include "keyboard/keyboard.s"
                               1 ;;-----------------------------LICENSE NOTICE------------------------------------
                               2 ;;  This file is part of CPCtelera: An Amstrad CPC Game Engine 
                               3 ;;  Copyright (C) 2014 ronaldo / Fremos / Cheesetea / ByteRealms (@FranGallegoBR)
@@ -92,7 +117,7 @@ Hexadecimal [16-Bits]
                      0402    52 .equ Key_Return       ,#0x0402
                      0802    53 .equ Key_CloseBracket ,#0x0802
                      1002    54 .equ Key_F4           ,#0x1002
-ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 3.
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 5.
 Hexadecimal [16-Bits]
 
 
@@ -152,7 +177,7 @@ Hexadecimal [16-Bits]
                      2007   107 .equ Key_D            ,#0x2007
                      4007   108 .equ Key_C            ,#0x4007
                      8007   109 .equ Key_X            ,#0x8007
-ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 4.
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 6.
 Hexadecimal [16-Bits]
 
 
@@ -175,239 +200,256 @@ Hexadecimal [16-Bits]
                      2009   125 .equ Joy0_Fire2       ,#0x2009
                      4009   126 .equ Joy0_Fire3       ,#0x4009
                      8009   127 .equ Key_Del          ,#0x8009
-ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 5.
-Hexadecimal [16-Bits]
-
-
-
-                             31 
-                             32 ;;====================
-                             33 ;;====================
-                             34 ;;PUBLIC FUNTIONS
-                             35 ;;====================
-                             36 ;;====================
-                             37 
-                             38 
-                             39 
-                             40 ;; ======================
-                             41 ;;	Controls Jump movements
-                             42 ;; ======================
-   001C                      43 hero_update::
-   001C CD 33 00      [17]   44 	call jumpControl
-   001F CD 88 00      [17]   45 	call checkUserInput
-   0022 C9            [10]   46 	ret
-                             47 
-                             48 
-                             49 ;; ======================
-                             50 ;;	Controls Jump movements
-                             51 ;; ======================
-   0023                      52 hero_draw::
-   0023 3E FF         [ 7]   53 	ld a, #0xFF
-   0025 CD B3 00      [17]   54 	call drawHero
-   0028 C9            [10]   55 	ret
-                             56 
-                             57 ;; ======================
-                             58 ;;	Gets a pointer to hero data 
-                             59 ;;	
-                             60 ;;	RETURNS:
-                             61 ;; 		HL:Pointer to hero data
-                             62 ;; ======================
-   0029                      63 hero_getPointer::
-   0029 21 00 00      [10]   64 	ld hl, #hero_x;; Hl points to the Hero Data
-   002C C9            [10]   65 	ret
-                             66 
-                             67 ;; ======================
-                             68 ;;	Controls Jump movements
-                             69 ;; ======================
-   002D                      70 hero_erase::
-   002D 3E 00         [ 7]   71 	ld a, #0x00
-   002F CD B3 00      [17]   72 	call drawHero
-   0032 C9            [10]   73 	ret
-                             74 
-                             75 ;;====================
-                             76 ;;====================
-                             77 ;;PRIVATE FUNCTIONS
-                             78 ;;====================
-                             79 ;;====================
-                             80 
-                             81 
-                             82 ;; ======================
-                             83 ;;	Controls Jump movements
-                             84 ;; ======================
-   0033                      85 jumpControl:
-ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 6.
-Hexadecimal [16-Bits]
-
-
-
-   0033 3A 04 00      [13]   86 	ld a, (hero_jump)	;;A = Hero_jump in status
-   0036 FE FF         [ 7]   87 	cp #-1				;;A == -1? (-1 is not jump)
-   0038 C8            [11]   88 	ret z				;;If A == -1, not jump
-                             89 
-                             90 	;;Get Jump Value
-   0039 21 05 00      [10]   91 	ld hl, #jumptable	;;HL Points
-   003C 4F            [ 4]   92 	ld c, a 			;;|
-   003D 06 00         [ 7]   93 	ld b, #0			;;\ BC = A (Offset)
-   003F 09            [11]   94 	add hl, bc			;;HL += BC
-                             95 
-   0040 3A 04 00      [13]   96 	ld a, (hero_jump)	;;A = Hero_jump
-   0043 FE 0C         [ 7]   97 	cp #0x0C
-   0045 CA 5E 00      [10]   98 	jp z, reset
-                             99 
-                            100 	;;Do Jump Movement
-   0048 46            [ 7]  101 	ld b, (hl)			;;B = Jump Movement
-   0049 3A 01 00      [13]  102 	ld a, (hero_y)		;;A = Hero_y
-   004C 80            [ 4]  103 	add b 				;;A += B (Add jump)
-   004D 32 01 00      [13]  104 	ld (hero_y), a 		;; Update Hero Jump
-                            105 
-                            106 	;;Increment Hero_jump Index
-   0050 3A 04 00      [13]  107 	ld a, (hero_jump)	;;A = Hero_jump
-   0053 FE 0C         [ 7]  108 	cp #0x0C 			;;Check if is latest vallue
-   0055 20 02         [12]  109 	jr nz, continue_jump ;;Not latest value, continue
-                            110 
-                            111 		;;End jump
-   0057 3E FE         [ 7]  112 		ld a, #-2
-                            113 
-   0059                     114 	continue_jump:
-   0059 3C            [ 4]  115 	inc a 				;;|
-   005A 32 04 00      [13]  116 	ld (hero_jump), a 	;;\ Hero_jump++
-                            117 
-   005D C9            [10]  118 	ret
-                            119 
-   005E                     120 	reset:
-   005E 3E FF         [ 7]  121 	ld a, #-1
-   0060 32 04 00      [13]  122 	ld (hero_jump), a
-   0063 C9            [10]  123 	ret
-                            124 
-                            125 
-                            126 
-                            127 ;; ======================
-                            128 ;;	Starts Hero Jump
-                            129 ;; ======================
-   0064                     130 startJump:
-   0064 3A 04 00      [13]  131 	ld a, (hero_jump)	;;A = hero_jump
-   0067 FE FF         [ 7]  132 	cp #-1				;;A == -1? Is jump action
-   0069 C0            [11]  133 	ret nz
-                            134 
-                            135 	;;Jump is inactive, activate it
-   006A 3E 00         [ 7]  136 	ld a, #0
-   006C 32 04 00      [13]  137 	ld (hero_jump), a
-                            138 
-                            139 
-   006F C9            [10]  140 	ret
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 7.
 Hexadecimal [16-Bits]
 
 
 
-                            141 
-                            142 
-                            143 
-                            144 ;; ======================
-                            145 ;; ======================
-   0070                     146 moveHeroRight:
-   0070 3A 00 00      [13]  147 	ld a, (hero_x)	;;A = hero_x
-   0073 FE 4E         [ 7]  148 	cp #80-2		;;Check against right limit (screen size - hero size)
-   0075 28 04         [12]  149 	jr z, d_not_move_right	;;Hero_x == Limit, do not move
-                            150 
-   0077 3C            [ 4]  151 	inc a 			;;A++ (hero_x++)
-   0078 32 00 00      [13]  152 	ld (hero_x), a 	;;Update hero_x
-                            153 
-   007B                     154 	d_not_move_right:
-   007B C9            [10]  155 	ret
-                            156 
-                            157 
-                            158 
-                            159 ;; ======================
-                            160 ;; ======================
-   007C                     161 moveHeroLeft:
-   007C 3A 00 00      [13]  162 	ld a, (hero_x)	;;A = hero_x
-   007F FE 00         [ 7]  163 	cp #0		;;Check against left limit (screen size - hero size)
-   0081 28 04         [12]  164 	jr z, d_not_move_left	;;Hero_x == Limit, do not move
-                            165 
-   0083 3D            [ 4]  166 	dec a 			;;A-- (hero_x--)
-   0084 32 00 00      [13]  167 	ld (hero_x), a 	;;Update hero_x
-                            168 
-   0087                     169 	d_not_move_left:
-   0087 C9            [10]  170 	ret
-                            171 
-                            172 ;; ======================
-                            173 ;;	Checks User Input and Reacts
-                            174 ;;	DESTROYS:
-                            175 ;; ======================
-   0088                     176 checkUserInput:
-                            177 	;;Scan the whole keyboard
-   0088 CD 00 00      [17]  178 	call cpct_scanKeyboard_asm ;;keyboard.s
-                            179 
-                            180 	;;Check for key 'D' being presed
-   008B 21 07 20      [10]  181 	ld hl, #Key_D 				;;HL = Key_D
-   008E CD 00 00      [17]  182 	call cpct_isKeyPressed_asm	;;Check if Key_D is presed
-   0091 FE 00         [ 7]  183 	cp #0						;;Check A == 0
-   0093 28 03         [12]  184 	jr z, d_not_pressed			;;Jump if A==0 (d_not_pressed)
-                            185 
-                            186 	;;D is pressed
-   0095 CD 70 00      [17]  187 	call moveHeroRight
-                            188 
-   0098                     189 	d_not_pressed:
-                            190 
-                            191 	;;Check for key 'A' being presed
-   0098 21 08 20      [10]  192 	ld hl, #Key_A 				;;HL = Key_A
-   009B CD 00 00      [17]  193 	call cpct_isKeyPressed_asm	;;Check if Key_A is presed
-   009E FE 00         [ 7]  194 	cp #0						;;Check A == 0
-   00A0 28 03         [12]  195 	jr z, a_not_pressed			;;Jump if A==0 (a_not_pressed)
+                             27 
+                             28 ;;===========================================
+                             29 ;;===========================================
+                             30 ;;PUBLIC FUNTIONS
+                             31 ;;===========================================
+                             32 ;;===========================================
+                             33 
+                             34 ;; ======================
+                             35 ;;	Hero Update
+                             36 ;; ======================
+   001C                      37 hero_update::
+   001C CD 33 00      [17]   38 	call jumpControl
+   001F CD 88 00      [17]   39 	call checkUserInput
+   0022 C9            [10]   40 	ret
+                             41 
+                             42 
+                             43 ;; ======================
+                             44 ;;	Hero Draw
+                             45 ;; ======================
+   0023                      46 hero_draw::
+   0023 3E FF         [ 7]   47 	ld a, #0xFF
+   0025 CD C0 00      [17]   48 	call drawHero
+   0028 C9            [10]   49 	ret
+                             50 
+                             51 ;; ======================
+                             52 ;;	Hero Erase
+                             53 ;; ======================
+   0029                      54 hero_erase::
+   0029 3E 00         [ 7]   55 	ld a, #0x00
+   002B CD C0 00      [17]   56 	call drawHero
+   002E C9            [10]   57 	ret
+                             58 
+                             59 ;; ======================
+                             60 ;;	Gets a pointer to hero data 
+                             61 ;;	
+                             62 ;;	RETURNS:
+                             63 ;; 		HL:Pointer to hero data
+                             64 ;; ======================
+   002F                      65 hero_getPointer::
+   002F 21 00 00      [10]   66 	ld hl, #hero_x 		;; Hl points to the Hero Data
+   0032 C9            [10]   67 	ret
+                             68 
+                             69 
+                             70 ;;===========================================
+                             71 ;;===========================================
+                             72 ;;PRIVATE FUNCTIONS
+                             73 ;;===========================================
+                             74 ;;===========================================
+                             75 
+                             76 
+                             77 ;; ======================
+                             78 ;;	Controls Jump movements
+                             79 ;; ======================
+   0033                      80 jumpControl:
+   0033 3A 04 00      [13]   81 	ld a, (hero_jump)	;;A = Hero_jump in status
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 8.
 Hexadecimal [16-Bits]
 
 
 
-                            196 
-                            197 	;;A is pressed
-   00A2 CD 7C 00      [17]  198 	call moveHeroLeft
+   0036 FE FF         [ 7]   82 	cp #-1				;;A == -1? (-1 is not jump)
+   0038 C8            [11]   83 	ret z				;;If A == -1, not jump
+                             84 
+                             85 	;;Get Jump Value
+   0039 21 05 00      [10]   86 	ld hl, #jumptable	;;HL Points
+   003C 4F            [ 4]   87 	ld c, a 			;;|
+   003D 06 00         [ 7]   88 	ld b, #0			;;\ BC = A (Offset)
+   003F 09            [11]   89 	add hl, bc			;;HL += BC
+                             90 
+   0040 3A 04 00      [13]   91 	ld a, (hero_jump)	;;A = Hero_jump
+   0043 FE 0C         [ 7]   92 	cp #0x0C
+   0045 CA 5E 00      [10]   93 	jp z, reset
+                             94 
+                             95 	;;Do Jump Movement
+   0048 46            [ 7]   96 	ld b, (hl)			;;B = Jump Movement
+   0049 3A 01 00      [13]   97 	ld a, (hero_y)		;;A = Hero_y
+   004C 80            [ 4]   98 	add b 				;;A += B (Add jump)
+   004D 32 01 00      [13]   99 	ld (hero_y), a 		;; Update Hero Jump
+                            100 
+                            101 	;;Increment Hero_jump Index
+   0050 3A 04 00      [13]  102 	ld a, (hero_jump)	;;A = Hero_jump
+   0053 FE 0C         [ 7]  103 	cp #0x0C 			;;Check if is latest vallue
+   0055 20 02         [12]  104 	jr nz, continue_jump ;;Not latest value, continue
+                            105 
+                            106 		;;End jump
+   0057 3E FE         [ 7]  107 		ld a, #-2
+                            108 
+   0059                     109 	continue_jump:
+   0059 3C            [ 4]  110 	inc a 				;;|
+   005A 32 04 00      [13]  111 	ld (hero_jump), a 	;;\ Hero_jump++
+                            112 
+   005D C9            [10]  113 	ret
+                            114 
+   005E                     115 	reset:
+   005E 3E FF         [ 7]  116 	ld a, #-1
+   0060 32 04 00      [13]  117 	ld (hero_jump), a
+   0063 C9            [10]  118 	ret
+                            119 
+                            120 
+                            121 
+                            122 ;; ======================
+                            123 ;;	Starts Hero Jump
+                            124 ;; ======================
+   0064                     125 startJump:
+   0064 3A 04 00      [13]  126 	ld a, (hero_jump)	;;A = hero_jump
+   0067 FE FF         [ 7]  127 	cp #-1				;;A == -1? Is jump action
+   0069 C0            [11]  128 	ret nz
+                            129 
+                            130 	;;Jump is inactive, activate it
+   006A 3E 00         [ 7]  131 	ld a, #0
+   006C 32 04 00      [13]  132 	ld (hero_jump), a
+                            133 
+                            134 
+   006F C9            [10]  135 	ret
+                            136 
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 9.
+Hexadecimal [16-Bits]
+
+
+
+                            137 
+                            138 
+                            139 ;; ======================
+                            140 ;; Move hero to the right
+                            141 ;; ======================
+   0070                     142 moveHeroRight:
+   0070 3A 00 00      [13]  143 	ld a, (hero_x)	;;A = hero_x
+   0073 FE 4E         [ 7]  144 	cp #80-2		;;Check against right limit (screen size - hero size)
+   0075 28 04         [12]  145 	jr z, d_not_move_right	;;Hero_x == Limit, do not move
+                            146 
+   0077 3C            [ 4]  147 	inc a 			;;A++ (hero_x++)
+   0078 32 00 00      [13]  148 	ld (hero_x), a 	;;Update hero_x
+                            149 
+   007B                     150 	d_not_move_right:
+   007B C9            [10]  151 	ret
+                            152 
+                            153 
+                            154 
+                            155 ;; ======================
+                            156 ;; Move hero to the left
+                            157 ;; ======================
+   007C                     158 moveHeroLeft:
+   007C 3A 00 00      [13]  159 	ld a, (hero_x)	;;A = hero_x
+   007F FE 00         [ 7]  160 	cp #0		;;Check against left limit (screen size - hero size)
+   0081 28 04         [12]  161 	jr z, d_not_move_left	;;Hero_x == Limit, do not move
+                            162 
+   0083 3D            [ 4]  163 	dec a 			;;A-- (hero_x--)
+   0084 32 00 00      [13]  164 	ld (hero_x), a 	;;Update hero_x
+                            165 
+   0087                     166 	d_not_move_left:
+   0087 C9            [10]  167 	ret
+                            168 
+                            169 ;; ======================
+                            170 ;;	Checks User Input and Reacts
+                            171 ;;	DESTROYS:
+                            172 ;; ======================
+   0088                     173 checkUserInput:
+                            174 	;;Scan the whole keyboard
+   0088 CD 00 00      [17]  175 	call cpct_scanKeyboard_asm ;;keyboard.s
+                            176 
+                            177 
+                            178 	;;Check for key 'Space' being pressed
+   008B 21 05 80      [10]  179 	ld hl, #Key_Space
+   008E CD 00 00      [17]  180 	call cpct_isKeyPressed_asm	;;Check if Key_Space is presed
+   0091 FE 00         [ 7]  181 	cp #0						;;Check A == 0
+   0093 28 03         [12]  182 	jr z, space_not_pressed		;;Jump if A==0 (space_not_pressed)
+                            183 
+                            184 	;;Space is pressed
+   0095 CD 00 00      [17]  185 	call bullets_newBullet
+                            186 
+   0098                     187 	space_not_pressed:
+                            188 
+                            189 	;;Check for key 'D' being pressed
+   0098 21 07 20      [10]  190 	ld hl, #Key_D 				;;HL = Key_D
+   009B CD 00 00      [17]  191 	call cpct_isKeyPressed_asm	;;Check if Key_D is presed
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 10.
+Hexadecimal [16-Bits]
+
+
+
+   009E FE 00         [ 7]  192 	cp #0						;;Check A == 0
+   00A0 28 03         [12]  193 	jr z, d_not_pressed			;;Jump if A==0 (d_not_pressed)
+                            194 
+                            195 	;;D is pressed
+   00A2 CD 70 00      [17]  196 	call moveHeroRight
+                            197 
+   00A5                     198 	d_not_pressed:
                             199 
-   00A5                     200 	a_not_pressed:
-                            201 
-                            202 
-                            203 	;;Check for key 'W' being presed
-   00A5 21 07 08      [10]  204 	ld hl, #Key_W 				;;HL = Key_W
-   00A8 CD 00 00      [17]  205 	call cpct_isKeyPressed_asm	;;Check if Key_W is presed
-   00AB FE 00         [ 7]  206 	cp #0						;;Check W == 0
-   00AD 28 03         [12]  207 	jr z, w_not_pressed			;;Jump if W==0 (w_not_pressed)
+                            200 	;;Check for key 'A' being pressed
+   00A5 21 08 20      [10]  201 	ld hl, #Key_A 				;;HL = Key_A
+   00A8 CD 00 00      [17]  202 	call cpct_isKeyPressed_asm	;;Check if Key_A is presed
+   00AB FE 00         [ 7]  203 	cp #0						;;Check A == 0
+   00AD 28 03         [12]  204 	jr z, a_not_pressed			;;Jump if A==0 (a_not_pressed)
+                            205 
+                            206 	;;A is pressed
+   00AF CD 7C 00      [17]  207 	call moveHeroLeft
                             208 
-                            209 	;;W is pressed
-   00AF CD 64 00      [17]  210 	call startJump
+   00B2                     209 	a_not_pressed:
+                            210 
                             211 
-   00B2                     212 	w_not_pressed:
-                            213 
-   00B2 C9            [10]  214 	ret
-                            215 
-                            216 
+                            212 	;;Check for key 'W' being pressed
+   00B2 21 07 08      [10]  213 	ld hl, #Key_W 				;;HL = Key_W
+   00B5 CD 00 00      [17]  214 	call cpct_isKeyPressed_asm	;;Check if Key_W is presed
+   00B8 FE 00         [ 7]  215 	cp #0						;;Check W == 0
+   00BA 28 03         [12]  216 	jr z, w_not_pressed			;;Jump if W==0 (w_not_pressed)
                             217 
-                            218 ;; ======================
-                            219 ;;	Draw the hero
-                            220 ;;	DESTROYS: AF, BC, DE, HL
-                            221 ;;  Parametrer: a
-                            222 ;; ======================
-   00B3                     223 drawHero:
+                            218 	;;W is pressed
+   00BC CD 64 00      [17]  219 	call startJump
+                            220 
+   00BF                     221 	w_not_pressed:
+                            222 
+   00BF C9            [10]  223 	ret
                             224 
-   00B3 F5            [11]  225 	push af 	;;Save A in the stack
+                            225 
                             226 
-                            227 	;; Calculate Screen position
-   00B4 11 00 C0      [10]  228 	ld de, #0xC000	;;Video memory
-                            229 
-   00B7 3A 00 00      [13]  230 	ld a, (hero_x)	;;|
-   00BA 4F            [ 4]  231 	ld c, a			;;\ C=hero_x
-                            232 
-   00BB 3A 01 00      [13]  233 	ld a, (hero_y)	;;|
-   00BE 47            [ 4]  234 	ld b, a			;;\ B=hero_y
+                            227 ;; ======================
+                            228 ;;	Draw the hero
+                            229 ;;	DESTROYS: AF, BC, DE, HL
+                            230 ;;  Parametrer: a
+                            231 ;; ======================
+   00C0                     232 drawHero:
+                            233 
+   00C0 F5            [11]  234 	push af 	;;Save A in the stack
                             235 
-   00BF CD 00 00      [17]  236 	call cpct_getScreenPtr_asm	;;Get pointer to screen
-   00C2 EB            [ 4]  237 	ex de, hl
+                            236 	;; Calculate Screen position
+   00C1 11 00 C0      [10]  237 	ld de, #0xC000	;;Video memory
                             238 
-   00C3 F1            [10]  239 	pop AF 		;;A = User selected code
-                            240 
-                            241 	;; Draw a box
-   00C4 01 02 08      [10]  242 	ld bc, #0x0802	;;8x8
-   00C7 CD 00 00      [17]  243 	call cpct_drawSolidBox_asm
+   00C4 3A 00 00      [13]  239 	ld a, (hero_x)	;;|
+   00C7 4F            [ 4]  240 	ld c, a			;;\ C=hero_x
+                            241 
+   00C8 3A 01 00      [13]  242 	ld a, (hero_y)	;;|
+   00CB 47            [ 4]  243 	ld b, a			;;\ B=hero_y
                             244 
-   00CA C9            [10]  245 	ret
-                            246 
+   00CC CD 00 00      [17]  245 	call cpct_getScreenPtr_asm	;;Get pointer to screen
+   00CF EB            [ 4]  246 	ex de, hl
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 11.
+Hexadecimal [16-Bits]
+
+
+
+                            247 
+   00D0 F1            [10]  248 	pop AF 		;;A = User selected code
+                            249 
+                            250 	;; Draw a box
+   00D1 01 02 08      [10]  251 	ld bc, #0x0802	;;8x8
+   00D4 CD 00 00      [17]  252 	call cpct_drawSolidBox_asm
+                            253 
+   00D7 C9            [10]  254 	ret
