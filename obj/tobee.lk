@@ -8,12 +8,14 @@
 -l /home/Robert/cpctelera/cpctelera/cpctelera.lib
 -l z80
 obj/obstacle.rel
+obj/bullets.h.rel
 obj/scene.h.rel
 obj/scene.rel
 obj/main.rel
 obj/obstacle.h.rel
 obj/hero.rel
 obj/cpctelera.h.rel
+obj/bullets.rel
 obj/hero.h.rel
 
 -e

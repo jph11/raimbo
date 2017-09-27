@@ -1,3 +1,5 @@
 *.cdt
 *.dsk
 obj/*
+obj/
+obj
