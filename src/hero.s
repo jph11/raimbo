@@ -13,7 +13,7 @@ hero_y:	.db #80
 hero_w:	.db #2
 hero_h:	.db #4
 hero_jump: .db #-1
-hero_last_movement: .db #1
+hero_last_movement: .db #01
 
 ;;Jump Table
 jumptable:
