@@ -13,6 +13,7 @@ hero_y:	.db #80
 hero_w:	.db #2
 hero_h:	.db #4
 hero_jump: .db #-1
+hero_last_movement: .db #01
 
 ;;Jump Table
 jumptable:
@@ -62,8 +63,18 @@ hero_erase::
 ;;	RETURNS:
 ;; 		HL:Pointer to hero data
 ;; ======================
+hero_getPointerLastMovement::
+	ld hl, #hero_last_movement 		;; Hl points to the Hero Data
+	ret
+
+;; ======================
+;;	Gets a pointer to hero data 
+;;	
+;;	RETURNS:
+;; 		HL:Pointer to hero data
+;; ======================
 hero_getPointer::
-	ld hl, #hero_x 		;; Hl points to the Hero Data
+	ld hl, #hero_x 					;; Hl points to the Hero Data
 	ret
 
 
@@ -193,6 +204,9 @@ checkUserInput:
 	jr z, d_not_pressed			;;Jump if A==0 (d_not_pressed)
 
 	;;D is pressed
+	ld hl, #hero_last_movement
+	ld a, #01
+	ld (hl), a
 	call moveHeroRight
 
 	d_not_pressed:
@@ -204,6 +218,9 @@ checkUserInput:
 	jr z, a_not_pressed			;;Jump if A==0 (a_not_pressed)
 
 	;;A is pressed
+	ld hl, #hero_last_movement
+	ld a, #00
+	ld (hl), a
 	call moveHeroLeft
 
 	a_not_pressed:
