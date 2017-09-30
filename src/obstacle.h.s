@@ -7,4 +7,5 @@
 .globl obstacle_erase
 .globl obstacle_draw
 .globl obstacle_update
+.globl obstacle_init
 .globl obstacle_checkCollision

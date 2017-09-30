@@ -59,6 +59,18 @@ obstacle_erase::
 	ret
 
 ;; ======================
+;;	Obstacle init
+;;  Start obstacle values
+;; ======================
+obstacle_init::
+	ld a, #79		
+	ld (obs_x), a
+	ld a, #82
+	ld (obs_y),a
+
+	ret		
+
+;; ======================
 ;; Obstacle check collision
 ;; 	Inputs:
 ;; 	HL : Points to the other 
