@@ -1,12 +1,15 @@
 .area _DATA
+
+hero_alive: .db #01
+
 .area _CODE
 
 .include "hero.h.s"
 .include "scene.h.s"
 .include "obstacle.h.s"
+.include "enemy.h.s"
 .include "engine.h.s"
 .include "cpctelera.h.s"
-;;.include "keyboard/keyboard.s"
 
 ;;===========================================
 ;;===========================================
@@ -22,6 +25,15 @@ game_start::
 	call game_run
     ret
 
+;; ======================
+;;	Hero is death
+;; ======================
+game_heroKill::
+	ld a, #00
+	ld (hero_alive), a
+	ret
+		
+
 ;;===========================================
 ;;===========================================
 ;;PRIVATE FUNTIONS
@@ -33,7 +45,7 @@ game_start::
 ;; ======================
 game_init:
     call hero_init
-    ;;call enemy_init
+    call enemy_init
     call obstacle_init
     call scene_drawFloor
 
@@ -46,9 +58,13 @@ game_run:
 	call engine_eraseAll
 	call engine_updateAll
 
-		call hero_getPointer
-		call obstacle_checkCollision
-		ld (0xC000), a 					;;Print if collision in the screen
+	ld a, (hero_alive)
+	cp #0
+	jr z, gameOver
+
+	call hero_getPointer
+	call obstacle_checkCollision
+	ld (0xC000), a 					;;Print if collision in the screen
 
     call engine_drawAll
 
@@ -60,9 +76,7 @@ game_run:
 ;;	Checks User Input and Reacts
 ;;	DESTROYS:
 ;; ======================
-;;checkUserInput:
-
-	;;gameOver:
+gameOver:
 		;;Scan the whole keyboard
 		;;call cpct_scanKeyboard_asm ;;keyboard.s
 
@@ -74,5 +88,3 @@ game_run:
 
 		;;Space is pressed
 		;;call game_start
-
-		;;ret
