@@ -10,8 +10,8 @@
 ;;Hero Data
 hero_x: .db #39
 hero_y:	.db #80
-hero_w:	.db #2
-hero_h:	.db #4
+hero_w:	.db #02
+hero_h:	.db #04
 hero_jump: .db #-1
 hero_last_movement: .db #01
 
@@ -58,6 +58,22 @@ hero_erase::
 	ret
 
 ;; ======================
+;;	Hero init
+;;  Start hero values
+;; ======================
+hero_init::
+	ld a, #39
+	ld (hero_x), a
+	ld a, #80
+	ld (hero_y), a
+	ld a, #-1
+	ld (hero_jump), a
+	ld a, #01
+	ld (hero_last_movement), a
+
+	ret	
+
+;; ======================
 ;;	Gets a pointer to hero data 
 ;;	
 ;;	RETURNS:
@@ -76,8 +92,7 @@ hero_getPointerLastMovement::
 hero_getPointer::
 	ld hl, #hero_x 					;; Hl points to the Hero Data
 	ret
-
-
+	
 ;;===========================================
 ;;===========================================
 ;;PRIVATE FUNCTIONS
