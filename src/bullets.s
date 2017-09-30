@@ -8,11 +8,12 @@
 ;;===========================================
 
 ;; Bullets - Cantidad máxima de balas en pantalla 10
-
+tempBullets: 
+	.db #0x00
 bullets:	;; Bullets (x,y,dirección)
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
-	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF 
+	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF  
 	.db #0x81
 
 .include "hero.h.s"
@@ -28,6 +29,17 @@ bullets:	;; Bullets (x,y,dirección)
 ;; Add a new bullet if posible 
 ;;======================
 bullets_newBullet::
+											;; Esta primera función guarda una bala cada dos veces y realiza un efecto de temporizador
+	ld hl, #tempBullets 					;; hl <= tempBullets
+	ld a, (hl) 								;; a <= (tempBullets)
+	cp #0x02 								;; a == 0x02
+	jr z, nueva 							;; if(!a==0x02){
+		inc a 								;; 	a++
+		ld (hl), a 							;; 	Actualizamos tempBullets
+		ret 								;; 	Terminamos
+	nueva:									;; }else{
+	ld (hl), #0x00 							;;  Reiniciamos tempBullets y procedemos a guardar la bala
+											;; }
 	call checkAvalibility					;; Comprobamos si hay un hueco libre
 	cp #-1									;; if(a == -1)
 		ret z								;; No hay hueco libre, terminamos
@@ -119,7 +131,6 @@ checkAvalibility:
 ;;		A (Color)
 ;; ======================
 drawBullet:
-
 	push af 							;; Guardamos el color
 	ld hl, #bullets 					;; hl = referencia a memoria a #bullets_x
 	bucleDraw: 							;;
@@ -155,7 +166,6 @@ drawBullet:
 ;;	Update all the bullets
 ;; ======================
 updateBullets:
-
 	ld hl, #bullets 				;; hl = referencia a memoria a #bullets
 	bucle: 							;;
 	ld a, (hl) 						;; a = hl(bullets_x)
