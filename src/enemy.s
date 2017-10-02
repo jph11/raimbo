@@ -15,6 +15,7 @@ enemy_h: .db #8
 
 .include "cpctelera.h.s"
 .include "game.h.s"
+.include "hero.h.s"
 
 
 ;;===========================================
@@ -28,6 +29,7 @@ enemy_h: .db #8
 ;; ======================
 enemy_update::
 	call moveEnemyLeft
+	call hero_getPointer
 	call enemy_checkCollision
 
 	ret
@@ -81,12 +83,12 @@ enemy_checkCollision::
 	;;	enemy_x + enemy_w - hero_x <= 0
 	;; 
 
-	ld a, (enemy_x)		;; | enemy_x
-	ld c, a 			;; | +
-	ld a, (enemy_w)	 	;; | enemy_w
-	add c 				;; | -
-	sub (hl)			;; | hero_x			
-	jr z, not_collision ;; | if(==0)
+	ld a, (enemy_x)			;; | enemy_x
+	ld c, a 				;; | +
+	ld a, (enemy_w)	 		;; | enemy_w
+	add c 					;; | -
+	sub (hl)				;; | hero_x			
+	jr z, not_collision 	;; | if(==0)
 	jp m, not_collision 	;; | if(<0)
 
 	;;
@@ -103,7 +105,7 @@ enemy_checkCollision::
 	ld b, a
 	ld a, c
 	sub b
-	jr z, not_collision ;; | if(==0)
+	jr z, not_collision 	;; | if(==0)
 	jp m, not_collision 	;; | if(<0)
 
 	;;
@@ -111,13 +113,13 @@ enemy_checkCollision::
 	;;	enemy_y + enemy_h - hero_y <= 0
 	;;
 
-	ld a, (enemy_y)		;; | enemy_x
-	ld c, a 			;; | +
-	ld a, (enemy_h)	 	;; | obx_w
+	ld a, (enemy_y)			;; | enemy_x
+	ld c, a 				;; | +
+	ld a, (enemy_h)	 		;; | obx_w
 	add c
-	dec hl				;; | -
-	sub (hl)			;; | hero_x			
-	jr z, not_collision ;; | if(==0)
+	dec hl					;; | -
+	sub (hl)				;; | hero_x			
+	jr z, not_collision 	;; | if(==0)
 	jp m, not_collision 	;; | if(<0)
 
 	;;
@@ -139,7 +141,6 @@ enemy_checkCollision::
 
 		;;Other posibilities of collision
 		call game_heroKill
-		ret
 	
 	not_collision:
 

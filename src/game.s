@@ -10,6 +10,7 @@ hero_alive: .db #01
 .include "enemy.h.s"
 .include "engine.h.s"
 .include "cpctelera.h.s"
+.include "keyboard.s"
 
 ;;===========================================
 ;;===========================================
@@ -29,8 +30,9 @@ game_start::
 ;;	Hero is death
 ;; ======================
 game_heroKill::
-	ld a, #00
-	ld (hero_alive), a
+	ld hl, #hero_alive
+	ld a, #0
+	ld (hl), a
 	ret
 		
 
@@ -78,13 +80,15 @@ game_run:
 ;; ======================
 gameOver:
 		;;Scan the whole keyboard
-		;;call cpct_scanKeyboard_asm ;;keyboard.s
+		call cpct_scanKeyboard_asm ;;keyboard.s
 
 		;;Check for key 'Space' being pressed
-		;;ld hl, #Key_Enter
-		;;call cpct_isKeyPressed_asm	;;Check if Key_Space is presed
-		;;cp #0						;;Check A == 0
-		;;jr z, gameOver		;;Jump if A==0 (space_not_pressed)
+		ld hl, #Key_P
+		call cpct_isKeyPressed_asm	;;Check if Key_Space is presed
+		cp #0						;;Check A == 0
+		jr z, gameOver		;;Jump if A==0 (space_not_pressed)
 
 		;;Space is pressed
-		;;call game_start
+		ld a, #01
+		ld (hero_alive), a
+		call game_start

@@ -24,7 +24,7 @@ jumptable:
 
 .include "bullets.h.s"
 .include "cpctelera.h.s"
-.include "keyboard/keyboard.s"
+.include "keyboard.s"
 
 ;;===========================================
 ;;===========================================
