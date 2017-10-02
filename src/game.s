@@ -1,12 +1,16 @@
 .area _DATA
+
+hero_alive: .db #01
+
 .area _CODE
 
 .include "hero.h.s"
 .include "scene.h.s"
 .include "obstacle.h.s"
+.include "enemy.h.s"
 .include "engine.h.s"
 .include "cpctelera.h.s"
-;;.include "keyboard/keyboard.s"
+.include "keyboard.s"
 
 ;;===========================================
 ;;===========================================
@@ -22,6 +26,16 @@ game_start::
 	call game_run
     ret
 
+;; ======================
+;;	Hero is death
+;; ======================
+game_heroKill::
+	ld hl, #hero_alive
+	ld a, #0
+	ld (hl), a
+	ret
+		
+
 ;;===========================================
 ;;===========================================
 ;;PRIVATE FUNTIONS
@@ -33,7 +47,7 @@ game_start::
 ;; ======================
 game_init:
     call hero_init
-    ;;call enemy_init
+    call enemy_init
     call obstacle_init
     call scene_drawFloor
 
@@ -46,9 +60,13 @@ game_run:
 	call engine_eraseAll
 	call engine_updateAll
 
-		call hero_getPointer
-		call obstacle_checkCollision
-		ld (0xC000), a 					;;Print if collision in the screen
+	ld a, (hero_alive)
+	cp #0
+	jr z, gameOver
+
+	call hero_getPointer
+	call obstacle_checkCollision
+	ld (0xC000), a 					;;Print if collision in the screen
 
     call engine_drawAll
 
@@ -60,19 +78,17 @@ game_run:
 ;;	Checks User Input and Reacts
 ;;	DESTROYS:
 ;; ======================
-;;checkUserInput:
-
-	;;gameOver:
+gameOver:
 		;;Scan the whole keyboard
-		;;call cpct_scanKeyboard_asm ;;keyboard.s
+		call cpct_scanKeyboard_asm ;;keyboard.s
 
 		;;Check for key 'Space' being pressed
-		;;ld hl, #Key_Enter
-		;;call cpct_isKeyPressed_asm	;;Check if Key_Space is presed
-		;;cp #0						;;Check A == 0
-		;;jr z, gameOver		;;Jump if A==0 (space_not_pressed)
+		ld hl, #Key_P
+		call cpct_isKeyPressed_asm	;;Check if Key_Space is presed
+		cp #0						;;Check A == 0
+		jr z, gameOver		;;Jump if A==0 (space_not_pressed)
 
 		;;Space is pressed
-		;;call game_start
-
-		;;ret
+		ld a, #01
+		ld (hero_alive), a
+		call game_start
