@@ -1,4 +1,17 @@
 .area _DATA
+
+.globl _sprite_hero
+
+.macro defineEntity name, x, y, w, h, spr
+	name'_data:
+		name'_x: 	.db x
+		name'_y:	.db y
+		name'_w:	.db w
+		name'_h:	.db h
+		name'_jump: .db #-1
+		name'_sprite: .dw spr
+.endm
+
 .area _CODE
 
 ;;===========================================
@@ -8,12 +21,17 @@
 ;;===========================================
 
 ;;Hero Data
-hero_x: .db #39
-hero_y:	.db #80
-hero_w:	.db #02
-hero_h:	.db #04
-hero_jump: .db #-1
+defineEntity hero 39, 60, 7, 25, _sprite_hero
 hero_last_movement: .db #01
+	
+.equ Ent_x, 0
+.equ Ent_y, 1
+.equ Ent_w, 2
+.equ Ent_h, 3
+.equ Ent_jmp, 4	
+.equ Ent_spr_l, 5
+.equ Ent_spr_h, 6
+.equ Ent_lst_mov, 7
 
 ;;Jump Table
 jumptable:
@@ -46,6 +64,7 @@ hero_update::
 ;; ======================
 hero_draw::
 	ld a, #0xFF
+	ld ix, #hero_data
 	call drawHero
 	ret
 
@@ -54,6 +73,7 @@ hero_draw::
 ;; ======================
 hero_erase::
 	ld a, #0x00
+	ld ix, #hero_data
 	call drawHero
 	ret
 
@@ -64,7 +84,7 @@ hero_erase::
 hero_init::
 	ld a, #39
 	ld (hero_x), a
-	ld a, #80
+	ld a, #60
 	ld (hero_y), a
 	ld a, #-1
 	ld (hero_jump), a
@@ -167,7 +187,7 @@ startJump:
 ;; ======================
 moveHeroRight:
 	ld a, (hero_x)	;;A = hero_x
-	cp #80-2		;;Check against right limit (screen size - hero size)
+	cp #80-4		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_right	;;Hero_x == Limit, do not move
 
 	inc a 			;;A++ (hero_x++)
@@ -266,21 +286,25 @@ drawHero:
 	push af 	;;Save A in the stack
 
 	;; Calculate Screen position
-	ld de, #0xC000	;;Video memory
+	ld de, #0xC000		;;Video memory
 
-	ld a, (hero_x)	;;|
-	ld c, a			;;\ C=hero_x
-
-	ld a, (hero_y)	;;|
-	ld b, a			;;\ B=hero_y
+	ld c, Ent_x(ix)			;;\ C=hero_x
+	ld b, Ent_y(ix)			;;\ B=hero_y
 
 	call cpct_getScreenPtr_asm	;;Get pointer to screen
 	ex de, hl
 
-	pop AF 		;;A = User selected code
-
 	;; Draw a box
-	ld bc, #0x0802	;;8x8
-	call cpct_drawSolidBox_asm
-
+	ld b, Ent_h(ix)
+	ld c, Ent_w(ix)
+	pop AF 		;;A = User selected code
+	cp #00
+	jr z, eraseHero
+		;;Draw sprite
+		ld h, Ent_spr_h(ix)
+		ld l, Ent_spr_l(ix)
+		call cpct_drawSprite_asm
+		ret
+	eraseHero:
+	call cpct_drawSolidBox_asm	
 	ret
