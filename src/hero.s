@@ -1,15 +1,17 @@
 .area _DATA
 
-.globl _sprite_hero
+.globl _sprite_hero_right
+.globl _sprite_hero_left
 
-.macro defineEntity name, x, y, w, h, spr
+.macro defineEntity name, x, y, w, h, spr_right, spri_left
 	name'_data:
 		name'_x: 	.db x
 		name'_y:	.db y
 		name'_w:	.db w
 		name'_h:	.db h
 		name'_jump: .db #-1
-		name'_sprite: .dw spr
+		name'_sprite_right: .dw spr_right
+		name'_sprite_left: .dw spri_left
 .endm
 
 .area _CODE
@@ -21,7 +23,7 @@
 ;;===========================================
 
 ;;Hero Data
-defineEntity hero 39, 60, 7, 25, _sprite_hero
+defineEntity hero 39, 60, 7, 25, _sprite_hero_right, _sprite_hero_left 
 hero_last_movement: .db #01
 	
 .equ Ent_x, 0
@@ -29,9 +31,11 @@ hero_last_movement: .db #01
 .equ Ent_w, 2
 .equ Ent_h, 3
 .equ Ent_jmp, 4	
-.equ Ent_spr_l, 5
-.equ Ent_spr_h, 6
-.equ Ent_lst_mov, 7
+.equ Ent_spr_right_l, 5
+.equ Ent_spr_right_h, 6
+.equ Ent_spr_left_l, 7
+.equ Ent_spr_left_h, 8
+.equ Ent_lst_mov, 9
 
 ;;Jump Table
 jumptable:
@@ -181,13 +185,40 @@ startJump:
 	ret
 
 
+;; ======================
+;; Move hero to up
+;; ======================
+moveHeroUp:
+	ld a, (hero_y)	;;A = hero_x
+	cp #0		;;Check against right limit (screen size - hero size)
+	jr z, d_not_move_up	;;Hero_x == Limit, do not move
+
+	dec a 			;;A++ (hero_x++)
+	ld (hero_y), a 	;;Update hero_x
+
+	d_not_move_up:
+	ret
+
+;; ======================
+;; Move hero to bottom
+;; ======================
+moveHeroBottom:
+	ld a, (hero_y)	;;A = hero_x
+	cp #180-5		;;Check against right limit (screen size - hero size)
+	jr z, d_not_move_bottom	;;Hero_x == Limit, do not move
+
+	inc a 			;;A++ (hero_x++)
+	ld (hero_y), a 	;;Update hero_x
+
+	d_not_move_bottom:
+	ret
 
 ;; ======================
 ;; Move hero to the right
 ;; ======================
 moveHeroRight:
 	ld a, (hero_x)	;;A = hero_x
-	cp #80-4		;;Check against right limit (screen size - hero size)
+	cp #80-7		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_right	;;Hero_x == Limit, do not move
 
 	inc a 			;;A++ (hero_x++)
@@ -260,6 +291,18 @@ checkUserInput:
 
 	a_not_pressed:
 
+	;;Check for key 'S' being pressed
+	ld hl, #Key_S 				;;HL = Key_S
+	call cpct_isKeyPressed_asm	;;Check if Key_S is presed
+	cp #0						;;Check S == 0
+	jr z, s_not_pressed			;;Jump if S==0 (s_not_pressed)
+
+	;;S is pressed
+	
+	;;call startJump
+	call moveHeroBottom
+	s_not_pressed:
+
 
 	;;Check for key 'W' being pressed
 	ld hl, #Key_W 				;;HL = Key_W
@@ -268,8 +311,9 @@ checkUserInput:
 	jr z, w_not_pressed			;;Jump if W==0 (w_not_pressed)
 
 	;;W is pressed
-	call startJump
-
+	
+	;;call startJump
+	call moveHeroUp
 	w_not_pressed:
 
 	ret
@@ -300,9 +344,22 @@ drawHero:
 	pop AF 		;;A = User selected code
 	cp #00
 	jr z, eraseHero
+		push af
+		ld a, (hero_last_movement)
+		cp #0
+		jr z, left
 		;;Draw sprite
-		ld h, Ent_spr_h(ix)
-		ld l, Ent_spr_l(ix)
+		pop af
+		ld h, Ent_spr_right_h(ix)
+		ld l, Ent_spr_right_l(ix)
+		call cpct_drawSprite_asm
+		ret
+
+		left:
+		;;Draw sprite
+		pop af
+		ld h, Ent_spr_left_h(ix)
+		ld l, Ent_spr_left_l(ix)
 		call cpct_drawSprite_asm
 		ret
 	eraseHero:
