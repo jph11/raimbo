@@ -20,7 +20,7 @@
 ;;====================
 
 ;;Obstacle Data
-defineEntity obs 68, 61, 6, 12, _sprite_jar
+defineEntity obs 72, 76, 6, 12, _sprite_jar
 
 .include "hero.h.s"
 .include "cpctelera.h.s"
@@ -42,7 +42,7 @@ obstacle_update::
 	 jr nz, not_restart_x	;; | If (Obs_x = 0) then restart
 
 	 ;; Restart_x when it is 0
-	  ld a, #80-1
+	  ld a, #72
 
 
 	 not_restart_x:
@@ -74,9 +74,9 @@ obstacle_erase::
 ;;  Start obstacle values
 ;; ======================
 obstacle_init::
-	ld a, #79		
+	ld a, #72		
 	ld (obs_x), a
-	ld a, #82
+	ld a, #76
 	ld (obs_y),a
 
 	ret		
