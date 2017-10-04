@@ -1,8 +1,17 @@
 .area _DATA
-.area _CODE
 
-.include "hero.h.s"
-.include "cpctelera.h.s"
+.globl _sprite_jar
+
+.macro defineEntity name, x, y, w, h, spr
+    name'_data:
+        name'_x: 	.db x
+        name'_y:	.db y
+        name'_w:	.db w
+        name'_h:	.db h
+        name'_sprite: .dw spr
+.endm
+
+.area _CODE
 
 ;;====================
 ;;====================
@@ -10,12 +19,12 @@
 ;;====================
 ;;====================
 
-
 ;;Obstacle Data
-obs_x: 	.db #80-1
-obs_y:	.db #82
-obs_w:	.db #1
-obs_h:	.db #4
+defineEntity obs 68, 61, 6, 12, _sprite_jar
+
+.include "hero.h.s"
+.include "cpctelera.h.s"
+.include "entity.h.s"
 
 ;;===========================================
 ;;===========================================
@@ -37,7 +46,7 @@ obstacle_update::
 
 
 	 not_restart_x:
-	  ld (obs_x), a 		;; Update
+		ld (obs_x), a 		;; Update
 	 
 	 ret
 
@@ -47,7 +56,8 @@ obstacle_update::
 ;; ======================
 obstacle_draw::
 	ld a, #0x0F
-	call drawObstacle
+	ld ix, #obs_data
+	call entity_draw
 	ret
 
 ;; ======================
@@ -55,7 +65,8 @@ obstacle_draw::
 ;; ======================
 obstacle_erase::
 	ld a, #0x00
-	call drawObstacle
+	ld ix, #obs_data
+	call entity_draw
 	ret
 
 ;; ======================
@@ -153,31 +164,3 @@ obstacle_checkCollision::
 ;;PRIVATE FUNCTIONS
 ;;===========================================
 ;;===========================================
-
-;; ======================
-;;	Draw the obstacle
-;;	DESTROYS: AF, BC, DE, HL
-;;  Parametrer: a
-;; ======================
-drawObstacle:
-	push af 	;;Save A in the stack
-
-	;; Calculate Screen position
-	ld de, #0xC000	;;Video memory
-
-	ld a, (obs_x)	;;|
-	ld c, a			;;\ C=hero_x
-
-	ld a, (obs_y)	;;|
-	ld b, a			;;\ B=hero_y
-
-	call cpct_getScreenPtr_asm	;;Get pointer to screen
-	ex de, hl
-
-	pop AF 		;;A = User selected code
-
-	;; Draw a box
-	ld bc, #0x0401	;;4x4
-	call cpct_drawSolidBox_asm
-
-	ret

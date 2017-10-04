@@ -70,8 +70,6 @@ bullets_newBullet::
 	jp bucleNew								;; 	Repetimos operación hasta encontrar hueco libre
 											;; }
 
-
-
 ;; ======================
 ;;	Bullets Update
 ;; ======================
