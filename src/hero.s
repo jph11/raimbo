@@ -189,12 +189,14 @@ startJump:
 ;; Move hero to up
 ;; ======================
 moveHeroUp:
-	ld a, (hero_y)	;;A = hero_x
+	ld a, (hero_y)	;;A = hero_y
 	cp #0		;;Check against right limit (screen size - hero size)
-	jr z, d_not_move_up	;;Hero_x == Limit, do not move
+	jr z, d_not_move_up	;;Hero_y == Limit, do not move
 
-	dec a 			;;A++ (hero_x++)
-	ld (hero_y), a 	;;Update hero_x
+	dec a 			;;A++ (hero_y--)
+	dec a
+	dec a
+	ld (hero_y), a 	;;Update hero_y
 
 	d_not_move_up:
 	ret
@@ -203,12 +205,19 @@ moveHeroUp:
 ;; Move hero to bottom
 ;; ======================
 moveHeroBottom:
-	ld a, (hero_y)	;;A = hero_x
+	ld a, (hero_y)	;;A = hero_y
 	cp #180-5		;;Check against right limit (screen size - hero size)
-	jr z, d_not_move_bottom	;;Hero_x == Limit, do not move
+	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
+	cp #180-6		;;Check against right limit (screen size - hero size)
+	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
+	cp #180-7		;;Check against right limit (screen size - hero size)
+	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
 
-	inc a 			;;A++ (hero_x++)
-	ld (hero_y), a 	;;Update hero_x
+
+	inc a 			;;A++ (hero_y++)
+	inc a
+	inc a
+	ld (hero_y), a 	;;Update hero_y
 
 	d_not_move_bottom:
 	ret
@@ -299,9 +308,20 @@ checkUserInput:
 
 	;;S is pressed
 	
-	;;call startJump
 	call moveHeroBottom
 	s_not_pressed:
+
+
+	;;Check for key 'Shift' being pressed
+	ld hl, #Key_Shift 				;;HL = Key_Shift
+	call cpct_isKeyPressed_asm	;;Check if Key_Shift is presed
+	cp #0						;;Check Shift == 0
+	jr z, shift_not_pressed			;;Jump if Shift==0 (shift_not_pressed)
+
+	;;S is pressed
+	
+	call startJump
+	shift_not_pressed:
 
 
 	;;Check for key 'W' being pressed
@@ -312,7 +332,6 @@ checkUserInput:
 
 	;;W is pressed
 	
-	;;call startJump
 	call moveHeroUp
 	w_not_pressed:
 
