@@ -107,24 +107,26 @@ bullets_draw::
 ;;		A <= -1 No Space
 ;; ======================
 checkAvalibility:
-	ld hl, #bullets 			 	;;	Cargamos la dirección bullets en hl
-	check: 							;;
-	ld a, (hl)						;;	Cargamos VALOR de la posición hl(bullets_x) en a
-	cp #0x81 						;;	Comprobamos fin array
-	jr z, noHayHueco 				;;	Si fin array -> no hay hueco
-	cp #0xFF 						;;	Comprobamos si está libre (0xFF)
-	jr z, hayHueco 					;;	Si 0xFF -> hay Hueco
-		inc hl						;;	hl++ hl <= bullet_y_1
-		inc hl 						;;	hl++ hl <= bullet_direccion_1
-		inc hl						;;	hl++ hl <= bullet_x_2
-		jr check					;;	Saltamos para comprobar la siguiente posición 
-	hayHueco: 						;;	Hueco
-	ld a, #1 						;;	Devolvemos 1
-	ret 							;;
-	noHayHueco: 					;;	No hueco
-	ld a, #-1 						;;	Devolvemos -1
-	ret 							;;
+	ld hl, #bullets 			 		;;	Cargamos la dirección bullets en hl
+	check: 								;;
+	ld a, (hl)							;;	Cargamos VALOR de la posición hl(bullets_x) en a
+	cp #0x81 							;;	Comprobamos fin array
+	jr z, noHayHueco 					;;	Si fin array -> no hay hueco
+	cp #0xFF 							;;	Comprobamos si está libre (0xFF)
+	jr z, hayHueco 						;;	Si 0xFF -> hay Hueco
+		inc hl							;;	hl++ hl <= bullet_y_1
+		inc hl 							;;	hl++ hl <= bullet_direccion_1
+		inc hl							;;	hl++ hl <= bullet_x_2
+		jr check						;;	Saltamos para comprobar la siguiente posición 
+	hayHueco: 							;;	Hueco
+	ld a, #1 							;;	Devolvemos 1
+	ret 								;;
+	noHayHueco: 						;;	No hueco
+	ld a, #-1 							;;	Devolvemos -1
+	ret 								;;
 
+drawBulletVertically:
+	
 ;; ======================
 ;;	Draw the bullets that are storage in memory
 ;;  INPUTS: 
@@ -143,15 +145,39 @@ drawBullet:
 		inc hl 							;; hl++
 		ld b, (hl) 						;; B = bullet_y
 		ld de, #0xC000 					;; Video memory
-		pop af 							;; Mantenemos consistencia en pila
-		push hl 						;; Almacenamos la dirección de de bullets_x
-		push af 						;; Guardamos Color
+		;pop af 						;; Mantenemos consistencia en pila
+		push hl 						;; Almacenamos la dirección de de bullets_y
+		;push af 						;; Guardamos Color
 		call cpct_getScreenPtr_asm 		;; Get pointer to screen
-		pop af 							;; Recuperamos color
-		ld (hl), a 						;; Lo pintamos en la pantalla
-		pop hl 							;; Recuperamos bullets_x
+		;pop af 						;; Recuperamos color
+		;ld c, a							
+		ex de, hl 						;; de = posicion a pintar en pantalla, hl = ni idea (no nos importa)
+		pop hl 							;; hl = bullets_y
+		inc hl 							;; hl = bullets_dirección
+		ld a, (hl) 						;; A = dirección
+		push hl
+		ex de, hl  						;; hl = posicion a pintar en pantalla, de = ni idea (no nos importa)
+		cp #2 							;; Compramos con 2
+		jr c, leftRight 				;; Si 2 mayor que dirección pitamos izquierda-derecha modo
+		ex de, hl
+		pop hl
+		pop af
+		cp #00
+		jr z, borrar
+			ld a, #0xAA
+			ld (de), a
+		borrar:
+			ld (de), a
+		jr keepGoingDraw 				;; Saltamos 
+		leftRight:
+		ex de, hl
+		pop hl
+		pop af
+		ld (de), a 						;; Lo pintamos en la pantalla
+		keepGoingDraw:
+		inc hl 							;; Recuperamos bullets_x
 		push af 						;; Mantenemos consistencia en la pila
-		jr increment_after_draw 		;; Saltamos a incrementar la dirección de memoria
+		jr bucleDraw			 		;; Saltamos a incrementar la dirección de memoria
 	incrementDraw: 						;;
 	inc hl  							;; hl++  hl <= bullet_y
 	increment_after_draw: 				;;
@@ -166,42 +192,80 @@ drawBullet:
 ;;	Update all the bullets
 ;; ======================
 updateBullets:
-	ld hl, #bullets 				;; hl = referencia a memoria a #bullets
-	bucle: 							;;
-	ld a, (hl) 						;; a = hl(bullets_x)
-	cp #0x81 						;; a == 0x81
-		ret z 						;; if(a==0x81) ret
-	cp #0xFF 						;; else a == 0xFF
-	jr z, increment 				;; Si la condición de arriba es verdadera salta a incrementar la dirección de memoria
-	cp #80-1 						;; Comprobamos si está al final de la pantalla
-	jr z, reset 					;; Si está en el final de la pantalla...
-	cp #0
-	jr nz, update 					;; Si está en el principio de la pantalla...
+	ld hl, #bullets 					;; hl = referencia a memoria a #bullets
+	bucle: 								;;
+	ld a, (hl) 							;; a = hl(bullets_x)
+	cp #0x81 							;; a == 0x81
+		ret z 							;; if(a==0x81) ret
+	cp #0xFF 							;; else a == 0xFF
+	jr z, increment 					;; Si la condición de arriba es verdadera salta a incrementar la dirección de memoria
+
+	startSwitch:
+		push hl
+		inc hl
+		inc hl
+		ld a, (hl)
+		;; Izquierda
+		cp #0
+		jr z, left
+			;; Derecha
+			cp #1
+			jr z, right
+				;;Arriba-Abajo
+				pop hl 	;; hl = bullets_x
+				inc hl 	;; hl = bullets_y
+				cp #2
+				jr z, up
+					;; Down
+					ld a, (hl)
+					cp #200-2
+					jr z, resetVertical
+					cp #200-1 
+					jr z, resetVertical
+					jr c, keepGoingDown
+						jr resetVertical
+					keepGoingDown:
+						inc a
+						inc a
+						inc a
+						ld (hl), a
+						jr increment_after_update
+				up:
+					ld a, (hl)
+					cp #0
+					jr z, resetVertical
+					jr c, resetVertical
+						dec a
+						dec a
+						dec a
+						ld (hl), a
+						jr increment_after_update
+		left:
+			pop hl
+			ld a, (hl)
+			cp #0
+			jr z,  reset
+				dec a
+				ld (hl), a
+				jr increment
+			right:
+				pop hl
+				ld a, (hl)
+				cp #80-1
+				jr z,  reset
+					inc a
+					ld (hl), a
+					jr increment
+	resetVertical:
+		dec hl
 	reset:
-		ld (hl), #0xFF				;; bullet_x reiniciado
-		inc hl						;; hl++	hl<= bullet_y
-		ld (hl), #0xFF				;; bullet_y reiniciado
-		jr increment_after_update	;;
-	update: 						;;
-	push hl 						;; Guardamos bullets_x
-	ld b, a 						;; Guardamos x
-	inc hl 							;; hl++  hl <= bullet_y
-	inc hl 							;; hl++  hl <= bullet_direccion
-	ld a, (hl) 						;; Obtenemos la última dirección que el usuario se ha movido
-	cp #01 							;; Se ha movido derecha
-	ld a, b 						;; Cargamos x en a 
-	pop hl 							;; Recuperamos bullets_x
-	jr z, right 					;;
-	dec a 							;; Decrementamos a  (izquierda)
-	ld (hl), a 						;; Modificar a nueva posicion (bullet_x--)
-	jr increment  					;;
-	right: 							;;
-	inc a 							;; Aumentamos a (derecha)
-	ld (hl), a 						;; Modificar a nueva posicion (bullet_x++)
-	jr increment 					;;
-	increment: 						;;
-	inc hl 							;; hl++  hl <= bullet_y
-	increment_after_update:			;;
-	inc hl 							;; hl++  hl <= bullet_dirección
-	inc hl 							;; hl++  hl <= bullet_x
-	jp bucle 						;;
+		ld (hl), #0xFF					;; bullet_x reiniciado
+		inc hl							;; hl++	hl<= bullet_y
+		ld (hl), #0xFF					;; bullet_y reiniciado
+		jr increment_after_update		;;
+	increment: 							;;
+		inc hl 							;; hl++  hl <= bullet_y
+	increment_after_update:				;;
+		inc hl 							;; hl++  hl <= bullet_dirección
+		inc hl 							;; hl++  hl <= bullet_x	
+	jp bucle 							;;
