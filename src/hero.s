@@ -272,19 +272,6 @@ checkUserInput:
 
 	space_not_pressed:
 
-	;;Check for key 'D' being pressed
-	ld hl, #Key_D 				;;HL = Key_D
-	call cpct_isKeyPressed_asm	;;Check if Key_D is presed
-	cp #0						;;Check A == 0
-	jr z, d_not_pressed			;;Jump if A==0 (d_not_pressed)
-
-	;;D is pressed
-	ld hl, #hero_last_movement
-	ld a, #01
-	ld (hl), a
-	call moveHeroRight
-
-	d_not_pressed:
 
 	;;Check for key 'A' being pressed
 	ld hl, #Key_A 				;;HL = Key_A
@@ -300,6 +287,33 @@ checkUserInput:
 
 	a_not_pressed:
 
+	;;Check for key 'D' being pressed
+	ld hl, #Key_D 				;;HL = Key_D
+	call cpct_isKeyPressed_asm	;;Check if Key_D is presed
+	cp #0						;;Check A == 0
+	jr z, d_not_pressed			;;Jump if A==0 (d_not_pressed)
+
+	;;D is pressed
+	ld hl, #hero_last_movement
+	ld a, #01
+	ld (hl), a
+	call moveHeroRight
+
+	d_not_pressed:
+
+	;;Check for key 'W' being pressed
+	ld hl, #Key_W 				;;HL = Key_W
+	call cpct_isKeyPressed_asm	;;Check if Key_W is presed
+	cp #0						;;Check W == 0
+	jr z, w_not_pressed			;;Jump if W==0 (w_not_pressed)
+
+	;;W is pressed
+	ld hl, #hero_last_movement
+	ld a, #02
+	ld (hl), a
+	call moveHeroUp
+	w_not_pressed:
+
 	;;Check for key 'S' being pressed
 	ld hl, #Key_S 				;;HL = Key_S
 	call cpct_isKeyPressed_asm	;;Check if Key_S is presed
@@ -307,10 +321,13 @@ checkUserInput:
 	jr z, s_not_pressed			;;Jump if S==0 (s_not_pressed)
 
 	;;S is pressed
-	
+	ld hl, #hero_last_movement
+	ld a, #03
+	ld (hl), a
 	call moveHeroBottom
 	s_not_pressed:
 
+	
 
 	;;Check for key 'Shift' being pressed
 	ld hl, #Key_Shift 				;;HL = Key_Shift
@@ -322,18 +339,6 @@ checkUserInput:
 	
 	call startJump
 	shift_not_pressed:
-
-
-	;;Check for key 'W' being pressed
-	ld hl, #Key_W 				;;HL = Key_W
-	call cpct_isKeyPressed_asm	;;Check if Key_W is presed
-	cp #0						;;Check W == 0
-	jr z, w_not_pressed			;;Jump if W==0 (w_not_pressed)
-
-	;;W is pressed
-	
-	call moveHeroUp
-	w_not_pressed:
 
 	ret
 
