@@ -23,14 +23,6 @@
 defineEntity enemy 55, 60, 7, 25, _sprite_oldman_left
 enemy_temp: .db #0x00
 
-
-.equ Ent_x, 0
-.equ Ent_y, 1
-.equ Ent_w, 2
-.equ Ent_h, 3	
-.equ Ent_spr_l, 4
-.equ Ent_spr_h, 5
-
 .include "cpctelera.h.s"
 .include "game.h.s"
 .include "hero.h.s"
