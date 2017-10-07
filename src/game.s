@@ -64,9 +64,8 @@ game_run:
 	cp #0
 	jr z, gameOver
 
-	call hero_getPointer
-	call obstacle_checkCollision
-	ld (0xC000), a 					;;Print if collision in the screen
+	;;call hero_getPointer
+	;;call obstacle_checkCollision
 
     call engine_drawAll
 

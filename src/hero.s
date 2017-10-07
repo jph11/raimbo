@@ -1,18 +1,6 @@
 .area _DATA
 
 .globl _sprite_hero_right
-.globl _sprite_hero_left
-
-.macro defineEntity name, x, y, w, h, spr_right, spri_left
-	name'_data:
-		name'_x: 	.db x
-		name'_y:	.db y
-		name'_w:	.db w
-		name'_h:	.db h
-		name'_jump: .db #-1
-		name'_sprite_right: .dw spr_right
-		name'_sprite_left: .dw spri_left
-.endm
 
 .area _CODE
 
@@ -22,31 +10,24 @@
 ;;===========================================
 ;;===========================================
 
-;;Hero Data
-defineEntity hero 39, 60, 7, 25, _sprite_hero_right, _sprite_hero_left 
-hero_last_movement: .db #01
-	
-.equ Ent_x, 0
-.equ Ent_y, 1
-.equ Ent_w, 2
-.equ Ent_h, 3
-.equ Ent_jmp, 4	
-.equ Ent_spr_right_l, 5
-.equ Ent_spr_right_h, 6
-.equ Ent_spr_left_l, 7
-.equ Ent_spr_left_h, 8
-.equ Ent_lst_mov, 9
-
-;;Jump Table
-jumptable:
-	.db #-3, #-2, #-1, #-1
-	.db #-1, #00, #00, #01
-	.db #01, #01, #02, #03
-	.db #0x80
-
 .include "bullets.h.s"
 .include "cpctelera.h.s"
 .include "keyboard.s"
+.include "entity.h.s"
+.include "macros.h.s"
+
+;;Hero Data
+defineEntity hero 39, 60, 7, 25, _sprite_hero_right
+hero_jump: .db #-1
+hero_last_movement: .db #01
+
+;;Jump Table
+jumptable:
+	.db #-5, #-4, #-2, #-1
+	.db #-1, #00, #00, #00
+	.db #00, #00,#00, #01
+	.db #01, #02, #04, #05
+	.db #0x80
 
 ;;===========================================
 ;;===========================================
@@ -62,14 +43,13 @@ hero_update::
 	call checkUserInput
 	ret
 
-
 ;; ======================
 ;;	Hero Draw
 ;; ======================
 hero_draw::
 	ld a, #0xFF
 	ld ix, #hero_data
-	call drawHero
+	call entity_draw
 	ret
 
 ;; ======================
@@ -78,7 +58,7 @@ hero_draw::
 hero_erase::
 	ld a, #0x00
 	ld ix, #hero_data
-	call drawHero
+	call entity_draw
 	ret
 
 ;; ======================
@@ -139,7 +119,7 @@ jumpControl:
 	add hl, bc			;;HL += BC
 
 	ld a, (hero_jump)	;;A = Hero_jump
-	cp #0x0C
+	cp #0x10
 	jp z, reset
 
 	;;Do Jump Movement
@@ -150,7 +130,7 @@ jumpControl:
 
 	;;Increment Hero_jump Index
 	ld a, (hero_jump)	;;A = Hero_jump
-	cp #0x0C 			;;Check if is latest vallue
+	cp #0x10 			;;Check if is latest vallue
 	jr nz, continue_jump ;;Not latest value, continue
 
 		;;End jump
@@ -166,8 +146,6 @@ jumpControl:
 	ld a, #-1
 	ld (hero_jump), a
 	ret
-
-
 
 ;; ======================
 ;;	Starts Hero Jump
@@ -235,8 +213,6 @@ moveHeroRight:
 
 	d_not_move_right:
 	ret
-
-
 
 ;; ======================
 ;; Move hero to the left
@@ -342,50 +318,3 @@ checkUserInput:
 
 	ret
 
-
-
-;; ======================
-;;	Draw the hero
-;;	DESTROYS: AF, BC, DE, HL
-;;  Parametrer: a
-;; ======================
-drawHero:
-
-	push af 	;;Save A in the stack
-
-	;; Calculate Screen position
-	ld de, #0xC000		;;Video memory
-
-	ld c, Ent_x(ix)			;;\ C=hero_x
-	ld b, Ent_y(ix)			;;\ B=hero_y
-
-	call cpct_getScreenPtr_asm	;;Get pointer to screen
-	ex de, hl
-
-	;; Draw a box
-	ld b, Ent_h(ix)
-	ld c, Ent_w(ix)
-	pop AF 		;;A = User selected code
-	cp #00
-	jr z, eraseHero
-		push af
-		ld a, (hero_last_movement)
-		cp #0
-		jr z, left
-		;;Draw sprite
-		pop af
-		ld h, Ent_spr_right_h(ix)
-		ld l, Ent_spr_right_l(ix)
-		call cpct_drawSprite_asm
-		ret
-
-		left:
-		;;Draw sprite
-		pop af
-		ld h, Ent_spr_left_h(ix)
-		ld l, Ent_spr_left_l(ix)
-		call cpct_drawSprite_asm
-		ret
-	eraseHero:
-	call cpct_drawSolidBox_asm	
-	ret

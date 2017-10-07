@@ -1,4 +1,7 @@
 .area _DATA
+
+.globl _sprite_oldman_left
+
 .area _CODE
 
 ;;===========================================
@@ -7,16 +10,15 @@
 ;;===========================================
 ;;===========================================
 
-;;Enemy Data
-enemy_x: .db #77
-enemy_y: .db #80
-enemy_w: .db #3
-enemy_h: .db #8
-
 .include "cpctelera.h.s"
 .include "game.h.s"
 .include "hero.h.s"
+.include "entity.h.s"
+.include "macros.h.s"
 
+;;Enemy Data
+defineEntity enemy 55, 60, 7, 25, _sprite_oldman_left
+enemy_temp: .db #0x00
 
 ;;===========================================
 ;;===========================================
@@ -39,7 +41,8 @@ enemy_update::
 ;; ======================
 enemy_draw::
 	ld a, #0x6F
-	call drawEnemy
+	ld ix, #enemy_data
+	call entity_draw
 	ret
 
 ;; ======================
@@ -47,7 +50,8 @@ enemy_draw::
 ;; ======================
 enemy_erase::
 	ld a, #0x00
-	call drawEnemy
+	ld ix, #enemy_data
+	call entity_draw
 	ret
 
 ;; ======================
@@ -55,13 +59,12 @@ enemy_erase::
 ;;  Start enemy values
 ;; ======================
 enemy_init::
-	ld a, #77
+	ld a, #65
 	ld (enemy_x), a
-	ld a, #80
+	ld a, #60
 	ld (enemy_y),a
 
 	ret	
-
 
 ;;===========================================
 ;;===========================================
@@ -150,43 +153,27 @@ enemy_checkCollision::
 ;; Move enemy to the left
 ;; ======================
 moveEnemyLeft:
+
+	ld hl, #enemy_temp	 					;; hl <= enemy_temp
+	ld a, (hl) 								;; a <= (enemy_temp)
+	cp #0x03 								;; a == 0x04
+	jr z, nueva 							;; if(!a==0x02){
+		inc a 								;; 	a++
+		ld (hl), a 							;; 	Actualizamos enemy_temp
+		ret 								;; 	Terminamos
+	nueva:									;; }else{
+	ld (hl), #0x00 							;;  Reiniciamos tempBullets y procedemos a guardar la bala
+											;; }
+
 	;;Move enemy to the left
 	ld a, (enemy_x) 			;; |
 	dec a						;; | enemy_x--
 	jr nz, not_restart_x		;; | If (enemy_x = 0) then restart
 
 	;; Restart_x when it is 0 to the right
-	ld a, #80-3
+	ld a, #65-3
 
 	not_restart_x:
 	ld (enemy_x), a
 
 	ret
-
-;; ======================
-;;	Draw the enemy
-;;	DESTROYS: AF, BC, DE, HL
-;;  Parametrer: a
-;; ======================
-drawEnemy:
-	push af 	;;Save A in the stack
-
-	;; Calculate Screen position
-	ld de, #0xC000	;;Video memory
-
-	ld a, (enemy_x)	;;|
-	ld c, a			;;\ C=enemy_x
-
-	ld a, (enemy_y)	;;|
-	ld b, a			;;\ B=enemy_y
-
-	call cpct_getScreenPtr_asm	;;Get pointer to screen
-	ex de, hl
-
-	pop AF 		;;A = User selected code
-
-	;; Draw a box
-	ld bc, #0x0803	
-	call cpct_drawSolidBox_asm
-
-	ret    

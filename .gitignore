@@ -1,3 +1,4 @@
 *.cdt
 *.dsk
 obj/
+.DS_Store

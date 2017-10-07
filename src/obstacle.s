@@ -1,8 +1,8 @@
 .area _DATA
-.area _CODE
 
-.include "hero.h.s"
-.include "cpctelera.h.s"
+.globl _sprite_jar
+
+.area _CODE
 
 ;;====================
 ;;====================
@@ -10,12 +10,13 @@
 ;;====================
 ;;====================
 
+.include "hero.h.s"
+.include "cpctelera.h.s"
+.include "entity.h.s"
+.include "macros.h.s"
 
 ;;Obstacle Data
-obs_x: 	.db #80-1
-obs_y:	.db #82
-obs_w:	.db #1
-obs_h:	.db #4
+defineEntity obs 72, 76, 6, 12, _sprite_jar
 
 ;;===========================================
 ;;===========================================
@@ -33,11 +34,11 @@ obstacle_update::
 	 jr nz, not_restart_x	;; | If (Obs_x = 0) then restart
 
 	 ;; Restart_x when it is 0
-	  ld a, #80-1
+	  ld a, #72
 
 
 	 not_restart_x:
-	  ld (obs_x), a 		;; Update
+		ld (obs_x), a 		;; Update
 	 
 	 ret
 
@@ -47,7 +48,8 @@ obstacle_update::
 ;; ======================
 obstacle_draw::
 	ld a, #0x0F
-	call drawObstacle
+	ld ix, #obs_data
+	call entity_draw
 	ret
 
 ;; ======================
@@ -55,7 +57,8 @@ obstacle_draw::
 ;; ======================
 obstacle_erase::
 	ld a, #0x00
-	call drawObstacle
+	ld ix, #obs_data
+	call entity_draw
 	ret
 
 ;; ======================
@@ -63,9 +66,9 @@ obstacle_erase::
 ;;  Start obstacle values
 ;; ======================
 obstacle_init::
-	ld a, #79		
+	ld a, #72		
 	ld (obs_x), a
-	ld a, #82
+	ld a, #76
 	ld (obs_y),a
 
 	ret		
@@ -153,31 +156,3 @@ obstacle_checkCollision::
 ;;PRIVATE FUNCTIONS
 ;;===========================================
 ;;===========================================
-
-;; ======================
-;;	Draw the obstacle
-;;	DESTROYS: AF, BC, DE, HL
-;;  Parametrer: a
-;; ======================
-drawObstacle:
-	push af 	;;Save A in the stack
-
-	;; Calculate Screen position
-	ld de, #0xC000	;;Video memory
-
-	ld a, (obs_x)	;;|
-	ld c, a			;;\ C=hero_x
-
-	ld a, (obs_y)	;;|
-	ld b, a			;;\ B=hero_y
-
-	call cpct_getScreenPtr_asm	;;Get pointer to screen
-	ex de, hl
-
-	pop AF 		;;A = User selected code
-
-	;; Draw a box
-	ld bc, #0x0401	;;4x4
-	call cpct_drawSolidBox_asm
-
-	ret
