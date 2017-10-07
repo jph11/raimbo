@@ -2,15 +2,6 @@
 
 .globl _sprite_jar
 
-.macro defineEntity name, x, y, w, h, spr
-    name'_data:
-        name'_x: 	.db x
-        name'_y:	.db y
-        name'_w:	.db w
-        name'_h:	.db h
-        name'_sprite: .dw spr
-.endm
-
 .area _CODE
 
 ;;====================
@@ -19,12 +10,13 @@
 ;;====================
 ;;====================
 
-;;Obstacle Data
-defineEntity obs 72, 76, 6, 12, _sprite_jar
-
 .include "hero.h.s"
 .include "cpctelera.h.s"
 .include "entity.h.s"
+.include "macros.h.s"
+
+;;Obstacle Data
+defineEntity obs 72, 76, 6, 12, _sprite_jar
 
 ;;===========================================
 ;;===========================================

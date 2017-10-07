@@ -2,15 +2,6 @@
 
 .globl _sprite_hero_right
 
-.macro defineEntity name, x, y, w, h, spr
-    name'_data:
-        name'_x: 	.db x
-        name'_y:	.db y
-        name'_w:	.db w
-        name'_h:	.db h
-        name'_sprite: .dw spr
-.endm
-
 .area _CODE
 
 ;;===========================================
@@ -18,6 +9,12 @@
 ;;PRIVATE DATA
 ;;===========================================
 ;;===========================================
+
+.include "bullets.h.s"
+.include "cpctelera.h.s"
+.include "keyboard.s"
+.include "entity.h.s"
+.include "macros.h.s"
 
 ;;Hero Data
 defineEntity hero 39, 60, 7, 25, _sprite_hero_right
@@ -31,11 +28,6 @@ jumptable:
 	.db #00, #00,#00, #01
 	.db #01, #02, #04, #05
 	.db #0x80
-
-.include "bullets.h.s"
-.include "cpctelera.h.s"
-.include "keyboard.s"
-.include "entity.h.s"
 
 ;;===========================================
 ;;===========================================

@@ -1,18 +1,6 @@
 .area _DATA
 
-.macro defineEntity name, x, y, w, h, spr
-    name'_data:
-        name'_x: 	.db x
-        name'_y:	.db y
-        name'_w:	.db w
-        name'_h:	.db h
-        name'_sprite: .dw spr
-.endm
-
 .area _CODE
-
-defineEntity enemy 55, 60, 7, 25, #0xFFFF
-
 
 .equ Ent_x, 0
 .equ Ent_y, 1

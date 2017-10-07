@@ -2,15 +2,6 @@
 
 .globl _sprite_oldman_left
 
-.macro defineEntity name, x, y, w, h, spr
-    name'_data:
-        name'_x: 	.db x
-        name'_y:	.db y
-        name'_w:	.db w
-        name'_h:	.db h
-        name'_sprite: .dw spr
-.endm
-
 .area _CODE
 
 ;;===========================================
@@ -19,15 +10,15 @@
 ;;===========================================
 ;;===========================================
 
-;;Enemy Data
-defineEntity enemy 55, 60, 7, 25, _sprite_oldman_left
-enemy_temp: .db #0x00
-
 .include "cpctelera.h.s"
 .include "game.h.s"
 .include "hero.h.s"
 .include "entity.h.s"
+.include "macros.h.s"
 
+;;Enemy Data
+defineEntity enemy 55, 60, 7, 25, _sprite_oldman_left
+enemy_temp: .db #0x00
 
 ;;===========================================
 ;;===========================================
