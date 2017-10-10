@@ -16,7 +16,7 @@
 ;;	Draw all
 ;; ======================
 engine_drawAll::
-    call bullets_draw
+    ;call bullets_draw
     call hero_draw
 	call obstacle_draw
     call enemy_draw
@@ -38,7 +38,7 @@ engine_updateAll::
 ;;	Erase all
 ;; ======================
 engine_eraseAll::
-    call bullets_erase
+    ;call bullets_erase
     call hero_erase
     call obstacle_erase
     call enemy_erase

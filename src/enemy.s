@@ -66,6 +66,16 @@ enemy_init::
 
 	ret	
 
+;; ======================
+;;	Gets a pointer to hero data 
+;;	
+;;	RETURNS:
+;; 		HL:Pointer to hero data
+;; ======================
+enemy_getPointer::
+	ld hl, #enemy_x 					;; Hl points to the Hero Data
+	ret	
+
 ;;===========================================
 ;;===========================================
 ;;PRIVATE FUNCTIONS
@@ -79,7 +89,7 @@ enemy_init::
 ;;	Return:
 ;;		XXXXXXXX
 ;; ======================
-enemy_checkCollision::
+enemy_checkCollision:
 	
 	;;
 	;;	If (enemy_x + enemy_w <= hero_x ) no_collision

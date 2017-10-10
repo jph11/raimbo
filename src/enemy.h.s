@@ -8,4 +8,4 @@
 .globl enemy_draw
 .globl enemy_update
 .globl enemy_init
-.globl enemy_checkCollision
+.globl enemy_getPointer
