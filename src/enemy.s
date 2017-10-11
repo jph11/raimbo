@@ -19,6 +19,7 @@
 ;;Enemy Data
 defineEntity enemy 55, 60, 7, 25, _sprite_oldman_left
 enemy_temp: .db #0x00
+enemy_alive: .db #01
 
 ;;===========================================
 ;;===========================================
@@ -30,9 +31,12 @@ enemy_temp: .db #0x00
 ;;	Enemy Update
 ;; ======================
 enemy_update::
-	call moveEnemyLeft
-	call hero_getPointer
-	call enemy_checkCollision
+	ld a, (enemy_alive)
+	cp #0
+	jr z, enemyOver
+		call moveEnemyLeft
+		call hero_getPointer
+		call enemy_checkCollision
 
 	ret
 
@@ -40,18 +44,24 @@ enemy_update::
 ;;	Enemy Draw
 ;; ======================
 enemy_draw::
-	ld a, #0x6F
-	ld ix, #enemy_data
-	call entity_draw
+	ld a, (enemy_alive)
+	cp #0
+	jr z, enemyOver
+		ld a, #0x6F
+		ld ix, #enemy_data
+		call entity_draw
 	ret
 
 ;; ======================
 ;;	Enemy Erase
 ;; ======================
 enemy_erase::
-	ld a, #0x00
-	ld ix, #enemy_data
-	call entity_draw
+	ld a, (enemy_alive)
+	cp #0
+	jr z, enemyOver
+		ld a, #0x00
+		ld ix, #enemy_data
+		call entity_draw
 	ret
 
 ;; ======================
@@ -76,11 +86,23 @@ enemy_getPointer::
 	ld hl, #enemy_x 					;; Hl points to the Hero Data
 	ret	
 
+;; ======================
+;;	Enemy is death
+;; ======================
+enemy_enemyKill::
+	ld hl, #enemy_alive
+	ld a, #0
+	ld (hl), a
+	ret  	
+
 ;;===========================================
 ;;===========================================
 ;;PRIVATE FUNCTIONS
 ;;===========================================
 ;;===========================================
+
+enemyOver:
+	ret
 
 ;; ======================
 ;; Enemy check collision
