@@ -1,6 +1,6 @@
 .area _DATA
 
-.globl _sprite_hero_right
+.globl _sprite_hero_pistol
 
 .area _CODE
 
@@ -17,7 +17,7 @@
 .include "macros.h.s"
 
 ;;Hero Data
-defineEntity hero 39, 60, 7, 25, _sprite_hero_right
+defineEntity hero 39, 60, 9, 25, _sprite_hero_pistol
 hero_jump: .db #-1
 hero_last_movement: .db #01
 
@@ -184,12 +184,9 @@ moveHeroUp:
 ;; ======================
 moveHeroBottom:
 	ld a, (hero_y)	;;A = hero_y
-	cp #180-5		;;Check against right limit (screen size - hero size)
+	cp #200-26		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
-	cp #180-6		;;Check against right limit (screen size - hero size)
-	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
-	cp #180-7		;;Check against right limit (screen size - hero size)
-	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
+	jr nc, d_not_move_bottom
 
 
 	inc a 			;;A++ (hero_y++)
@@ -205,7 +202,7 @@ moveHeroBottom:
 ;; ======================
 moveHeroRight:
 	ld a, (hero_x)	;;A = hero_x
-	cp #80-7		;;Check against right limit (screen size - hero size)
+	cp #80-9		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_right	;;Hero_x == Limit, do not move
 
 	inc a 			;;A++ (hero_x++)

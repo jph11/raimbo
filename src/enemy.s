@@ -82,7 +82,7 @@ enemy_erase::
 enemy_init::
 	ld a, #65
 	ld (enemy_x), a
-	ld a, #60
+	ld a, #170
 	ld (enemy_y),a
 
 	ret	

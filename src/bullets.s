@@ -13,7 +13,7 @@ nBullets:
 tempBullets: 
 	.db #0x00
 bullets:	;; Bullets (x,y)
-	.db #0xFF, #0x55, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
+	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0x81
@@ -54,9 +54,13 @@ bullets_newBullet::
 		ret z								;; No hay hueco libre, terminamos
 
 	call hero_getPointer					;; hl <= Hero_data 		;; hl(hero_x)
-	ld c, (hl)								;; c <= Hero_x
+	ld a, (hl)								;; c <= Hero_x
+	add #9
+	ld c, a
 	inc hl									;; hl++ 				;; hl(hero_y)
-	ld b, (hl)								;; b <= Hero_y
+	ld a, (hl)								;; b <= Hero_y
+	add #14
+	ld b, a
 	ld hl, #bullets 						;; hl = referencia a memoria a #bullets_x
 	bucleNew:								;;
 	ld a, (hl)								;; a = hl(bullets_x)
@@ -121,6 +125,10 @@ bullets_draw::
   ;; ======================
 bullet_checkCollision:
 	
+	ld a, (nBullets)
+	cp #0
+	ret z
+
 	ld de, #bullets 					;; hl = referencia a memoria a #bullets
 	for: 								;;
 	ld a, (de) 							;; a = hl(bullets_x)
@@ -133,7 +141,7 @@ bullet_checkCollision:
 	;;	If (bullet_x + bullet_w <= enemy_x ) no_collision
 	;;	bullet_x + bullet_w - enemy_x <= 0
 	;; 
-	ld a, (de)					;; | bullet_x
+	;;ld a, (de)					;; | bullet_x
 	ld c, a 					;; | +
 	ld a, (bullet_w)	 		;; | bullet_w
 	add c 						;; | -
@@ -165,12 +173,12 @@ bullet_checkCollision:
 
 	inc de
 
-	ld a, (de)				;; | bullet_x
+	ld a, (de)				;; | bullet_y
 	ld c, a 				;; | +
-	ld a, (bullet_h)	 	;; | obx_w
+	ld a, (bullet_h)	 	;; | bullet_w
 	add c
 	dec hl					;; | -
-	sub (hl)				;; | enemy_x			
+	sub (hl)				;; | enemy_y			
 	jr z, not_collision 	;; | if(==0)
 	jp m, not_collision 	;; | if(<0)
 
@@ -197,7 +205,6 @@ bullet_checkCollision:
 		ld a, (hl)			;;|| Si el enemigo ya está muerto finalizamos
 		cp #0				;;||
 		ret z
-
 		ld a, #0xFF			;;||
 		ld (de), a			;;|| Borramos la bala 
 		inc de 				;;|| que ha matado a enemy
@@ -234,8 +241,6 @@ checkAvalibility:
 	noHayHueco: 						;;	No hueco
 	ld a, #-1 							;;	Devolvemos -1
 	ret
-
-drawBulletVertically:
 	
 ;; ======================
 ;;	Draw the bullets that are storage in memory
@@ -339,6 +344,10 @@ updateBullets:
 				up:
 					ld a, (hl)
 					cp #0
+					jr z, resetVertical
+					cp #1
+					jr z, resetVertical
+					cp #2
 					jr z, resetVertical
 					jr c, resetVertical
 						sub a, #3
