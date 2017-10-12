@@ -12,10 +12,13 @@ nBullets:
 	.db #0x00
 tempBullets: 
 	.db #0x00
-bullets:	;; Bullets (x,y,dirección)
+bullets:	;; Bullets (x,y)
+	.db #0xFF, #0x55, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
-	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF  
+	.db #0x81
+direccion:
+	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0x81
 
 .include "hero.h.s"
@@ -31,7 +34,7 @@ bullets:	;; Bullets (x,y,dirección)
 ;; Add a new bullet if posible 
 ;;======================
 bullets_newBullet::
-											;; Esta primera función guarda una bala cada dos veces y realiza un efecto de temporizador
+	;; Temporizador - Esta primera función guarda una bala cada dos veces y realiza un efecto de temporizador
 	ld hl, #tempBullets 					;; hl <= tempBullets
 	ld a, (hl) 								;; a <= (tempBullets)
 	cp #0x02 								;; a == 0x02
@@ -42,6 +45,8 @@ bullets_newBullet::
 	nueva:									;; }else{
 	ld (hl), #0x00 							;;  Reiniciamos tempBullets y procedemos a guardar la bala
 											;; }
+
+
 	call checkAvalibility					;; Comprobamos si hay un hueco libre
 	cp #-1									;; if(a == -1)
 		ret z								;; No hay hueco libre, terminamos
@@ -216,9 +221,7 @@ updateBullets:
 					jr c, keepGoingDown
 						jr resetVertical
 					keepGoingDown:
-						inc a
-						inc a
-						inc a
+						add a, #3
 						ld (hl), a
 						jr increment_after_update
 				up:
@@ -226,9 +229,7 @@ updateBullets:
 					cp #0
 					jr z, resetVertical
 					jr c, resetVertical
-						dec a
-						dec a
-						dec a
+						sub a, #3
 						ld (hl), a
 						jr increment_after_update
 		left:
