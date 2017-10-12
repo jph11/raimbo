@@ -20,7 +20,7 @@
 ;;Enemy Data
 defineEntity enemy 55, 60, 7, 25, _sprite_oldman_left
 enemy_temp: .db #0x00
-enemy_alive: .db #01
+enemy_alive: .db #03
 enemy_last_movement: .db #00
 
 ;;Death Data
@@ -57,7 +57,7 @@ enemy_update::
 enemy_draw::
 	ld a, (enemy_alive)
 	cp #0
-	jr z, enemyOver
+	ret z
 		ld a, #0x6F
 		ld ix, #enemy_data
 		call entity_draw
@@ -69,7 +69,7 @@ enemy_draw::
 enemy_erase::
 	ld a, (enemy_alive)
 	cp #0
-	jr z, enemyOver
+	ret z
 		ld a, #0x00
 		ld ix, #enemy_data
 		call entity_draw
@@ -101,14 +101,18 @@ enemy_getPointer::
 ;;	Enemy is death
 ;; ======================
 enemy_enemyKill::
-	ld hl, #enemy_alive
-	ld a, #0
-	ld (hl), a
+	ld a, (enemy_alive)
+	dec a
+	ld (enemy_alive), a
+	cp #0
+	jr z, death
+		ret
 
-	ld a, (enemy_x)
-	ld (death_x), a
-	ld a, (enemy_y)
-	ld (death_y), a
+	death:
+		ld a, (enemy_x)
+		ld (death_x), a
+		ld a, (enemy_y)
+		ld (death_y), a
 
 	ret  
 

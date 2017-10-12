@@ -186,19 +186,18 @@ bullet_checkCollision:
 	jp m, not_collision 	;;| If(<0)
 
 		;;Other posibilities of collision
-		call enemy_isAlive
-		ld a, (hl)
-		cp #0
-		jr z, hit
+		call enemy_isAlive	;;||
+		ld a, (hl)			;;|| Si el enemigo ya está muerto finalizamos
+		cp #0				;;||
+		ret z
 
-		ld a, #0xFF
-		ld (de), a
-		inc de 
-		ld (de), a
+		ld a, #0xFF			;;||
+		ld (de), a			;;|| Borramos la bala 
+		inc de 				;;|| que ha matado a enemy
+		ld (de), a			;;||
 
-		hit:
-			call enemy_erase
-			call enemy_enemyKill
+		call enemy_erase
+		call enemy_enemyKill
 	
 		ret
 	
