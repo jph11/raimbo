@@ -8,6 +8,8 @@
 ;;===========================================
 
 ;; Bullets - Cantidad máxima de balas en pantalla 10
+nBullets:
+	.db #0x00
 tempBullets: 
 	.db #0x00
 bullets:	;; Bullets (x,y,dirección)
@@ -62,6 +64,9 @@ bullets_newBullet::
 		ld a, (hl) 							;; Cargamos la última posicion
 		pop hl 								;; Recuperamos bullet_dirección
 		ld (hl), a 							;; Y la guardamos
+		ld a, (nBullets) 					;; Cargamos cantidad de balas 
+		inc a 								;; Aumentamos
+		ld (nBullets), a 					;; Volvemos a guardar
 		ret 								;; 	Nueva bala añadida, terminamos
 	incrementNew: 							;; }else{
 	inc hl 									;; 	hl++  hl <= bullet_y
@@ -105,23 +110,15 @@ bullets_draw::
 ;;		A <= -1 No Space
 ;; ======================
 checkAvalibility:
-	ld hl, #bullets 			 		;;	Cargamos la dirección bullets en hl
-	check: 								;;
-	ld a, (hl)							;;	Cargamos VALOR de la posición hl(bullets_x) en a
-	cp #0x81 							;;	Comprobamos fin array
-	jr z, noHayHueco 					;;	Si fin array -> no hay hueco
-	cp #0xFF 							;;	Comprobamos si está libre (0xFF)
-	jr z, hayHueco 						;;	Si 0xFF -> hay Hueco
-		inc hl							;;	hl++ hl <= bullet_y_1
-		inc hl 							;;	hl++ hl <= bullet_direccion_1
-		inc hl							;;	hl++ hl <= bullet_x_2
-		jr check						;;	Saltamos para comprobar la siguiente posición 
+	ld a, (nBullets)
+	cp #10
+	jr z, noHayHueco
 	hayHueco: 							;;	Hueco
 	ld a, #1 							;;	Devolvemos 1
 	ret 								;;
 	noHayHueco: 						;;	No hueco
 	ld a, #-1 							;;	Devolvemos -1
-	ret 								;;
+	ret
 
 drawBulletVertically:
 	
@@ -143,12 +140,8 @@ drawBullet:
 		inc hl 							;; hl++
 		ld b, (hl) 						;; B = bullet_y
 		ld de, #0xC000 					;; Video memory
-		;pop af 						;; Mantenemos consistencia en pila
 		push hl 						;; Almacenamos la dirección de de bullets_y
-		;push af 						;; Guardamos Color
-		call cpct_getScreenPtr_asm 		;; Get pointer to screen
-		;pop af 						;; Recuperamos color
-		;ld c, a							
+		call cpct_getScreenPtr_asm 		;; Get pointer to screen						
 		ex de, hl 						;; de = posicion a pintar en pantalla, hl = ni idea (no nos importa)
 		pop hl 							;; hl = bullets_y
 		inc hl 							;; hl = bullets_dirección
@@ -260,6 +253,9 @@ updateBullets:
 		ld (hl), #0xFF					;; bullet_x reiniciado
 		inc hl							;; hl++	hl<= bullet_y
 		ld (hl), #0xFF					;; bullet_y reiniciado
+		ld a, (nBullets) 				;; Cargamos cantidad de balas 
+		dec a 							;; Decrementamos 
+		ld (nBullets), a 				;; Volvemos a guardar
 		jr increment_after_update		;;
 	increment: 							;;
 		inc hl 							;; hl++  hl <= bullet_y
