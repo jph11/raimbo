@@ -29,7 +29,7 @@ engine_drawAll::
 engine_updateAll::
     call bullets_update
     call hero_update
-    call obstacle_update		
+    call obstacle_update
     call enemy_update
 
     ret
@@ -43,4 +43,4 @@ engine_eraseAll::
     call obstacle_erase
     call enemy_erase
 
-    ret
+    ret  

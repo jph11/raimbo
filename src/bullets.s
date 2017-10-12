@@ -18,7 +18,12 @@ bullets:	;; Bullets (x,y)
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0x81
 
+bullet_w: .db #1
+
+bullet_h: .db #1	
+
 .include "hero.h.s"
+.include "enemy.h.s"
 .include "cpctelera.h.s"
 
 ;;===========================================
@@ -82,6 +87,8 @@ bullets_newBullet::
 ;; ======================
 bullets_update::
 	call updateBullets
+	call enemy_getPointer
+	call bullet_checkCollision
 	ret
 
 ;; ======================
@@ -104,6 +111,112 @@ bullets_draw::
 ;;PRIVATE FUNCTIONS
 ;;===========================================
 ;;===========================================
+
+;; ======================
+;; Bullet check collision
+;; 	Inputs:
+;; 	HL : Points to the other 
+;;	Return:
+;;		XXXXXXXX
+  ;; ======================
+bullet_checkCollision:
+	
+	ld de, #bullets 					;; hl = referencia a memoria a #bullets
+	for: 								;;
+	ld a, (de) 							;; a = hl(bullets_x)
+	cp #0x81 							;; a == 0x81
+		ret z 							;; if(a==0x81) ret
+	cp #0xFF 							;; else a == 0xFF
+	jr z, incr		 					;; Si la condición de arriba es verdadera salta a incrementar la dirección de memoria
+	
+	;;
+	;;	If (bullet_x + bullet_w <= enemy_x ) no_collision
+	;;	bullet_x + bullet_w - enemy_x <= 0
+	;; 
+	ld a, (de)					;; | bullet_x
+	ld c, a 					;; | +
+	ld a, (bullet_w)	 		;; | bullet_w
+	add c 						;; | -
+	sub (hl)					;; | enemy_x			
+	jr z, not_collision 		;; | if(==0)
+	jp m, not_collision 		;; | if(<0)
+
+	;;
+	;; 	If (enemy_x + enemy_w <= bullet_x)
+	;; 	enemy_x + enemy_w - bullet_x <= 0
+	;;
+
+	ld a, (hl)
+	inc hl
+	inc hl
+	add (hl)
+	ld c, a
+	ld a, (de)
+	ld b, a
+	ld a, c
+	sub b
+	jr z, not_collision 	;; | if(==0)
+	jp m, not_collision 	;; | if(<0)
+
+	;;
+	;;	If (bullet_y + bullet_h <= enemy_y ) no_collision
+	;;	bullet_y + bullet_h - enemy_y <= 0
+	;;
+
+	inc de
+
+	ld a, (de)				;; | bullet_x
+	ld c, a 				;; | +
+	ld a, (bullet_h)	 	;; | obx_w
+	add c
+	dec hl					;; | -
+	sub (hl)				;; | enemy_x			
+	jr z, not_collision 	;; | if(==0)
+	jp m, not_collision 	;; | if(<0)
+
+	;;
+	;; 	If (enemy_y + enemy_h <= bullet_x)
+	;; 	enemy_y + enemy_h - bullet_y <= 0
+	;;
+
+	ld a, (hl)
+	inc hl
+	inc hl
+	add (hl)
+	ld c, a
+	ld a, (de)
+	ld b, a
+	ld a, c
+	sub b
+	dec de
+	jr z, not_collision 	;;| If(==0)
+	jp m, not_collision 	;;| If(<0)
+
+		;;Other posibilities of collision
+		call enemy_isAlive	;;||
+		ld a, (hl)			;;|| Si el enemigo ya está muerto finalizamos
+		cp #0				;;||
+		ret z
+
+		ld a, #0xFF			;;||
+		ld (de), a			;;|| Borramos la bala 
+		inc de 				;;|| que ha matado a enemy
+		ld (de), a			;;||
+
+		call enemy_erase
+		call enemy_enemyKill
+	
+		ret
+	
+	not_collision:
+
+	incr: 								;;
+		inc de 							;; hl++  hl <= bullet_y
+		inc de 							;; hl++  hl <= bullet_dirección
+		inc de 							;; hl++  hl <= bullet_x	
+	jp for	 							;;
+
+	ret
 
 ;; ======================
 ;;	Check if avaible and then insert the bullet
@@ -215,6 +328,8 @@ updateBullets:
 					jr z, resetVertical
 					cp #200-1 
 					jr z, resetVertical
+					cp #200-3 
+					jr z, resetVertical
 					jr c, keepGoingDown
 						jr resetVertical
 					keepGoingDown:
@@ -246,7 +361,7 @@ updateBullets:
 					ld (hl), a
 					jr increment
 	resetVertical:
-		dec hl
+		dec hl 							;; hl = bullet_x
 	reset:
 		ld (hl), #0xFF					;; bullet_x reiniciado
 		inc hl							;; hl++	hl<= bullet_y
