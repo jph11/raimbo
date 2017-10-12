@@ -186,8 +186,20 @@ bullet_checkCollision:
 	jp m, not_collision 	;;| If(<0)
 
 		;;Other posibilities of collision
-		call enemy_erase
-		call enemy_enemyKill
+		call enemy_isAlive
+		ld a, (hl)
+		cp #0
+		jr z, hit
+
+		ld a, #0xFF
+		ld (de), a
+		inc de 
+		ld (de), a
+
+		hit:
+			call enemy_erase
+			call enemy_enemyKill
+	
 		ret
 	
 	not_collision:
