@@ -19,11 +19,13 @@ bullets:	;; Bullets (x,y)
 	.db #0x81
 
 bullet_w: .db #1
-
-bullet_h: .db #1	
+bullet_h: .db #1
+bullet_victim: .db #00	
 
 .include "hero.h.s"
 .include "enemy.h.s"
+.include "entity.h.s"
+.include "game.h.s"
 .include "cpctelera.h.s"
 
 ;;===========================================
@@ -53,7 +55,8 @@ bullets_newBullet::
 	cp #-1									;; if(a == -1)
 		ret z								;; No hay hueco libre, terminamos
 
-	call hero_getPointer					;; hl <= Hero_data 		;; hl(hero_x)
+	;;call hero_getPointer					;; hl <= Hero_data 		;; hl(hero_x)
+	call entity_getPointer
 	ld a, (hl)								;; c <= Hero_x
 	add #9
 	ld c, a
@@ -71,7 +74,7 @@ bullets_newBullet::
 		ld (hl), b 							;; 	bullets_y <= hero_y 
 		inc hl 								;;  hl++  hl <= bullet_direccion
 		push hl 							;; Guardamos bullet_direccion, la siguiente llamada lo sobreescribe
-		call hero_getPointerLastMovement    ;; Obtenemos la última direccioón del heroe 
+		call entity_getPointerLastMovement  ;; Obtenemos la última dirección del heroe 
 		ld a, (hl) 							;; Cargamos la última posicion
 		pop hl 								;; Recuperamos bullet_dirección
 		ld (hl), a 							;; Y la guardamos
@@ -91,8 +94,20 @@ bullets_newBullet::
 ;; ======================
 bullets_update::
 	call updateBullets
-	call enemy_getPointer
-	call bullet_checkCollision
+	call entity_getId
+	ld a, (hl)
+	cp #00
+	jr z, theEnemyVictim
+		call hero_getPointer
+		ld a, #00
+		ld (bullet_victim), a
+		call bullet_checkCollision
+		ret
+	theEnemyVictim:
+		call enemy_getPointer
+		ld a, #01
+		ld (bullet_victim), a	
+		call bullet_checkCollision
 	ret
 
 ;; ======================
@@ -141,7 +156,7 @@ bullet_checkCollision:
 	;;	If (bullet_x + bullet_w <= enemy_x ) no_collision
 	;;	bullet_x + bullet_w - enemy_x <= 0
 	;; 
-	;;ld a, (de)					;; | bullet_x
+	ld a, (de)					;; | bullet_x
 	ld c, a 					;; | +
 	ld a, (bullet_w)	 		;; | bullet_w
 	add c 						;; | -
@@ -163,8 +178,8 @@ bullet_checkCollision:
 	ld b, a
 	ld a, c
 	sub b
-	jr z, not_collision 	;; | if(==0)
-	jp m, not_collision 	;; | if(<0)
+	jr z, not_collision_dec2HL 	;; | if(==0)
+	jp m, not_collision_dec2HL 	;; | if(<0)
 
 	;;
 	;;	If (bullet_y + bullet_h <= enemy_y ) no_collision
@@ -173,14 +188,14 @@ bullet_checkCollision:
 
 	inc de
 
-	ld a, (de)				;; | bullet_y
+	ld a, (de)				;; | bullet_x
 	ld c, a 				;; | +
-	ld a, (bullet_h)	 	;; | bullet_w
+	ld a, (bullet_h)	 	;; | obx_w
 	add c
 	dec hl					;; | -
-	sub (hl)				;; | enemy_y			
-	jr z, not_collision 	;; | if(==0)
-	jp m, not_collision 	;; | if(<0)
+	sub (hl)				;; | enemy_x			
+	jr z, not_collision_dec1DEdec1HL 	;; | if(==0)
+	jp m, not_collision_dec1DEdec1HL 	;; | if(<0)
 
 	;;
 	;; 	If (enemy_y + enemy_h <= bullet_x)
@@ -197,23 +212,55 @@ bullet_checkCollision:
 	ld a, c
 	sub b
 	dec de
-	jr z, not_collision 	;;| If(==0)
-	jp m, not_collision 	;;| If(<0)
+	jr z, not_collision_dec3HL 	;;| If(==0)
+	jp m, not_collision_dec3HL 	;;| If(<0)
 
 		;;Other posibilities of collision
-		call enemy_isAlive	;;||
-		ld a, (hl)			;;|| Si el enemigo ya está muerto finalizamos
-		cp #0				;;||
-		ret z
-		ld a, #0xFF			;;||
-		ld (de), a			;;|| Borramos la bala 
-		inc de 				;;|| que ha matado a enemy
-		ld (de), a			;;||
+		ld a, (bullet_victim)
+		cp #00
+		jr nz, enemyVictim
+			call game_heroKill
+			ld a, #0xFF			;;||
+			ld (de), a			;;|| Borramos la bala 
+			inc de 				;;|| que ha matado a hero
+			ld (de), a			;;||
+			ld a, (nBullets)
+			dec a
+			ld (nBullets), a
+			ret
 
-		call enemy_erase
-		call enemy_enemyKill
-	
-		ret
+		enemyVictim:
+			call enemy_isAlive	;;||
+			ld a, (hl)			;;|| Si el enemigo ya está muerto finalizamos
+			cp #0				;;||
+			ret z
+
+			ld a, #0xFF			;;||
+			ld (de), a			;;|| Borramos la bala 
+			inc de 				;;|| que ha matado a enemy
+			ld (de), a			;;||
+
+			ld a, (nBullets)
+			dec a
+			ld (nBullets), a
+
+			call enemy_erase
+			call enemy_enemyKill
+			dec de
+
+			ret
+
+	not_collision_dec1DEdec1HL:
+		dec hl
+		dec de
+		jr incr
+
+	not_collision_dec3HL:
+		dec hl
+
+	not_collision_dec2HL:
+		dec hl
+		dec hl
 	
 	not_collision:
 
@@ -329,28 +376,16 @@ updateBullets:
 				jr z, up
 					;; Down
 					ld a, (hl)
-					cp #200-2
-					jr z, resetVertical
 					cp #200-1 
 					jr z, resetVertical
-					cp #200-3 
-					jr z, resetVertical
-					jr c, keepGoingDown
-						jr resetVertical
-					keepGoingDown:
-						add a, #3
+						add a, #1
 						ld (hl), a
 						jr increment_after_update
 				up:
 					ld a, (hl)
 					cp #0
 					jr z, resetVertical
-					cp #1
-					jr z, resetVertical
-					cp #2
-					jr z, resetVertical
-					jr c, resetVertical
-						sub a, #3
+						sub a, #1
 						ld (hl), a
 						jr increment_after_update
 		left:

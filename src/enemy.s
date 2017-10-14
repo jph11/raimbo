@@ -16,12 +16,15 @@
 .include "hero.h.s"
 .include "entity.h.s"
 .include "macros.h.s"
+.include "bullets.h.s"
 
 ;;Enemy Data
 defineEntity enemy 55, 60, 7, 25, _sprite_oldman_left
 enemy_temp: .db #0x00
+enemy_tempBullets: .db #0x00
 enemy_alive: .db #03
 enemy_last_movement: .db #00
+enemy_id: .db #01
 
 ;;Death Data
 defineEntity death #enemy_x, #enemy_y, 8, 16, _sprite_death
@@ -48,7 +51,7 @@ enemy_update::
 		call moveEnemyLeft
 		call hero_getPointer
 		call enemy_checkCollision
-
+		call enemyShoot
 	ret
 
 ;; ======================
@@ -293,5 +296,26 @@ moveEnemyLeft:
 
 	not_restart_x:
 	ld (enemy_x), a		
+
+	ret
+
+enemyShoot:	
+	ld hl, #enemy_tempBullets	 			;; hl <= enemy_temp
+	ld a, (hl) 								;; a <= (enemy_temp)
+	cp #0x0F 								;; a == 0x04
+	jr z, plus 								;; if(!a==0x02){
+		inc a 								;; 	a++
+		ld (hl), a 							;; 	Actualizamos enemy_temp
+		ret 								;; 	Terminamos
+	plus:									;; }else{
+	ld (hl), #0x00
+
+	ld hl, #enemy_x
+	call entity_setPointer
+	ld hl, #enemy_last_movement
+	call entity_setPointerLastMovement
+	ld hl, #enemy_id
+	call entity_setId
+	call bullets_newBullet
 
 	ret
