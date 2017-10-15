@@ -37,7 +37,7 @@ entity_setPointer::
 
 	ld a, (hl)
 	ld (entity_h), a
-	inc hl
+	
 	ret
 
 ;; ======================
@@ -49,7 +49,6 @@ entity_setPointer::
 entity_getPointer::
 	ld hl, #entity_x 					;; Hl points to the Hero Data
 	ret	
-
 
 entity_setPointerLastMovement::
 	ld a, (hl)
