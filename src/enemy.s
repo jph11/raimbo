@@ -19,7 +19,7 @@
 .include "bullets.h.s"
 
 ;;Enemy Data
-defineEntity enemy 55, 60, 7, 25, _sprite_oldman_left
+defineEntity enemy 65, 120, 7, 25, _sprite_oldman_left
 enemy_temp: .db #0x00
 enemy_tempBullets: .db #0x00
 enemy_alive: .db #03
@@ -51,7 +51,7 @@ enemy_update::
 		call moveEnemyLeft
 		call hero_getPointer
 		call enemy_checkCollision
-		;call enemyShoot
+		call enemyShoot
 	ret
 
 ;; ======================

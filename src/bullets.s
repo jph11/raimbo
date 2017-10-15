@@ -19,8 +19,9 @@ bullets:	;; Bullets (x,y,dirección,etiqueta)
 	.db #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0x81
 
-bullet_w: .db #1
-bullet_h: .db #1
+bullet_w: .db #01
+bullet_h: .db #01
+bullet_victim: .db #09
 
 .include "hero.h.s"
 .include "enemy.h.s"
@@ -144,9 +145,13 @@ bullet_whoShots:
 	dec de
 	cp #00
 	jr z, heroShoot
+		ld a, #00
+		ld (bullet_victim), a
 		call hero_getPointer
 		ret
 	heroShoot:
+		ld a, #01
+		ld (bullet_victim), a
 		call enemy_getPointer
 		ret
 
@@ -172,7 +177,6 @@ bullet_checkCollision:
 	jr z, incr		 					;; Si la condición de arriba es verdadera salta a incrementar la dirección de memoria
 
 	call bullet_whoShots
-	push AF
 
 	;;
 	;;	If (bullet_x + bullet_w <= enemy_x ) no_collision
@@ -234,9 +238,9 @@ bullet_checkCollision:
 	jp m, not_collision_dec3HL 			;;| If(<0)
 
 		;;Other posibilities of collision
-			pop AF
+			ld a, (bullet_victim)
 			cp #00
-			jr z, enemyVictim
+			jr nz, enemyVictim
 			
 				;;Hero es la víctima
 				call game_heroKill
