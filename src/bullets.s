@@ -16,6 +16,7 @@ bullets:	;; Bullets (x,y,dirección,etiqueta)
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
+	.db #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0x81
 
 bullet_w: .db #1
@@ -109,7 +110,7 @@ bullets_newBullet::
 ;; ======================
 bullets_update::
 	call updateBullets
-	;call bullet_checkCollision
+	call bullet_checkCollision
 	ret
 
 ;; ======================
@@ -143,10 +144,10 @@ bullet_whoShots:
 	dec de
 	cp #00
 	jr z, heroShoot
-		call enemy_getPointer
+		call hero_getPointer
 		ret
 	heroShoot:
-		call hero_getPointer
+		call enemy_getPointer
 		ret
 
 ;; ======================
@@ -189,15 +190,15 @@ bullet_checkCollision:
 	;; 	If (enemy_x + enemy_w <= bullet_x)
 	;; 	enemy_x + enemy_w - bullet_x <= 0
 	;;
-	ld a, (hl)
-	inc hl
-	inc hl
-	add (hl)
-	ld c, a
-	ld a, (de)
-	ld b, a
-	ld a, c
-	sub b
+	ld a, (hl)					;; | enemy_x
+	inc hl						;; | hl++ / hl = enemy_y
+	inc hl						;; | hl++ / hl = enemy_w
+	add (hl)					;; | enemy_x + enemy_w
+	ld c, a						;; C <= enemy_x + enemy_w
+	ld a, (de)					;; A <= bullet_x
+	ld b, a						;; B <= bullet_x
+	ld a, c						;; A <= enemy_x + enemy_w
+	sub b						;; (enemy_x + enemy_w) - bullet_x
 	jr z, not_collision_dec2HL 	;; | if(==0)
 	jp m, not_collision_dec2HL 	;; | if(<0)
 
@@ -205,13 +206,13 @@ bullet_checkCollision:
 	;;	If (bullet_y + bullet_h <= enemy_y ) no_collision
 	;;	bullet_y + bullet_h - enemy_y <= 0
 	;;
-	inc de
-	ld a, (de)							;; | bullet_y
-	ld c, a 							;; | +
-	ld a, (bullet_h)	 				;; | bullet_h
-	add c
-	dec hl								;; | -
-	sub (hl)							;; | enemy_y			
+	dec hl								;; | hl-- / hl = enemy_y
+	inc de								;; | de++ / de = bullet_y
+	ld a, (de)							;; | A <= bullet_y
+	ld c, a 							;; | C <= bullet_y
+	ld a, (bullet_h)	 				;; | A <= bullet_h
+	add c								;; | bullet_y + bullet_h
+	sub (hl)							;; | (bullet_y + bullet_h) enemy_y			
 	jr z, not_collision_dec1DEdec1HL 	;; | if(==0)
 	jp m, not_collision_dec1DEdec1HL 	;; | if(<0)
 
@@ -219,18 +220,18 @@ bullet_checkCollision:
 	;; 	If (enemy_y + enemy_h <= bullet_y)
 	;; 	enemy_y + enemy_h - bullet_y <= 0
 	;;
-	ld a, (hl)
-	inc hl
-	inc hl
-	add (hl)
-	ld c, a
-	ld a, (de)
-	ld b, a
-	ld a, c
-	sub b
-	dec de
-	jr z, not_collision_dec3HL 	;;| If(==0)
-	jp m, not_collision_dec3HL 	;;| If(<0)
+	ld a, (hl)							;; | A <= enemy_y
+	inc hl								;; | hl++ / hl = enemy_w
+	inc hl								;; | hl++ / hl = enemy_h
+	add (hl)							;; | enemy_y + enemy_h
+	ld c, a								;; | C <= enemy_y + enemy_h
+	ld a, (de)							;; | A <= bullet_y
+	ld b, a								;; | B <= bullet_y
+	ld a, c								;; | A <= enemy_y + enemy_h
+	sub b								;; | (enemy_y + enemy_h) - bullet_y
+	dec de								;; | de-- / de = bullet_x
+	jr z, not_collision_dec3HL 			;;| If(==0)
+	jp m, not_collision_dec3HL 			;;| If(<0)
 
 		;;Other posibilities of collision
 			pop AF
@@ -238,7 +239,7 @@ bullet_checkCollision:
 			jr z, enemyVictim
 			
 				;;Hero es la víctima
-				;call game_heroKill
+				call game_heroKill
 				ld a, #0xFF			;;||
 				ld (de), a			;;|| Borramos la bala 
 				inc de 				;;|| que ha matado a enemy
@@ -284,7 +285,7 @@ bullet_checkCollision:
 
 	not_collision:
 
-	incr: 								;;
+	incr: 								
 		inc de 							;; de++  de <= bullet_y
 		inc de 							;; de++  de <= bullet_dirección
 		inc de 							;; de++  de <= bullet_etiqueta
@@ -378,7 +379,7 @@ updateBullets:
 	ld a, (nBullets)
 	cp #0
 	ret z
-	
+
 	ld hl, #bullets 					;; hl = referencia a memoria a #bullets
 	bucle: 								;;
 	ld a, (hl) 							;; a = hl(bullets_x)
