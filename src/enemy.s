@@ -48,7 +48,7 @@ enemy_update::
 	ld a, (enemy_alive)
 	cp #0
 	jr z, enemyOver
-		call Algorithm_FetchHero
+		call Algorithm_Shooter
 		call hero_getPointer
 		call enemy_checkCollision
 		call enemyShoot
@@ -83,7 +83,7 @@ enemy_erase::
 ;;  Start enemy values
 ;; ======================
 enemy_init::
-	ld a, #40
+	ld a, #50
 	ld (enemy_x), a
 	ld a, #120
 	ld (enemy_y),a
@@ -275,6 +275,74 @@ enemy_checkCollision:
 	
 	not_collision:
 
+	ret
+
+Algorithm_Shooter::
+	call hero_getPointer
+	inc hl
+	ld b, (hl)
+	ld a, (enemy_y)
+	cp b
+	jr z, keepDistance
+	jr c, incEnemy
+		dec a
+		ld (enemy_y), a
+		jr keepDistance
+	incEnemy:
+		inc a
+		ld (enemy_y), a
+
+	keepDistance:
+		dec hl
+		ld a, (enemy_x) 			; hl <= Enemy_x
+		ld b, a 					; b <= Enemy_x
+		ld a, (hl) 					; a <= hero_x
+		cp b 					
+		jr c, forward 				; Salta si enemy_x > hero_x
+		jr z, forward
+			;backward
+			ld c, b
+			ld b, a
+			ld a, c 
+			sub b
+			cp #-20
+			jr c, reverseShooter1
+			jr z, endShooter
+				ld a, (enemy_x)
+				cp #0
+				 ret z
+				dec a
+				ld (enemy_x), a
+					ret
+			reverseShooter1:
+				ld a, (enemy_x)
+				cp #0
+				 ret z
+				inc a
+				ld (enemy_x), a
+					ret
+				jr endShooter
+		forward:
+			ld c, b 				; c <= enemy_x
+			ld b, a 				; b <= hero_x
+			ld a, c  				; a <= enemy_x
+			sub b 					; a = enemy_x - hero_x
+			cp #40 					; Si 20 > a fin
+			jr z, endShooter
+			jr nc, reverseShooter2
+				ld a, (enemy_x)
+				cp #80-7
+				 ret z
+				inc a
+				ld (enemy_x), a
+				ret 
+		reverseShooter2:
+				ld a, (enemy_x)
+				cp #80-7
+				 ret z
+				dec a
+				ld (enemy_x), a
+		endShooter:
 	ret
 
 Algorithm_FetchHero:
