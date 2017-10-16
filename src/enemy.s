@@ -45,7 +45,7 @@ enemy_update::
 	ld a, (enemy_alive)
 	cp #0
 	jr z, enemyOver
-		call Algorithm_Random
+		call Algorithm_FetchHero
 		call hero_getPointer
 		call enemy_checkCollision
 	ret
