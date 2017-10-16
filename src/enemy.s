@@ -16,12 +16,15 @@
 .include "hero.h.s"
 .include "entity.h.s"
 .include "macros.h.s"
+.include "bullets.h.s"
 
 ;;Enemy Data
-defineEntity enemy 55, 60, 7, 25, _sprite_oldman_left
+defineEntity enemy 65, 120, 7, 25, _sprite_oldman_left
 enemy_temp: .db #0x00
+enemy_tempBullets: .db #0x00
 enemy_alive: .db #03
 enemy_last_movement: .db #00
+enemy_id: .db #01
 
 ;;Death Data
 defineEntity death #enemy_x, #enemy_y, 8, 16, _sprite_death
@@ -48,7 +51,7 @@ enemy_update::
 		call moveEnemyLeft
 		call hero_getPointer
 		call enemy_checkCollision
-
+		call enemyShoot
 	ret
 
 ;; ======================
@@ -82,7 +85,7 @@ enemy_erase::
 enemy_init::
 	ld a, #65
 	ld (enemy_x), a
-	ld a, #170
+	ld a, #120
 	ld (enemy_y),a
 
 	ret	
@@ -271,7 +274,6 @@ enemy_checkCollision:
 ;; Move enemy to the left
 ;; ======================
 moveEnemyLeft:
-
 	ld hl, #enemy_temp	 					;; hl <= enemy_temp
 	ld a, (hl) 								;; a <= (enemy_temp)
 	cp #0x03 								;; a == 0x04
@@ -293,5 +295,29 @@ moveEnemyLeft:
 
 	not_restart_x:
 	ld (enemy_x), a		
+
+	ret
+
+enemyShoot:	
+	ld hl, #enemy_tempBullets
+	ld a, (hl) 			
+	cp #0x0E 			
+	jr z, plus 			
+		inc a 			
+		ld (hl), a 		
+		ret 			
+	plus:				
+	ld (hl), #0x00
+
+	ld hl, #enemy_x
+	call entity_setPointer
+
+	ld hl, #enemy_last_movement
+	call entity_setPointerLastMovement
+
+	ld hl, #enemy_id
+	call entity_setId
+
+	call bullets_newBullet
 
 	ret

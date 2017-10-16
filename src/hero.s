@@ -20,6 +20,7 @@
 defineEntity hero 39, 60, 9, 25, _sprite_hero_pistol
 hero_jump: .db #-1
 hero_last_movement: .db #01
+hero_id: .db #00
 
 ;;Jump Table
 jumptable:
@@ -241,6 +242,12 @@ checkUserInput:
 	jr z, space_not_pressed		;;Jump if A==0 (space_not_pressed)
 
 	;;Space is pressed
+	ld hl, #hero_x
+	call entity_setPointer
+	ld hl, #hero_last_movement
+	call entity_setPointerLastMovement
+	ld hl, #hero_id
+	call entity_setId
 	call bullets_newBullet
 
 	space_not_pressed:
