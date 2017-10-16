@@ -316,7 +316,7 @@ Algorithm_Shooter::
 					ret
 			reverseShooter1:
 				ld a, (enemy_x)
-				cp #0
+				cp #80-7
 				 ret z
 				inc a
 				ld (enemy_x), a
@@ -338,7 +338,7 @@ Algorithm_Shooter::
 				ret 
 		reverseShooter2:
 				ld a, (enemy_x)
-				cp #80-7
+				cp #0
 				 ret z
 				dec a
 				ld (enemy_x), a
