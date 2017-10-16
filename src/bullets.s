@@ -141,7 +141,7 @@ bullet_checkCollision:
 	;;	If (bullet_x + bullet_w <= enemy_x ) no_collision
 	;;	bullet_x + bullet_w - enemy_x <= 0
 	;; 
-	;;ld a, (de)					;; | bullet_x
+	ld a, (de)					;; | bullet_x
 	ld c, a 					;; | +
 	ld a, (bullet_w)	 		;; | bullet_w
 	add c 						;; | -
@@ -163,8 +163,8 @@ bullet_checkCollision:
 	ld b, a
 	ld a, c
 	sub b
-	jr z, not_collision 	;; | if(==0)
-	jp m, not_collision 	;; | if(<0)
+	jr z, not_collision_dec2HL 	;; | if(==0)
+	jp m, not_collision_dec2HL 	;; | if(<0)
 
 	;;
 	;;	If (bullet_y + bullet_h <= enemy_y ) no_collision
@@ -173,14 +173,14 @@ bullet_checkCollision:
 
 	inc de
 
-	ld a, (de)				;; | bullet_y
+	ld a, (de)				;; | bullet_x
 	ld c, a 				;; | +
-	ld a, (bullet_h)	 	;; | bullet_w
+	ld a, (bullet_h)	 	;; | obx_w
 	add c
 	dec hl					;; | -
-	sub (hl)				;; | enemy_y			
-	jr z, not_collision 	;; | if(==0)
-	jp m, not_collision 	;; | if(<0)
+	sub (hl)				;; | enemy_x			
+	jr z, not_collision_dec1DEdec1HL 	;; | if(==0)
+	jp m, not_collision_dec1DEdec1HL 	;; | if(<0)
 
 	;;
 	;; 	If (enemy_y + enemy_h <= bullet_x)
@@ -197,30 +197,48 @@ bullet_checkCollision:
 	ld a, c
 	sub b
 	dec de
-	jr z, not_collision 	;;| If(==0)
-	jp m, not_collision 	;;| If(<0)
+	jr z, not_collision_dec3HL 	;;| If(==0)
+	jp m, not_collision_dec3HL 	;;| If(<0)
 
 		;;Other posibilities of collision
 		call enemy_isAlive	;;||
 		ld a, (hl)			;;|| Si el enemigo ya está muerto finalizamos
 		cp #0				;;||
 		ret z
+
 		ld a, #0xFF			;;||
 		ld (de), a			;;|| Borramos la bala 
 		inc de 				;;|| que ha matado a enemy
 		ld (de), a			;;||
 
+		ld a, (nBullets)
+		dec a
+		ld (nBullets), a
+
 		call enemy_erase
 		call enemy_enemyKill
-	
+		dec de
+
 		ret
-	
+
+	not_collision_dec1DEdec1HL:
+	dec hl
+	dec de
+	jr incr
+
+	not_collision_dec3HL:
+	dec hl
+	not_collision_dec2HL:
+	dec hl
+	dec hl
+
+
 	not_collision:
 
 	incr: 								;;
 		inc de 							;; hl++  hl <= bullet_y
 		inc de 							;; hl++  hl <= bullet_dirección
-		inc de 							;; hl++  hl <= bullet_x	
+		inc de 							;; hl++  hl <= bullet_x
 	jp for	 							;;
 
 	ret
@@ -303,6 +321,11 @@ drawBullet:
 ;;	Update all the bullets
 ;; ======================
 updateBullets:
+
+	ld a, (nBullets)
+	cp #0
+	ret z
+
 	ld hl, #bullets 					;; hl = referencia a memoria a #bullets
 	bucle: 								;;
 	ld a, (hl) 							;; a = hl(bullets_x)
@@ -329,28 +352,16 @@ updateBullets:
 				jr z, up
 					;; Down
 					ld a, (hl)
-					cp #200-2
-					jr z, resetVertical
 					cp #200-1 
 					jr z, resetVertical
-					cp #200-3 
-					jr z, resetVertical
-					jr c, keepGoingDown
-						jr resetVertical
-					keepGoingDown:
-						add a, #3
+						add a, #1
 						ld (hl), a
 						jr increment_after_update
 				up:
 					ld a, (hl)
 					cp #0
 					jr z, resetVertical
-					cp #1
-					jr z, resetVertical
-					cp #2
-					jr z, resetVertical
-					jr c, resetVertical
-						sub a, #3
+						sub a, #1
 						ld (hl), a
 						jr increment_after_update
 		left:
@@ -384,4 +395,4 @@ updateBullets:
 	increment_after_update:				;;
 		inc hl 							;; hl++  hl <= bullet_dirección
 		inc hl 							;; hl++  hl <= bullet_x	
-	jp bucle 							;;
+	jp bucle 		

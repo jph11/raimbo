@@ -15,11 +15,17 @@
 .include "keyboard.s"
 .include "entity.h.s"
 .include "macros.h.s"
+.include "game.h.s"
 
 ;;Hero Data
 defineEntity hero 39, 60, 9, 25, _sprite_hero_pistol
 hero_jump: .db #-1
 hero_last_movement: .db #01
+hero_lifes: .db #3
+hero_invencibleState: .db #0
+hero_invencibleTransitions: .db #10			;;Número de animaciones de pintar-no_pintar
+hero_invencibleDuration: .db #20	;;Duración de la animación
+hero_invencibleAnimState: .db #00	;;Estado actual [0-1]
 
 ;;Jump Table
 jumptable:
@@ -39,14 +45,72 @@ jumptable:
 ;;	Hero Update
 ;; ======================
 hero_update::
+	
+	ld hl, #0xC232
+	ld a, (hero_lifes)
+	cp #0
+	jr z, borrar1
+	jr c, borrar1
+	ld a, #0xFF
+	ld (hl), a
+	jr pintar
+	borrar1:
+	ld a, #0x00
+	ld (hl), a
+	pintar:
+	ld hl, #0xC234
+	ld a, (hero_lifes)
+	cp #1
+	jr z, borrar2
+	jr c, borrar2
+	ld a, #0xFF
+	ld (hl), a
+	jr pintar2
+	borrar2:
+	ld a, #0x00
+	ld (hl), a
+	pintar2:
+	ld hl, #0xC236
+	ld a, (hero_lifes)
+	cp #2
+	jr z, borrar3
+	jr c, borrar3
+	ld a, #0xFF
+	ld (hl), a
+	jr pintar3
+	borrar3:
+	ld a, #0x00
+	ld (hl), a
+	pintar3:
+	ld hl, #0xC238
+	ld a, (hero_lifes)
+	cp #3
+	jr z, borrar4
+	jr c, borrar4
+	ld a, #0xFF
+	ld (hl), a
+	jr pintar4
+	borrar4:
+	ld a, #0x00
+	ld (hl), a
+	pintar4:
+
+
+	finPintar:
+
 	call jumpControl
 	call checkUserInput
+	call hero_heroDamage
 	ret
 
 ;; ======================
 ;;	Hero Draw
 ;; ======================
 hero_draw::
+	ld a, (hero_invencibleState)
+	cp #1
+		ret z
+
 	ld a, #0xFF
 	ld ix, #hero_data
 	call entity_draw
@@ -74,19 +138,36 @@ hero_init::
 	ld (hero_jump), a
 	ld a, #01
 	ld (hero_last_movement), a
-
+	ld a, #03
+	ld (hero_lifes), a
+	ld a, #0
+	ld (hero_invencibleState), a
+	ld a, #10
+	ld (hero_invencibleTransitions), a
+	ld a, #20
+	ld (hero_invencibleDuration), a
+	ld a, #0
+	ld (hero_invencibleAnimState), a
 	ret	
 
 ;; ======================
-;;	Gets a pointer to hero data 
+;;	Gets a pointer to hero last movement
 ;;	
 ;;	RETURNS:
-;; 		HL:Pointer to hero data
+;; 		HL:Pointer to hero last moevement
 ;; ======================
 hero_getPointerLastMovement::
 	ld hl, #hero_last_movement 		;; Hl points to the Hero Data
 	ret
-
+;; ======================
+;;	Gets a pointer to hero last movement
+;;	
+;;	RETURNS:
+;; 		HL:Pointer to hero last moevement
+;; ======================
+hero_getPointerInvecible::
+	ld hl , #hero_invencibleState
+	ret
 ;; ======================
 ;;	Gets a pointer to hero data 
 ;;	
@@ -315,3 +396,94 @@ checkUserInput:
 
 	ret
 
+;; ======================
+;;	Hero is death
+;; ======================
+
+hero_decreaseLife::
+	ld a, (hero_lifes)
+	dec a
+	ld (hero_lifes), a
+	ret
+
+
+
+
+;hero_invencibleState: .db #0 			;; Invencible o no
+;hero_invencibleTransitions: .db #10		;; Número de animaciones de pintar-no_pintar
+;hero_invencibleDuration: .db #20		;; Duración de la animación
+;hero_invencibleAnimState: .db #00		;; Estado actual [0-1]
+
+hero_heroDamage:
+	ld a, (hero_invencibleState)
+	cp #0
+		ret z
+
+	ld a, (hero_lifes)
+	cp #0
+	 	jr nz, continue
+		call game_PointerHeroAlive
+		ld a, #0
+		ld (hl), a
+		ret
+
+	continue:
+	ld a, (hero_invencibleTransitions)		;;Cargamos nº alteraciones
+		cp #0				
+		jr z, end				;;Si nº alteraciones==0 terminamos ==> end
+		ld a, (hero_invencibleDuration)		;;sino cargamos la duración de la animación i
+								;;y entramos en el loop
+		loop:
+			cp #0						;;Si la duración de la animación es 0,
+			jr z, decrement_anim		;;pasamos al siguiente nº de animación
+
+				push af					;;Pusheamos A para no perder el estado de duración
+
+				ld a, (hero_invencibleAnimState)
+				cp #0		
+				jr z, dibujar			;;Si es 0-->dibujar / 1-->borrar
+
+				ld a, #0x00				;;||
+				ld ix, #hero_data		;;||Borramos
+				call entity_draw		;;||
+
+				ld a, #00				;;Alteramos el estado a 0
+				ld (hero_invencibleAnimState), a
+				jr decrement_anim2
+
+				dibujar:
+					ld a, #0xFF			;;||
+					ld ix, #hero_data	;;||Dibujamos
+					call entity_draw	;;||
+
+					ld a, #01			;;Alteramos el estado a 1
+					ld (hero_invencibleAnimState), a
+
+				decrement_anim2:
+					pop af				;;Popeamos el estado de duración en A
+					dec a				;;death_anim2--
+					ld (hero_invencibleDuration), a
+					jr draw				;;Finalizamos hasta la siguiente llamada a enemyOver
+
+			decrement_anim:
+				ld a, #20				;;Volvemos a cargar a 20 la duración de la animación
+				ld (hero_invencibleDuration), a		;;para la animación i+1
+
+				ld a, (hero_invencibleTransitions)		;;Decrementamos nº animación
+				dec a
+				ld (hero_invencibleTransitions), a
+
+				jr draw					;;Finalizamos hasta la siguiente llamada a enemyOver
+
+	end: 
+		ld a, #00				
+		ld (hero_invencibleState), a
+		ld a, #10
+		ld (hero_invencibleTransitions), a
+		ld a, #20
+		ld (hero_invencibleDuration), a
+		ld a, #0
+		ld (hero_invencibleAnimState), a
+	draw:
+
+	ret

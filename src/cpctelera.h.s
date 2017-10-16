@@ -11,3 +11,4 @@
 .globl cpct_disableFirmware_asm
 .globl cpct_setVideoMode_asm
 .globl cpct_setPalette_asm
+.globl cpct_getRandom_lcg_u8_asm

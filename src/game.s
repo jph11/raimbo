@@ -27,13 +27,12 @@ game_start::
     ret
 
 ;; ======================
-;;	Hero is death
+;;	Pointer to Hero Alive
 ;; ======================
-game_heroKill::
-	ld hl, #hero_alive
-	ld a, #0
-	ld (hl), a
-	ret
+game_PointerHeroAlive::
+    ld hl, #hero_alive
+    ret
+
 
 ;;===========================================
 ;;===========================================
