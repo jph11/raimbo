@@ -16,12 +16,15 @@
 .include "hero.h.s"
 .include "entity.h.s"
 .include "macros.h.s"
+.include "bullets.h.s"
 
 ;;Enemy Data
-defineEntity enemy 55, 60, 7, 25, _sprite_oldman_left
+defineEntity enemy 65, 120, 7, 25, _sprite_oldman_left
 enemy_temp: .db #0x00
+enemy_tempBullets: .db #0x00
 enemy_alive: .db #03
 enemy_last_movement: .db #00
+enemy_id: .db #01
 
 ;;Death Data
 defineEntity death #enemy_x, #enemy_y, 8, 16, _sprite_death
@@ -48,6 +51,7 @@ enemy_update::
 		call Algorithm_FetchHero
 		call hero_getPointer
 		call enemy_checkCollision
+		call enemyShoot
 	ret
 
 ;; ======================
@@ -81,7 +85,7 @@ enemy_erase::
 enemy_init::
 	ld a, #40
 	ld (enemy_x), a
-	ld a, #100
+	ld a, #120
 	ld (enemy_y),a
 
 	ret	
@@ -273,66 +277,6 @@ enemy_checkCollision:
 
 	ret
 
-Algorithm_Random::
-
-	ld hl, #enemy_temp 						
-	ld a, (hl) 								
-	cp #0x04 								
-	jr z, resetRandom							
-		inc a 								
-		ld (hl), a 							
-		ret 								
-	resetRandom:									
-	ld (hl), #0x00
-
-	call cpct_getRandom_lcg_u8_asm
-	cp #64
-	jp c, primerRango
-	cp #128
-	jp c, segundoRango
-	cp #192
-	jp c, tercerRango
-		;; cuartoRango
-		ld a, (enemy_y)
-		cp #0
-			ret z
-		cp #1
-			ret z
-		cp #2
-			ret z
-		sub a, #3
-		ld (enemy_y), a
-		ret
-	primerRango:
-		ld a, (enemy_x)
-		cp #80-7
-		 ret z
-		inc a
-		ld (enemy_x), a
-		ret
-	segundoRango:
-		ld a, (enemy_x)
-		cp #0
-		 ret z
-		dec a
-		ld (enemy_x), a
-		ret
-	tercerRango:
-		ld a, (enemy_y)
-		cp #200-26
-		ret z
-		cp #200-27
-		ret z
-		cp #200-25
-			ret z
-		add a, #3
-		ld (enemy_y), a
-		ret
-
-
-;; ======================
-;; Move enemy to the hero
-;; ======================
 Algorithm_FetchHero:
 	
 	ld hl, #enemy_temp 						
@@ -396,4 +340,115 @@ Algorithm_FetchHero:
 	ld (enemy_y), a
 
 	samePosition:
+	ret
+
+
+Algorithm_Random:
+
+	ld hl, #enemy_temp 						
+	ld a, (hl) 								
+	cp #0x04 								
+	jr z, resetRandom							
+		inc a 								
+		ld (hl), a 							
+		ret 								
+	resetRandom:									
+	ld (hl), #0x00
+
+	call cpct_getRandom_lcg_u8_asm
+	cp #64
+	jp c, primerRango
+	cp #128
+	jp c, segundoRango
+	cp #192
+	jp c, tercerRango
+		;; cuartoRango
+		ld a, (enemy_y)
+		cp #0
+			ret z
+		cp #1
+			ret z
+		cp #2
+			ret z
+		sub a, #3
+		ld (enemy_y), a
+		ret
+	primerRango:
+		ld a, (enemy_x)
+		cp #80-7
+		 ret z
+		inc a
+		ld (enemy_x), a
+		ret
+	segundoRango:
+		ld a, (enemy_x)
+		cp #0
+		 ret z
+		dec a
+		ld (enemy_x), a
+		ret
+	tercerRango:
+		ld a, (enemy_y)
+		cp #200-26
+		ret z
+		cp #200-27
+		ret z
+		cp #200-25
+			ret z
+		add a, #3
+		ld (enemy_y), a
+		ret
+
+
+;; ======================
+;; Move enemy to the hero
+;; ======================
+
+moveEnemyLeft:
+	ld hl, #enemy_temp	 					;; hl <= enemy_temp
+	ld a, (hl) 								;; a <= (enemy_temp)
+	cp #0x03 								;; a == 0x04
+	jr z, nueva 							;; if(!a==0x02){
+		inc a 								;; 	a++
+		ld (hl), a 							;; 	Actualizamos enemy_temp
+		ret 								;; 	Terminamos
+	nueva:									;; }else{
+	ld (hl), #0x00 							;;  Reiniciamos tempBullets y procedemos a guardar la bala
+											;; }
+
+	;;Move enemy to the left
+	ld a, (enemy_x) 			;; |
+	dec a						;; | enemy_x--
+	jr nz, not_restart_x		;; | If (enemy_x = 0) then restart
+
+	;; Restart_x when it is 0 to the right
+	ld a, #80-7
+
+	not_restart_x:
+	ld (enemy_x), a		
+
+	ret
+
+enemyShoot:	
+	ld hl, #enemy_tempBullets
+	ld a, (hl) 			
+	cp #0x0E 			
+	jr z, plus 			
+		inc a 			
+		ld (hl), a 		
+		ret 			
+	plus:				
+	ld (hl), #0x00
+
+	ld hl, #enemy_x
+	call entity_setPointer
+
+	ld hl, #enemy_last_movement
+	call entity_setPointerLastMovement
+
+	ld hl, #enemy_id
+	call entity_setId
+
+	call bullets_newBullet
+
 	ret
