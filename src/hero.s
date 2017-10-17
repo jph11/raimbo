@@ -17,6 +17,9 @@
 .include "macros.h.s"
 .include "game.h.s"
 
+
+tempBullets: 
+	.db #0x00
 ;;Hero Data
 defineEntity hero 39, 60, 9, 25, _sprite_hero_pistol
 hero_jump: .db #-1
@@ -321,6 +324,19 @@ checkUserInput:
 	call cpct_isKeyPressed_asm	;;Check if Key_Space is presed
 	cp #0						;;Check A == 0
 	jr z, space_not_pressed		;;Jump if A==0 (space_not_pressed)
+
+
+	;; Temporizador - Esta primera función guarda una bala cada dos veces y realiza un efecto de temporizador
+	ld hl, #tempBullets 					;; hl <= tempBullets
+	ld a, (hl) 								;; a <= (tempBullets)
+	cp #0x02 								;; a == 0x02
+	jr z, nueva 							;; if(!a==0x02){
+		inc a 								;; 	a++
+		ld (hl), a 							;; 	Actualizamos tempBullets
+		jr space_not_pressed				;; 	Continuamos
+	nueva:									;; }else{
+	ld (hl), #0x00 							;;  Reiniciamos tempBullets y procedemos a guardar la bala
+											;; }
 
 	;;Space is pressed
 	ld hl, #hero_x

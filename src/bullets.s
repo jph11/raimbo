@@ -10,8 +10,6 @@
 ;; Bullets - Cantidad máxima de balas en pantalla 10
 nBullets:
 	.db #0x00
-tempBullets: 
-	.db #0x00
 bullets:	;; Bullets (x,y,dirección,etiqueta)
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
@@ -39,18 +37,6 @@ bullet_victim: .db #09
 ;; Add a new bullet if posible 
 ;;======================
 bullets_newBullet::
-	;; Temporizador - Esta primera función guarda una bala cada dos veces y realiza un efecto de temporizador
-	ld hl, #tempBullets 					;; hl <= tempBullets
-	ld a, (hl) 								;; a <= (tempBullets)
-	cp #0x02 								;; a == 0x02
-	jr z, nueva 							;; if(!a==0x02){
-		inc a 								;; 	a++
-		ld (hl), a 							;; 	Actualizamos tempBullets
-		ret 								;; 	Terminamos
-	nueva:									;; }else{
-	ld (hl), #0x00 							;;  Reiniciamos tempBullets y procedemos a guardar la bala
-											;; }
-
 
 	call checkAvalibility					;; Comprobamos si hay un hueco libre
 	cp #-1									;; if(a == -1)
@@ -158,10 +144,8 @@ bullet_whoShots:
 ;; ======================
 ;; Bullet check collision
 ;; 	Inputs:
-;; 	HL : Points to the other 
-;;	Return:
-;;		XXXXXXXX
-  ;; ======================
+;; 		HL : Points to the other 
+;; ======================
 bullet_checkCollision:
 	
 	ld a, (nBullets)
