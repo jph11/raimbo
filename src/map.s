@@ -4,7 +4,8 @@
 .globl _sprite_death
 
 .area _CODE
-
+.include "enemy.h.s"
+.include "bullets.h.s"
 ;;========================
 ;;========================
 ;; MAP GLOBAL POINTERS
@@ -18,9 +19,9 @@ ptilemapA::
 puertaIzquierdaA::
 	.dw #0xFFFF
 puertaDerechaA::
-	.dw #0xFFFF
+	.dw #Map1
 arrayEnemyA::
-	.dw #0x0000
+	.dw #arrayEnemyM1
 
 ;;========================
 ;;========================
@@ -67,35 +68,38 @@ Map3:
 		.db #65, #50, #7, #25, _sprite_oldman_left, #0x03, #0x00, #0x01, #0x02
 		.db #0x81
 
-map_updateAllEnemies::
+map_updateAllEnemiesAndBullets::
 	ld ix, #arrayEnemyA
-	loopMap:
+	loopMapUpdate:
 	ld a, 0(ix)
 	cp #81
 	 ret z
 	call enemy_update
+	call bullets_update
 	ld de, (NextEnemy)
 	add ix, de
-ret
+	jr loopMapUpdate
 
-map_drawAllEnemies::
+map_drawAllEnemiesAndBullets::
 	ld ix, #arrayEnemyA
-	loopMap:
+	loopMapDraw:
 	ld a, 0(ix)
 	cp #81
 	 ret z
-	call enemy_update
+	call enemy_draw
+	call bullets_draw
 	ld de, (NextEnemy)
 	add ix, de
-ret
+	jr loopMapDraw
 
-map_eraseAllEnemies::
+map_eraseAllEnemiesAndBullets::
 	ld ix, #arrayEnemyA
-	loopMap:
+	loopMapErase:
 	ld a, 0(ix)
 	cp #81
 	 ret z
-	call enemy_update
+	call enemy_erase
+	call bullets_erase
 	ld de, (NextEnemy)
 	add ix, de
-ret
+	jr loopMapErase

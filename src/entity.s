@@ -18,24 +18,20 @@ entity_id: .db #03
 
 ;; ======================
 ;;	Sets a pointer to entity data 
-;;	
-;;	RETURNS:
-;; 		HL:Pointer to sub_entity data
+;;	INPUT:
+;; 		IX: entity_data
 ;; ======================
 entity_setPointer::
-	ld a, (hl)
+	ld a, Ent_x(ix)
 	ld (entity_x), a					;; Hl points to the entity Data
-	inc hl
 
-	ld a, (hl)
+	ld a, Ent_y(ix)
 	ld (entity_y), a
-	inc hl
 
-	ld a, (hl)
+	ld a, Ent_w(ix)
 	ld (entity_w), a					;; Hl points to the entity Data
-	inc hl
 
-	ld a, (hl)
+	ld a, Ent_h(ix)
 	ld (entity_h), a
 	
 	ret
@@ -50,20 +46,37 @@ entity_getPointer::
 	ld hl, #entity_x 					;; Hl points to the Hero Data
 	ret	
 
+;; ======================
+;;	Sets a pointer to entity data 
+;;	INPUT:
+;; 		A: Entity last movement
+;; ======================
 entity_setPointerLastMovement::
-	ld a, (hl)
 	ld (entity_last_movement), a
 	ret
 
+;; ======================
+;;	Sets a pointer to entity data 
+;;	OUTPUT:
+;; 		HL: Pointer to entity last movement
+;; ======================
 entity_getPointerLastMovement::
 	ld hl, #entity_last_movement 		
 	ret
 
+;; ======================
+;;	Sets a pointer to entity data 
+;;	INPUT:
+;; 		A: Entity id
+;; ======================
 entity_setId::
-	ld a, (hl)
 	ld (entity_id), a
 	ret
-
+;; ======================
+;;	Sets a pointer to entity data 
+;;	OUTPUT:
+;; 		HL: Pointer to entity id
+;; ======================
 entity_getId::
 	ld hl, #entity_id		
 	ret

@@ -1,3 +1,4 @@
-.globl map_drawAllEnemies
-.globl map_eraseAllEnemies
-.globl map_updateAllEnemies
+.globl map_drawAllEnemiesAndBullets
+.globl map_eraseAllEnemiesAndBullets
+.globl map_updateAllEnemiesAndBullets
+.globl arrayEnemyA

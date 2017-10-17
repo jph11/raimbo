@@ -339,11 +339,11 @@ checkUserInput:
 											;; }
 
 	;;Space is pressed
-	ld hl, #hero_x
+	ld ix, #hero_data
 	call entity_setPointer
-	ld hl, #hero_last_movement
+	ld a, (hero_last_movement)
 	call entity_setPointerLastMovement
-	ld hl, #hero_id
+	ld a, (hero_id)
 	call entity_setId
 	call bullets_newBullet
 

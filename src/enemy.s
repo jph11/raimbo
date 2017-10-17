@@ -17,35 +17,24 @@
 .include "entity.h.s"
 .include "macros.h.s"
 .include "bullets.h.s"
+.include "map.h.s"
 
-;;Enemy Data
-defineEntity enemy 65, 120, 7, 25, _sprite_oldman_left
-enemy_temp: .db #0x00
-enemy_tempBullets: .db #0x00
-enemy_alive: .db #03
-enemy_last_movement: .db #00
-enemy_type: .db #00
-
-
-enemy_auxiliarMemory:
-	.dw 0x0000
-enemy_memory:
-	.dw 0x0000
-enemy_id: .db #01
+enemy_memory::
+	.dw #arrayEnemyA
+enemy_id: 
+	.db #01
 
 .equ Enemy_x, 0
 .equ Enemy_y, 1
 .equ Enemy_w, 2
-.equ Ent_h, 3	
-.equ Ent_spr_l, 4
-.equ Ent_spr_h, 5
+.equ Enemy_h, 3	
 .equ EnemyLives, 6
 .equ EnemyTemp, 7
 .equ EnemyLastMovement, 8
 .equ EnemyType, 9
 
 ;;Death Data
-defineEntity death #enemy_x, #enemy_y, 8, 16, _sprite_death
+defineEntity death 0, 0, 8, 16, _sprite_death
 death_isDraw: .db #00
 ;;Death Data Animation
 death_anim: .db #10			;;Número de animaciones de pintar-no_pintar
@@ -65,9 +54,11 @@ death_animState: .db #00	;;Estado actual [0-1]
 ;; 		IX: Enemy data
 ;; ======================
 enemy_update::
-	ld a, EnemyLifes(enemy_alive)
+	ld a, EnemyLives(ix)
 	cp #0
+	push ix
 	jr z, enemyOver
+		pop ix
 		ld a, EnemyType(ix)
 		cp #0
 		jr z, Shooter
@@ -77,6 +68,7 @@ enemy_update::
 		jr collision
 		Shooter:
 		call Algorithm_Shooter
+		call enemyShoot
 		jr collision
 		Random:
 		call Algorithm_Random
@@ -92,7 +84,7 @@ enemy_update::
 ;; 		IX: Enemy data
 ;; ======================
 enemy_draw::
-	ld a, EnemyLifes(ix)
+	ld a, EnemyLives(ix)
 	cp #0
 	ret z
 		ld a, #0x6F
@@ -104,7 +96,7 @@ enemy_draw::
 ;; 		IX: Enemy data
 ;; ======================
 enemy_erase::
-	ld a, EnemyLifes(ix)
+	ld a, EnemyLives(ix)
 	cp #0
 	ret z
 		ld a, #0x00
@@ -138,9 +130,9 @@ enemy_getPointer::
 ;;	Enemy is death
 ;; ======================
 enemy_enemyKill::
-	ld a, EnemyLifes(ix)
+	ld a, EnemyLives(ix)
 	dec a
-	ld EnemyLifes(ix), a
+	ld EnemyLives(ix), a
 	cp #0
 	jr z, death
 		ret
@@ -150,12 +142,7 @@ enemy_enemyKill::
 		ld (death_x), a
 		ld a, Enemy_y(ix)
 		ld (death_y), a
-
-	ret  
-
-enemy_isAlive::
-	ld hl, #enemy_alive
-	ret		
+	ret 	
 
 ;;===========================================
 ;;===========================================
@@ -241,9 +228,9 @@ enemy_checkCollision:
 	;;	enemy_x + enemy_w - hero_x <= 0
 	;; 
 
-	ld a, Enemy_x(ix)			;; | enemy_x
+	ld a, Enemy_x(ix)		;; | enemy_x
 	ld c, a 				;; | +
-	ld a, Enemy_w(ix)	 		;; | enemy_w
+	ld a, Enemy_w(ix)	 	;; | enemy_w
 	add c 					;; | -
 	sub (hl)				;; | hero_x			
 	jr z, not_collision 	;; | if(==0)
@@ -509,13 +496,12 @@ enemyShoot:
 	plus:				
 	ld EnemyTemp(ix), #0x00
 
-	ld hl, #enemy_x
 	call entity_setPointer
 
-	ld hl, #enemy_last_movement
+	ld a, EnemyLastMovement(ix)
 	call entity_setPointerLastMovement
 
-	ld hl, #enemy_id
+	ld a, (enemy_id)
 	call entity_setId
 
 	call bullets_newBullet

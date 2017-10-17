@@ -10,4 +10,3 @@
 .globl enemy_init
 .globl enemy_getPointer
 .globl enemy_enemyKill
-.globl enemy_isAlive
