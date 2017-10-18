@@ -56,9 +56,10 @@ death_animState: .db #00	;;Estado actual [0-1]
 enemy_update::
 	ld a, EnemyLives(ix)
 	cp #0
-	push ix
-	jr z, enemyOver
-		pop ix
+	;push ix
+	;jr z, enemyOver
+	ret z
+		;pop ix
 		ld a, EnemyType(ix)
 		cp #0
 		jr z, Shooter
@@ -102,18 +103,6 @@ enemy_erase::
 		ld a, #0x00
 		call entity_draw
 	ret
-
-;; ======================
-;;	Enemy init
-;;  Start enemy values
-;; ======================
-enemy_init::
-	ld a, #50
-	ld Enemy_x(ix), a
-	ld a, #120
-	ld Enemy_y(ix),a
-
-	ret	
 
 ;; ======================
 ;;	Gets a pointer to enemy data 

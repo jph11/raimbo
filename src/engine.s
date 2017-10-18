@@ -19,7 +19,6 @@
 engine_drawAll::
     call hero_draw
     call obstacle_draw
-    call enemy_draw
     call map_drawAllEnemiesAndBullets
     ret
 

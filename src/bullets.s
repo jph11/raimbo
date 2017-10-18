@@ -62,6 +62,13 @@ bullets_newBullet::
 
 	dec hl									;; hl++ / hl(entity_y)
 	ld a, (hl)								;; a <= Entity_y
+	;========================================================================================================================================
+	; 	Falta:
+	;   inc hl
+	;	inc hl  <= hl = entity_h
+	;	(hl)/2
+	;	add (hl)
+	;========================================================================================================================================
 	add #14
 	ld b, a									;; b <= Entity_y + (Entity_h/2)
 	ld hl, #bullets 						;; hl = referencia a memoria a #bullets_x
@@ -100,14 +107,6 @@ bullets_newBullet::
 	inc hl									;;  hl++  hl <= bullet_x	
 	jp bucleNew								;; 	Repetimos operación hasta encontrar hueco libre
 											;; }
-
-;; ======================
-;;	Bullets Update
-;; ======================
-bullets_update::
-	call updateBullets
-	call bullet_checkCollision
-	ret
 
 ;; ======================
 ;;	Erase bullets
@@ -154,7 +153,7 @@ bullet_whoShots:
 ;; 	Inputs:
 ;; 		HL : Points to the other 
 ;; ======================
-bullet_checkCollision:
+bullet_checkCollision::
 	
 	ld a, (nBullets)
 	cp #0
@@ -306,7 +305,11 @@ checkAvalibility:
 ;;		A (Color)
 ;; ======================
 drawBullet:
-	push af 							;; Guardamos el color
+	push af
+	ld a, (nBullets)
+	cp #0
+		jr z, fin
+	 									;; Guardamos el color
 	ld hl, #bullets 					;; hl = referencia a memoria a #bullets_x
 
 	bucleDraw: 							
@@ -361,10 +364,11 @@ drawBullet:
 	pop af 								;; hl++  hl <= bullet_y
 	ret 
 
+
 ;; ======================
 ;;	Update all the bullets
 ;; ======================
-updateBullets:
+bullets_updateBullets::
 
 	ld a, (nBullets)
 	cp #0

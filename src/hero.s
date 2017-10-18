@@ -21,7 +21,7 @@
 tempBullets: 
 	.db #0x00
 ;;Hero Data
-defineEntity hero 39, 60, 9, 25, _sprite_hero_pistol
+defineEntity hero 39, 60, 9, 25, _sprite_hero_pistol ;; Si cambiamos el ancho del hero hay que cambiar en el SpaceKey check el valor también
 hero_jump: .db #-1
 hero_last_movement: .db #01
 hero_id: .db #00
@@ -44,6 +44,12 @@ jumptable:
 ;;PUBLIC FUNTIONS
 ;;===========================================
 ;;===========================================
+
+
+hero_getPointerLife::
+	ld hl, #hero_lifes
+	ret 
+
 
 ;; ======================
 ;;	Hero Update
@@ -337,6 +343,11 @@ checkUserInput:
 	nueva:									;; }else{
 	ld (hl), #0x00 							;;  Reiniciamos tempBullets y procedemos a guardar la bala
 											;; }
+	ld a, (hero_x)
+	cp #0
+		ret z
+	cp #80-9
+		ret z
 
 	;;Space is pressed
 	ld ix, #hero_data
@@ -445,9 +456,8 @@ hero_heroDamage:
 	ld a, (hero_lifes)
 	cp #0
 	 	jr nz, continue
-		call game_PointerHeroAlive
-		ld a, #0
-		ld (hl), a
+	 	dec a
+		ld (hero_lifes), a
 		ret
 
 	continue:

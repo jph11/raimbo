@@ -5,4 +5,3 @@
 ;;========================
 
 .globl game_start
-.globl game_PointerHeroAlive 

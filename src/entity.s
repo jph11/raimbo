@@ -87,7 +87,7 @@ entity_getId::
 ;;  Parametrer: a
 ;; ======================
 entity_draw::
-
+ 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Cambiar para optimizar tiempo de orden la comparación
 	push af 	;;Save A in the stack
 
 	;; Calculate Screen position

@@ -4,7 +4,8 @@
 ;;========================
 ;;========================
 
-.globl bullets_update
+.globl bullets_updateBullets
+.globl bullet_checkCollision
 .globl bullets_draw
 .globl bullets_erase
 .globl bullets_newBullet
