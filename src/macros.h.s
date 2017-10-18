@@ -1,5 +1,5 @@
 .macro defineEntity name, x, y, w, h, spr
-    name'_data:
+    name'_data::
         name'_x: 	.db x   ;[0-80]
         name'_y:	.db y   ;[0-200]
         name'_w:	.db w

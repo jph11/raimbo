@@ -5,6 +5,7 @@
 .include "obstacle.h.s"
 .include "enemy.h.s"
 .include "bullets.h.s"
+.include "map.h.s"
 
 ;;===========================================
 ;;===========================================
@@ -13,34 +14,29 @@
 ;;===========================================
 
 ;; ======================
-;;	Draw all
+;;  Draw all
 ;; ======================
 engine_drawAll::
-    call bullets_draw
     call hero_draw
-	call obstacle_draw
-    call enemy_draw
-
+    call obstacle_draw
+    call map_drawAllEnemiesAndBullets
     ret
 
 ;; ======================
-;;	Update all
+;;  Update all
 ;; ======================
 engine_updateAll::
-    call bullets_update
     call hero_update
     call obstacle_update
-    call enemy_update
+    call map_updateAllEnemiesAndBullets
 
     ret
 
 ;; ======================
-;;	Erase all
+;;  Erase all
 ;; ======================
 engine_eraseAll::
-    call bullets_erase
     call hero_erase
     call obstacle_erase
-    call enemy_erase
-
+    call map_eraseAllEnemiesAndBullets
     ret  

@@ -1,7 +1,4 @@
 .area _DATA
-
-hero_alive: .db #01
-
 .area _CODE
 
 .include "hero.h.s"
@@ -11,6 +8,7 @@ hero_alive: .db #01
 .include "engine.h.s"
 .include "cpctelera.h.s"
 .include "keyboard.s"
+.include "map.h.s"
 
 ;;===========================================
 ;;===========================================
@@ -26,14 +24,6 @@ game_start::
 	call game_run
     ret
 
-;; ======================
-;;	Pointer to Hero Alive
-;; ======================
-game_PointerHeroAlive::
-    ld hl, #hero_alive
-    ret
-
-
 ;;===========================================
 ;;===========================================
 ;;PRIVATE FUNTIONS
@@ -45,7 +35,6 @@ game_PointerHeroAlive::
 ;; ======================
 game_init:
     call hero_init
-    call enemy_init
     call obstacle_init
     call scene_drawFloor
 
@@ -58,7 +47,8 @@ game_run:
 	call engine_eraseAll
 	call engine_updateAll
 
-	ld a, (hero_alive)
+	call hero_getPointerLife
+	ld a, (hl)
 	cp #0
 	jr z, gameOver
 
@@ -85,7 +75,8 @@ gameOver:
 		cp #0						;;Check A == 0
 		jr z, gameOver		;;Jump if A==0 (space_not_pressed)
 
-		;;Space is pressed
-		ld a, #01
-		ld (hero_alive), a
+		;;P is pressed
+		ld a, #03
+		call hero_getPointerLife
+		ld (hl), a
 		call game_start

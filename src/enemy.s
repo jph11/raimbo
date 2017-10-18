@@ -17,19 +17,25 @@
 .include "entity.h.s"
 .include "macros.h.s"
 .include "bullets.h.s"
+.include "map.h.s"
 
-;;Enemy Data
-defineEntity enemy 65, 120, 7, 25, _sprite_oldman_left
-enemy_temp: .db #0x00
-enemy_tempBullets: .db #0x00
-enemy_alive: .db #03
-enemy_last_movement: .db #00
-enemy_id: .db #01
+enemy_memory::
+	.dw #arrayEnemyA
+enemy_id: 
+	.db #01
+
+.equ Enemy_x, 0
+.equ Enemy_y, 1
+.equ Enemy_w, 2
+.equ Enemy_h, 3	
+.equ EnemyLives, 6
+.equ EnemyTemp, 7
+.equ EnemyLastMovement, 8
+.equ EnemyType, 9
 
 ;;Death Data
-defineEntity death #enemy_x, #enemy_y, 8, 16, _sprite_death
+defineEntity death 0, 0, 8, 16, _sprite_death
 death_isDraw: .db #00
-
 ;;Death Data Animation
 death_anim: .db #10			;;Número de animaciones de pintar-no_pintar
 death_anim2: .db #20		;;Duración de la animación
@@ -41,54 +47,62 @@ death_animState: .db #00	;;Estado actual [0-1]
 ;;===========================================
 ;;===========================================
 
+
 ;; ======================
 ;;	Enemy Update
+;;	INPUTS:
+;; 		IX: Enemy data
 ;; ======================
 enemy_update::
-	ld a, (enemy_alive)
+	ld a, EnemyLives(ix)
 	cp #0
-	jr z, enemyOver
+	;push ix
+	;jr z, enemyOver
+	ret z
+		;pop ix
+		ld a, EnemyType(ix)
+		cp #0
+		jr z, Shooter
+		cp #1
+		jr z, Random
+		call Algorithm_FetchHero
+		jr collision
+		Shooter:
 		call Algorithm_Shooter
+		call enemyShoot
+		jr collision
+		Random:
+		call Algorithm_Random
+
+		collision:
+
 		call hero_getPointer
 		call enemy_checkCollision
-		call enemyShoot
 	ret
 
 ;; ======================
 ;;	Enemy Draw
+;; 		IX: Enemy data
 ;; ======================
 enemy_draw::
-	ld a, (enemy_alive)
+	ld a, EnemyLives(ix)
 	cp #0
 	ret z
 		ld a, #0x6F
-		ld ix, #enemy_data
 		call entity_draw
 	ret
 
 ;; ======================
 ;;	Enemy Erase
+;; 		IX: Enemy data
 ;; ======================
 enemy_erase::
-	ld a, (enemy_alive)
+	ld a, EnemyLives(ix)
 	cp #0
 	ret z
 		ld a, #0x00
-		ld ix, #enemy_data
 		call entity_draw
 	ret
-
-;; ======================
-;;	Enemy init
-;;  Start enemy values
-;; ======================
-enemy_init::
-	ld a, #50
-	ld (enemy_x), a
-	ld a, #120
-	ld (enemy_y),a
-
-	ret	
 
 ;; ======================
 ;;	Gets a pointer to enemy data 
@@ -97,31 +111,27 @@ enemy_init::
 ;; 		HL:Pointer to enemy data
 ;; ======================
 enemy_getPointer::
-	ld hl, #enemy_x 	;; Hl points to the Enemy Data
+	ld (enemy_memory), ix
+	ld hl, (enemy_memory) ;; Hl points to the Enemy Data	
 	ret	
 
 ;; ======================
 ;;	Enemy is death
 ;; ======================
 enemy_enemyKill::
-	ld a, (enemy_alive)
+	ld a, EnemyLives(ix)
 	dec a
-	ld (enemy_alive), a
+	ld EnemyLives(ix), a
 	cp #0
 	jr z, death
 		ret
 
 	death:
-		ld a, (enemy_x)
+		ld a, Enemy_x(ix)
 		ld (death_x), a
-		ld a, (enemy_y)
+		ld a, Enemy_y(ix)
 		ld (death_y), a
-
-	ret  
-
-enemy_isAlive::
-	ld hl, #enemy_alive
-	ret		
+	ret 	
 
 ;;===========================================
 ;;===========================================
@@ -207,9 +217,9 @@ enemy_checkCollision:
 	;;	enemy_x + enemy_w - hero_x <= 0
 	;; 
 
-	ld a, (enemy_x)			;; | enemy_x
+	ld a, Enemy_x(ix)		;; | enemy_x
 	ld c, a 				;; | +
-	ld a, (enemy_w)	 		;; | enemy_w
+	ld a, Enemy_w(ix)	 	;; | enemy_w
 	add c 					;; | -
 	sub (hl)				;; | hero_x			
 	jr z, not_collision 	;; | if(==0)
@@ -225,7 +235,7 @@ enemy_checkCollision:
 	inc hl
 	add (hl)
 	ld c, a
-	ld a, (enemy_x)
+	ld a, Enemy_x(ix)
 	ld b, a
 	ld a, c
 	sub b
@@ -237,9 +247,9 @@ enemy_checkCollision:
 	;;	enemy_y + enemy_h - hero_y <= 0
 	;;
 
-	ld a, (enemy_y)			;; | enemy_x
+	ld a, Enemy_y(ix)			;; | enemy_x
 	ld c, a 				;; | +
-	ld a, (enemy_h)	 		;; | obx_w
+	ld a, Enemy_h(ix)	 		;; | obx_w
 	add c
 	dec hl					;; | -
 	sub (hl)				;; | hero_x			
@@ -256,7 +266,7 @@ enemy_checkCollision:
 	inc hl
 	add (hl)
 	ld c, a
-	ld a, (enemy_y)
+	ld a, Enemy_y(ix)
 	ld b, a
 	ld a, c
 	sub b
@@ -277,24 +287,24 @@ enemy_checkCollision:
 
 	ret
 
-Algorithm_Shooter::
+Algorithm_Shooter:
 	call hero_getPointer
 	inc hl
 	ld b, (hl)
-	ld a, (enemy_y)
+	ld a, Enemy_y(ix)
 	cp b
 	jr z, keepDistance
 	jr c, incEnemy
 		dec a
-		ld (enemy_y), a
+		ld Enemy_y(ix), a
 		jr keepDistance
 	incEnemy:
 		inc a
-		ld (enemy_y), a
+		ld Enemy_y(ix), a
 
 	keepDistance:
 		dec hl
-		ld a, (enemy_x) 			; hl <= Enemy_x
+		ld a, Enemy_x(ix) 			; hl <= Enemy_x
 		ld b, a 					; b <= Enemy_x
 		ld a, (hl) 					; a <= hero_x
 		cp b 					
@@ -308,18 +318,18 @@ Algorithm_Shooter::
 			cp #-20
 			jr c, reverseShooter1
 			jr z, endShooter
-				ld a, (enemy_x)
+				ld a, Enemy_x(ix)
 				cp #0
 				 ret z
 				dec a
-				ld (enemy_x), a
+				ld Enemy_x(ix), a
 					ret
 			reverseShooter1:
-				ld a, (enemy_x)
+				ld a, Enemy_x(ix)
 				cp #80-7
 				 ret z
 				inc a
-				ld (enemy_x), a
+				ld Enemy_x(ix), a
 					ret
 				jr endShooter
 		forward:
@@ -330,36 +340,35 @@ Algorithm_Shooter::
 			cp #40 					; Si 20 > a fin
 			jr z, endShooter
 			jr nc, reverseShooter2
-				ld a, (enemy_x)
+				ld a, Enemy_x(ix)
 				cp #80-7
 				 ret z
 				inc a
-				ld (enemy_x), a
+				ld Enemy_x(ix), a
 				ret 
 		reverseShooter2:
-				ld a, (enemy_x)
+				ld a, Enemy_x(ix)
 				cp #0
 				 ret z
 				dec a
-				ld (enemy_x), a
+				ld Enemy_x(ix), a
 		endShooter:
 	ret
 
 Algorithm_FetchHero:
 	
-	ld hl, #enemy_temp 						
-	ld a, (hl) 								
+	ld a, EnemyTemp(ix)  								
 	cp #0x04 								
 	jr z, resetFetch							
 		inc a 								
-		ld (hl), a 							
+		ld EnemyTemp(ix), a 							
 		ret 								
 	resetFetch:									
-	ld (hl), #0x00
+	ld EnemyTemp(ix), #0x00
 
 	call hero_getPointer
 	ld b, (hl)
-	ld a, (enemy_x)
+	ld a, Enemy_x(ix)
 	cp b
 	jr z, continue
 	jr c, right
@@ -370,10 +379,10 @@ Algorithm_FetchHero:
 		;right
 		inc a
 	continue:
-	ld (enemy_x), a
+	ld Enemy_x(ix), a
 	inc hl
 	ld b, (hl)
-	ld a, (enemy_y)
+	ld a, Enemy_y(ix)
 	cp b
 	jr z, samePosition
 	jr c, down
@@ -385,7 +394,7 @@ Algorithm_FetchHero:
 
 	equalsUp:
 		ld a, (hl)
-		ld (enemy_y), a
+		ld Enemy_y(ix), a
 		pop af
 		jr samePosition
 
@@ -399,29 +408,28 @@ Algorithm_FetchHero:
 
 		equalsDown:
 			ld a, (hl)
-			ld (enemy_y), a
+			ld Enemy_y(ix), a
 			pop af
 			jr samePosition
 
 	endFetch:
 	pop af
-	ld (enemy_y), a
+	ld Enemy_y(ix), a
 
 	samePosition:
 	ret
 
 
 Algorithm_Random:
-
-	ld hl, #enemy_temp 						
-	ld a, (hl) 								
+						
+	ld a, EnemyTemp(ix) 								
 	cp #0x04 								
 	jr z, resetRandom							
 		inc a 								
-		ld (hl), a 							
+		ld EnemyTemp(ix), a 							
 		ret 								
 	resetRandom:									
-	ld (hl), #0x00
+	ld EnemyTemp(ix), #0x00
 
 	call cpct_getRandom_lcg_u8_asm
 	cp #64
@@ -431,7 +439,7 @@ Algorithm_Random:
 	cp #192
 	jp c, tercerRango
 		;; cuartoRango
-		ld a, (enemy_y)
+		ld a, Enemy_y(ix)
 		cp #0
 			ret z
 		cp #1
@@ -439,24 +447,24 @@ Algorithm_Random:
 		cp #2
 			ret z
 		sub a, #3
-		ld (enemy_y), a
+		ld Enemy_y(ix), a
 		ret
 	primerRango:
-		ld a, (enemy_x)
+		ld a, Enemy_x(ix)
 		cp #80-7
 		 ret z
 		inc a
-		ld (enemy_x), a
+		ld Enemy_x(ix), a
 		ret
 	segundoRango:
-		ld a, (enemy_x)
+		ld a, Enemy_x(ix)
 		cp #0
 		 ret z
 		dec a
-		ld (enemy_x), a
+		ld Enemy_x(ix), a
 		ret
 	tercerRango:
-		ld a, (enemy_y)
+		ld a, Enemy_y(ix)
 		cp #200-26
 		ret z
 		cp #200-27
@@ -464,57 +472,25 @@ Algorithm_Random:
 		cp #200-25
 			ret z
 		add a, #3
-		ld (enemy_y), a
+		ld Enemy_y(ix), a
 		ret
 
-
-;; ======================
-;; Move enemy to the hero
-;; ======================
-
-moveEnemyLeft:
-	ld hl, #enemy_temp	 					;; hl <= enemy_temp
-	ld a, (hl) 								;; a <= (enemy_temp)
-	cp #0x03 								;; a == 0x04
-	jr z, nueva 							;; if(!a==0x02){
-		inc a 								;; 	a++
-		ld (hl), a 							;; 	Actualizamos enemy_temp
-		ret 								;; 	Terminamos
-	nueva:									;; }else{
-	ld (hl), #0x00 							;;  Reiniciamos tempBullets y procedemos a guardar la bala
-											;; }
-
-	;;Move enemy to the left
-	ld a, (enemy_x) 			;; |
-	dec a						;; | enemy_x--
-	jr nz, not_restart_x		;; | If (enemy_x = 0) then restart
-
-	;; Restart_x when it is 0 to the right
-	ld a, #80-7
-
-	not_restart_x:
-	ld (enemy_x), a		
-
-	ret
-
 enemyShoot:	
-	ld hl, #enemy_tempBullets
-	ld a, (hl) 			
+	ld a, EnemyTemp(ix)  			
 	cp #0x0E 			
 	jr z, plus 			
 		inc a 			
-		ld (hl), a 		
+		ld EnemyTemp(ix), a 		
 		ret 			
 	plus:				
-	ld (hl), #0x00
+	ld EnemyTemp(ix), #0x00
 
-	ld hl, #enemy_x
 	call entity_setPointer
 
-	ld hl, #enemy_last_movement
+	ld a, EnemyLastMovement(ix)
 	call entity_setPointerLastMovement
 
-	ld hl, #enemy_id
+	ld a, (enemy_id)
 	call entity_setId
 
 	call bullets_newBullet
