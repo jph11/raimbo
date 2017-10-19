@@ -16,12 +16,13 @@
 .include "entity.h.s"
 .include "macros.h.s"
 .include "game.h.s"
+.include "map.h.s"
 
 
 tempBullets: 
 	.db #0x00
 ;;Hero Data
-defineEntity hero 39, 60, 9, 25, _sprite_hero_pistol ;; Si cambiamos el ancho del hero hay que cambiar en el SpaceKey check el valor también
+defineEntity hero 39, 60, 9, 25, _sprite_hero_pistol ;; Si cambiamos el ancho del hero hay que cambiar en el SpaceKey check el valor también, cambiar valor que devulve changeMap de map
 hero_jump: .db #-1
 hero_last_movement: .db #01
 hero_id: .db #00
@@ -286,6 +287,7 @@ moveHeroBottom:
 	ld (hero_y), a 	;;Update hero_y
 
 	d_not_move_bottom:
+
 	ret
 
 ;; ======================
@@ -298,8 +300,14 @@ moveHeroRight:
 
 	inc a 			;;A++ (hero_x++)
 	ld (hero_x), a 	;;Update hero_x
-
+	ret 
+	
 	d_not_move_right:
+		ld a, #0
+		call map_changeMap
+		cp #-1
+			ret z
+		ld (hero_x), a
 	ret
 
 ;; ======================
@@ -312,8 +320,14 @@ moveHeroLeft:
 
 	dec a 			;;A-- (hero_x--)
 	ld (hero_x), a 	;;Update hero_x
+	ret 
 
 	d_not_move_left:
+		ld a, #1
+		call map_changeMap
+		cp #-1
+			ret z
+		ld (hero_x), a
 	ret
 
 ;; ======================

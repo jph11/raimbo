@@ -71,3 +71,4 @@ $(eval $(call IMG2SPRITES,assets/hero_left.png,0,sprite,14,25,$(PALETTE),,src/sp
 $(eval $(call IMG2SPRITES,assets/oldman_left.png,0,sprite,14,25,$(PALETTE),,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/jar.png,0,sprite,12,12,$(PALETTE),,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/death.png,0,sprite,16,16,$(PALETTE),,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/viejoNaranja.png,0,sprite,14,25,$(PALETTE),,src/sprites,))

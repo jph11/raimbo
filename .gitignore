@@ -2,3 +2,4 @@
 *.dsk
 obj/
 .DS_Store
+src/sprites/*
