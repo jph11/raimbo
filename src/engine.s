@@ -18,7 +18,7 @@
 ;; ======================
 engine_drawAll::
     call hero_draw
-    call obstacle_draw
+    ;call obstacle_draw
     call map_drawAllEnemiesAndBullets
     ret
 
@@ -27,7 +27,7 @@ engine_drawAll::
 ;; ======================
 engine_updateAll::
     call hero_update
-    call obstacle_update
+    ;call obstacle_update
     call map_updateAllEnemiesAndBullets
 
     ret
@@ -37,6 +37,6 @@ engine_updateAll::
 ;; ======================
 engine_eraseAll::
     call hero_erase
-    call obstacle_erase
+    ;call obstacle_erase
     call map_eraseAllEnemiesAndBullets
     ret  
