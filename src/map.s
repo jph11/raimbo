@@ -7,6 +7,7 @@
 .area _CODE
 .include "enemy.h.s"
 .include "bullets.h.s"
+.include "macros.h.s"
 ;;========================
 ;;========================
 ;; MAP GLOBAL POINTERS
@@ -21,6 +22,12 @@
 .equ EnemyLastMovement, 8
 .equ EnemyType, 9
 
+
+empty:
+ 	.dw #0x0000
+null:
+	.dw #0xFFFF
+
 NextEnemy:
 	.db #10
 ptilemapA::
@@ -28,9 +35,9 @@ ptilemapA::
 puertaIzquierdaA::
 	.dw 0xFFFF
 puertaDerechaA::
-	.dw Map2
+	.dw M2
 arrayEnemyA::
-	.dw arrayEnemyM1
+	.dw M1_arrayEnemy
 
 ;;========================
 ;;========================
@@ -38,55 +45,25 @@ arrayEnemyA::
 ;;========================
 ;;========================
 
-Map1:
-	ptilemapM1:
-		.dw #0x0000
-	puertaIzquierdaM1:
-		.dw #0xFFFF
-	puertaDerechaM1:
-		.dw #Map2
-	arrayEnemyM1:
-																		; Start Array
-		.db #0, #170, #7, #25  											; x,  y,  w,  h
-		.dw _sprite_oldman_left 										; sprite 
-		.db #0x05, #0x00, #0x01, #0x01									; lives,  temp, lastmovement, type
-																		; #0x81 - End Array
-		.db #70, #170, #7, #25 
-		.dw _sprite_oldman_left 
-		.db #0x05, #0x00, #0x01, #0x01
 
-		.db #0x81
+ 	; Map:
+ 	; 	name, ptilemap, puertaIzquierda, puertaDerecha
+ 	; Enemy:
+ 	;	x,  y,  w,  h, sprite, lives,  temp, lastmovement, type 
 
-Map2:
-	ptilemapM2:
-		.dw #0x0000
-	puertaIzquierdaM2:
-		.dw Map1
-	puertaDerechaM2:
-		.dw Map3
-	arrayEnemyM2:
-		.db #70, #170, #7, #25 
-		.dw _sprite_viejoNaranja 
-		.db #0x05, #0x00, #0x01, #0x01
-		.db #0x81
-Map3:
-	ptilemapM3:
-		.dw #0x0000
-	puertaIzquierdaM3:
-		.dw Map2
-	puertaDerechaM3:
-		.dw #0xFFFF
-	arrayEnemyM3:
-	
-		.db #0, #170, #7, #25 
-		.dw _sprite_viejoNaranja 
-		.db #0x05, #0x00, #0x01, #0x01
+M1:
+	defineMap M1 0, -1, M2
+	defineEnemy 0, 170, 7, 25, _sprite_oldman_left, 5, 0, 1, 1
+	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldman_left, 5, 0, 1, 2
 
-		.db #70, #170, #7, #25 
-		.dw _sprite_oldman_left 
-		.db #0x05, #0x00, #0x01, #0x01
+M2:
+	defineMap M2 0, M1, M3
+	defineEnemyLastOne 70, 170, 7, 25, _sprite_viejoNaranja, 5, 0, 1, 1
 
-		.db #0x81
+M3:
+	defineMap M3 0, M2, -1
+	defineEnemy 0, 170, 7, 25, _sprite_viejoNaranja, 5, 0, 1, 1
+	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldman_left, 5, 0, 1, 1
 
 map_updateAllEnemiesAndBullets::
 	call bullets_updateBullets
