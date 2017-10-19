@@ -16,7 +16,7 @@
 .include "macros.h.s"
 
 ;;Obstacle Data
-defineEntity obs 72, 76, 6, 12, _sprite_jar
+defineDeath obs 72, 76, 6, 12, _sprite_jar
 
 ;;===========================================
 ;;===========================================

@@ -141,7 +141,7 @@ bullet_whoShots:
 	jr z, heroShoot
 		ld a, #00
 		ld (bullet_victim), a
-		ld ix, (hero_data)
+		ld ix, #hero_data
 		ret
 	heroShoot:
 		ld a, #01
@@ -448,3 +448,24 @@ bullets_updateBullets::
 		inc hl 							;; hl++  hl <= bullet_x	
 	jp bucle 		
 
+;; ======================
+;;	Delete all the bullets
+;; ======================
+bullets_deleteAllBullets::
+
+	ld a, (nBullets)
+	cp #0
+	ret z
+
+	ld a, #0
+	ld (nBullets), a
+
+	ld hl, #bullets 					;; hl = referencia a memoria a #bullets
+	bucleDelete: 								;;
+	ld a, (hl) 							;; a = hl(bullets_x)
+	cp #0x81 							;; a == 0x81
+		ret z 							;; if(a==0x81) ret
+	ld a, #0xFF
+	ld (hl), a
+	inc hl
+	jr bucleDelete

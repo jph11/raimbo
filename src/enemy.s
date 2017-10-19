@@ -31,10 +31,14 @@ enemy_id:
 .equ EnemyLives, 6
 .equ EnemyTemp, 7
 .equ EnemyLastMovement, 8
-.equ EnemyType, 9
+.equ EnemyUX, 9
+.equ EnemyPUX, 10
+.equ EnemyUY, 11
+.equ EnemyPUY, 12
+.equ EnemyType, 13
 
 ;;Death Data
-defineEntity death 0, 0, 8, 16, _sprite_death
+defineDeath death 0, 0, 8, 16, _sprite_death
 death_isDraw: .db #00
 ;;Death Data Animation
 death_anim: .db #10			;;Número de animaciones de pintar-no_pintar
@@ -69,6 +73,13 @@ enemy_update::
 		jr collision
 		Shooter:
 		call Algorithm_Shooter
+		ld a, #80
+		ld b, Enemy_w(ix)
+		sub b
+		ld b, a
+		ld a, Enemy_x(ix)
+		cp b
+		jr z, collision
 		call enemyShoot
 		jr collision
 		Random:
@@ -325,8 +336,13 @@ Algorithm_Shooter:
 				ld Enemy_x(ix), a
 					ret
 			reverseShooter1:
+
+				ld a, #80
+				ld b, Enemy_w(ix)
+				sub b
+				ld b, a
 				ld a, Enemy_x(ix)
-				cp #80-7
+				cp b
 				 ret z
 				inc a
 				ld Enemy_x(ix), a
@@ -340,8 +356,12 @@ Algorithm_Shooter:
 			cp #40 					; Si 20 > a fin
 			jr z, endShooter
 			jr nc, reverseShooter2
+				ld a, #80
+				ld b, Enemy_w(ix)
+				sub b
+				ld b, a
 				ld a, Enemy_x(ix)
-				cp #80-7
+				cp b
 				 ret z
 				inc a
 				ld Enemy_x(ix), a
@@ -450,8 +470,12 @@ Algorithm_Random:
 		ld Enemy_y(ix), a
 		ret
 	primerRango:
+		ld a, #80
+		ld b, Enemy_w(ix)
+		sub b
+		ld b, a
 		ld a, Enemy_x(ix)
-		cp #80-7
+		cp b
 		 ret z
 		inc a
 		ld Enemy_x(ix), a
