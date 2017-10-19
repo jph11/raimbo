@@ -73,6 +73,7 @@ map_updateAllEnemiesAndBullets::
 	cp #0x81
 	 ret z
 	call enemy_update
+	ld hl, #arrayEnemyA
 	push ix
 	call bullet_checkCollision
 	pop ix

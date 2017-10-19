@@ -144,6 +144,8 @@ bullet_whoShots:
 		ld ix, #hero_data
 		ret
 	heroShoot:
+		push iy
+		pop ix
 		ld a, #01
 		ld (bullet_victim), a
 		ret
@@ -158,9 +160,10 @@ bullet_checkCollision::
 	ld a, (nBullets)
 	cp #0
 	ret z
-
 	ld de, #bullets 					;; de = referencia a memoria a #bullets
-	for: 								;;
+	push ix
+	pop iy
+	for:								;;
 	ld a, (de) 							;; a = de(bullets_x)
 	cp #0x81 							;; a == 0x81
 		ret z 							;; if(a==0x81) ret

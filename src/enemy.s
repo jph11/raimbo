@@ -73,13 +73,6 @@ enemy_update::
 		jr collision
 		Shooter:
 		call Algorithm_Shooter
-		ld a, #80
-		ld b, Enemy_w(ix)
-		sub b
-		ld b, a
-		ld a, Enemy_x(ix)
-		cp b
-		jr z, collision
 		call enemyShoot
 		jr collision
 		Random:
@@ -501,7 +494,7 @@ Algorithm_Random:
 
 enemyShoot:	
 	ld a, EnemyTemp(ix)  			
-	cp #0x0E 			
+	cp #0x30 			
 	jr z, plus 			
 		inc a 			
 		ld EnemyTemp(ix), a 		
