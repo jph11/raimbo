@@ -13,17 +13,23 @@
 ;; MAP GLOBAL POINTERS
 ;;========================
 ;;========================
+
 .equ Enemy_x, 0
 .equ Enemy_y, 1
 .equ Enemy_w, 2
 .equ Enemy_h, 3	
+.equ Ent_spr_l, 4
+.equ Ent_spr_h, 5
 .equ EnemyLives, 6
 .equ EnemyTemp, 7
 .equ EnemyLastMovement, 8
-.equ EnemyType, 9
+.equ EnemyUX, 9
+.equ EnemyPUX, 10
+.equ EnemyUY, 11
+.equ EnemyPUY, 12
 
 NextEnemy:
-	.db #10
+	.db #14
 ptilemapA::
 	.dw #0x0000 ;Cambiar al mapa correspondiente
 puertaIzquierdaA::
@@ -47,17 +53,17 @@ arrayEnemyA::
 
 M1:
 	defineMap M1 0, -1, M2
-	defineEnemy 0, 170, 7, 25, _sprite_oldman_left, 5, 0, 1, 1
-	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldman_left, 5, 0, 1, 2
+	;defineEnemy 0, 170, 7, 25, _sprite_oldman_left, 5, 0, 1, 1
+	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldman_left, 5, 0, 0, 70, 70, 170, 170, 0
 
 M2:
 	defineMap M2 0, M1, M3
-	defineEnemyLastOne 70, 170, 7, 25, _sprite_viejoNaranja, 5, 0, 1, 1
+	defineEnemyLastOne 70, 170, 7, 25, _sprite_viejoNaranja, 5, 0, 1, 70, 70, 170, 170, 1
 
 M3:
 	defineMap M3 0, M2, -1
-	defineEnemy 0, 170, 7, 25, _sprite_viejoNaranja, 5, 0, 1, 1
-	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldman_left, 5, 0, 1, 1
+	defineEnemy 0, 170, 7, 25, _sprite_viejoNaranja, 5, 0, 1, 70, 70, 170, 170, 1
+	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldman_left, 5, 0, 1, 70, 70, 170, 170, 1
 
 map_updateAllEnemiesAndBullets::
 	call bullets_updateBullets
@@ -67,7 +73,10 @@ map_updateAllEnemiesAndBullets::
 	cp #0x81
 	 ret z
 	call enemy_update
+	ld hl, #arrayEnemyA
+	push ix
 	call bullet_checkCollision
+	pop ix
 	ld de, (NextEnemy)
 	add ix, de
 	jr loopMapUpdate
@@ -135,12 +144,13 @@ map_changeMap::
 
 	previousMap:
 		ld de, (puertaIzquierdaA)
-	
-
+		
 	startChange:
 		ld a, d
 		cp #0xFF
 			jr z, keepOnMap
+
+		call bullets_deleteAllBullets
 
 		;; Cargamos: ptilemapA
 		ld hl, #ptilemapA

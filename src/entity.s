@@ -8,6 +8,13 @@
 .equ Ent_h, 3	
 .equ Ent_spr_l, 4
 .equ Ent_spr_h, 5
+.equ EntLives, 6
+.equ EntTemp, 7
+.equ EntLastMovement, 8
+.equ EntUX, 9
+.equ EntPUX, 10
+.equ EntUY, 11
+.equ EntPUY, 12
 
 .include "cpctelera.h.s"
 .include "macros.h.s"
@@ -87,7 +94,6 @@ entity_getId::
 ;;  Parametrer: a
 ;; ======================
 entity_draw::
- 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Cambiar para optimizar tiempo de orden la comparación
 	push af 	;;Save A in the stack
 
 	;; Calculate Screen position

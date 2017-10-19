@@ -141,9 +141,11 @@ bullet_whoShots:
 	jr z, heroShoot
 		ld a, #00
 		ld (bullet_victim), a
-		ld ix, (hero_data)
+		ld ix, #hero_data
 		ret
 	heroShoot:
+		push iy
+		pop ix
 		ld a, #01
 		ld (bullet_victim), a
 		ret
@@ -158,9 +160,10 @@ bullet_checkCollision::
 	ld a, (nBullets)
 	cp #0
 	ret z
-
 	ld de, #bullets 					;; de = referencia a memoria a #bullets
-	for: 								;;
+	push ix
+	pop iy
+	for:								;;
 	ld a, (de) 							;; a = de(bullets_x)
 	cp #0x81 							;; a == 0x81
 		ret z 							;; if(a==0x81) ret
@@ -448,3 +451,24 @@ bullets_updateBullets::
 		inc hl 							;; hl++  hl <= bullet_x	
 	jp bucle 		
 
+;; ======================
+;;	Delete all the bullets
+;; ======================
+bullets_deleteAllBullets::
+
+	ld a, (nBullets)
+	cp #0
+	ret z
+
+	ld a, #0
+	ld (nBullets), a
+
+	ld hl, #bullets 					;; hl = referencia a memoria a #bullets
+	bucleDelete: 								;;
+	ld a, (hl) 							;; a = hl(bullets_x)
+	cp #0x81 							;; a == 0x81
+		ret z 							;; if(a==0x81) ret
+	ld a, #0xFF
+	ld (hl), a
+	inc hl
+	jr bucleDelete
