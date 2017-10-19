@@ -22,12 +22,6 @@
 .equ EnemyLastMovement, 8
 .equ EnemyType, 9
 
-
-empty:
- 	.dw #0x0000
-null:
-	.dw #0xFFFF
-
 NextEnemy:
 	.db #10
 ptilemapA::
@@ -126,6 +120,7 @@ ret
 ;; 		A = 1: Previous map (right)
 ;;	OUTPUTS:
 ;;		A = 0: Move hero to the start of the map
+;;		A = 80-9: Move hero to the end of the map
 ;; 		A = -1: Do not move
 ;; ======================
 
