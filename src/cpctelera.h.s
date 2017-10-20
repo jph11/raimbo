@@ -16,3 +16,6 @@
 .globl cpct_etm_drawTileBox2x4_asm
 .globl cpct_memset_asm
 .globl cpct_etm_setTileset2x4_asm
+.globl cpct_setVideoMemoryPage_asm
+.globl cpct_etm_drawTilemap2x4_f_asm
+.globl cpct_setPALColour_asm

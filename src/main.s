@@ -1,11 +1,14 @@
 .area _DATA
 
 .globl _sprite_palette
+.globl _g_tileset
+.globl _g_tilemap
 
 .area _CODE
 
 .include "game.h.s"
 .include "cpctelera.h.s"
+.include "map.h.s"
 
 ;; =================================
 ;;	Settings, mode video and palette
@@ -29,6 +32,12 @@ settings::
 	ld bc, #0x4000
 	call cpct_memset_asm
 
+	ld de, #0x8000
+	ld a, #0x00
+	ld bc, #0x4000
+	call cpct_memset_asm
+
+	call map_draw
 	;; Set Parameters on the stack
 	ld   hl, #0x4000   ;; HL = pointer to the tilemap
 	push hl              ;; Push ptilemap to the stack
@@ -48,6 +57,7 @@ ret
 ;;	Main program entry
 ;; ======================
 _main::
-	
+	ld sp, #0x8000
+
 	call settings
 	call game_start

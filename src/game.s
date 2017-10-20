@@ -58,6 +58,7 @@ game_run:
     call engine_drawAll
 
 	call cpct_waitVSYNC_asm
+	call map_switchBuffers
 	
     jr game_run
 

@@ -142,7 +142,7 @@ hero_erase::
 hero_init::
 	ld a, #39
 	ld (hero_x), a
-	ld a, #60
+	ld a, #20
 	ld (hero_y), a
 	ld a, #-1
 	ld (hero_jump), a
@@ -275,7 +275,7 @@ moveHeroUp:
 ;; ======================
 moveHeroBottom:
 	ld a, (hero_y)	;;A = hero_y
-	cp #200-26		;;Check against right limit (screen size - hero size)
+	cp #200-29		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
 	jr nc, d_not_move_bottom
 
@@ -293,7 +293,7 @@ moveHeroBottom:
 ;; ======================
 moveHeroRight:
 	ld a, (hero_x)	;;A = hero_x
-	cp #80-9		;;Check against right limit (screen size - hero size)
+	cp #80-10		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_right	;;Hero_x == Limit, do not move
 
 	inc a 			;;A++ (hero_x++)

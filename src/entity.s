@@ -11,6 +11,7 @@
 
 .include "cpctelera.h.s"
 .include "macros.h.s"
+.include "map.h.s"
 
 defineInitEntity entity 0, 0, 0, 0
 entity_last_movement: .db #00
@@ -118,7 +119,7 @@ entity_draw::
 	push af 	;;Save A in the stack
 
 	;; Calculate Screen position
-	ld de, #0xC000		;;Video memory
+	ld de, (puntero_video)		;;Video memory
 
 	ld c, Ent_x(ix)			;;\ C=entity_x
 	ld b, Ent_y(ix)			;;\ B=entity_y
@@ -138,57 +139,5 @@ entity_draw::
 		call cpct_drawSpriteMasked_asm
 		ret
 	erase:
-		;; Calculamos width
-		ld a, Ent_x(ix)
-		ld c, #1
-		and c
-		ld c, #5
-		add a, c
-		ld e, a
-
-		;; Calculamos height
-		ld a, Ent_y(ix)
-		ld c, #3
-		and c
-
-		cp #0
-		ld a, #0
-		jr z, calculo_height
-		ld a, #1
-
-		calculo_height:
-		ld c, #7
-		add a, c
-		ld d, a
-
-		;;ld d, Ent_h(ix)
-
-		;; Calculamos y
-		ld a, Ent_y(ix)
-		ld c, #4
-		call divide
-		ld l, b
-
-		;; Calculamos x
-		ld a, Ent_x(ix)
-		ld c, #2
-		call divide
-		ld c, b
-
-		;; Devolvemos y al registro b
-		ld b, l
-
-
-		;; Set Parameters on the stack
-		ld   hl, #0x4000   ;; HL = pointer to the tilemap
-		push hl              ;; Push ptilemap to the stack
-		ld   hl, #0xC000  ;; HL = Pointer to video memory location where tilemap is drawn
-		push hl              ;; Push pvideomem to the stack
-		;; Set Paramters on registers
-		ld    a, #120 ;; A = map_width
-		;;ld    b, #0          ;; B = y tile-coordinate
-		;;ld    c, #0          ;; C = x tile-coordinate
-		;;ld    d, #46          ;; H = height in tiles of the tile-box
-		;;ld    e, #40          ;; L =  width in tiles of the tile-box
-		call  cpct_etm_drawTileBox2x4_asm ;; Call the function
+		call cpct_drawSolidBox_asm
 	ret

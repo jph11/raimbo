@@ -6,6 +6,12 @@
 .include "enemy.h.s"
 .include "bullets.h.s"
 .include "map.h.s"
+.include "cpctelera.h.s"
+
+.macro setBorder color
+    ld hl, #0x'color'10
+    call cpct_setPALColour_asm
+.endm
 
 ;;===========================================
 ;;===========================================
@@ -17,9 +23,11 @@
 ;;  Draw all
 ;; ======================
 engine_drawAll::
+
+    ;;call map_draw
     call hero_draw
-    call obstacle_draw
-    call map_drawAllEnemiesAndBullets
+    ;;call obstacle_draw
+    ;;call map_drawAllEnemiesAndBullets
     ret
 
 ;; ======================
@@ -27,8 +35,8 @@ engine_drawAll::
 ;; ======================
 engine_updateAll::
     call hero_update
-    call obstacle_update
-    call map_updateAllEnemiesAndBullets
+    ;;call obstacle_update
+    ;;call map_updateAllEnemiesAndBullets
 
     ret
 
@@ -37,6 +45,6 @@ engine_updateAll::
 ;; ======================
 engine_eraseAll::
     call hero_erase
-    call obstacle_erase
-    call map_eraseAllEnemiesAndBullets
+    ;;call obstacle_erase
+    ;;call map_eraseAllEnemiesAndBullets
     ret  
