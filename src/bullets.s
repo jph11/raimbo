@@ -53,6 +53,7 @@ bullet_victim: .db #09		;Valor sin importancia
 .include "entity.h.s"
 .include "game.h.s"
 .include "cpctelera.h.s"
+.include "map.h.s"
 
 ;;===========================================
 ;;===========================================
@@ -90,6 +91,7 @@ bullets_newBullet::
 	add #14
 	ld b, a									;; b <= Entity_y + (Entity_h/2)
 	ld hl, #bullets 						;; hl = referencia a memoria a #bullets_x
+	ld iy, #bullets_posiciones
 
 	bucleNew:									
 	ld a, (hl)								;; a = hl(bullets_x)
@@ -98,6 +100,12 @@ bullets_newBullet::
 		ld (hl), c 							;; 	bullet_x <= entity_x
 		inc hl								;;  hl++  hl <= entity_y
 		ld (hl), b 							;; 	bullets_y <= entity_y 
+
+		ld bullet_ux(iy), c
+		ld bullet_uy(iy), b
+
+		ld bullet_pux(iy), c
+		ld bullet_puy(iy), b
 
 		inc hl 								;;  hl++  hl <= bullet_direccion
 		push hl 							;; Guardamos bullet_direccion, la siguiente llamada lo sobreescribe
@@ -122,7 +130,8 @@ bullets_newBullet::
 	inc hl 									;; 	hl++  hl <= bullet_y
 	inc hl 									;; 	hl++  hl <= bullet_direccion
 	inc hl									;;  hl++  hl <= bullet_idAsesino
-	inc hl									;;  hl++  hl <= bullet_x	
+	inc hl									;;  hl++  hl <= bullet_x
+	call bullets_posiciones_updatePointer	;;  Actualización puntero iy
 	jp bucleNew								;; 	Repetimos operación hasta encontrar hueco libre
 											;; }
 
@@ -152,6 +161,29 @@ bullets_posiciones_updatePointer:
 	inc iy
 	inc iy
 	inc iy
+ret
+
+bullets_cleanOrDraw::º
+
+	cp #0xFF
+	jr z, internal_draw
+
+	push hl
+	push af
+
+	ld c, bullet_pux(iy)
+	ld b, bullet_puy(iy)
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	pop af
+	pop hl
+
+	internal_draw:
+	ld (de), a
+
+	fin_cleanOrDraw:
 ret
 
 bullet_whoShots:
@@ -339,6 +371,7 @@ drawBullet::
 		jr z, fin
 	 									;; Guardamos el color
 	ld hl, #bullets 					;; hl = referencia a memoria a #bullets_x
+	ld iy, #bullets_posiciones
 
 	bucleDraw: 							
 	ld a, (hl)  						;; A = (hl) Guardamos el primer valor de #bullets_x
@@ -349,7 +382,7 @@ drawBullet::
 		ld c, a 						;; C = bullet_x
 		inc hl 							;; hl++
 		ld b, (hl) 						;; B = bullet_y
-		ld de, #0xC000 					;; Video memory
+		ld de, (puntero_video) 					;; Video memory
 		push hl 						;; Almacenamos la dirección de de bullets_y
 		call cpct_getScreenPtr_asm 		;; Get pointer to screen						
 		ex de, hl 						;; de = posicion a pintar en pantalla, hl = ni idea (no nos importa)
@@ -368,16 +401,36 @@ drawBullet::
 			ld a, #0xAA 
 			ld (de), a
 		borrar:
+
+			;;push hl
+
+			;;ld de, (puntero_video)
+			;;ld c, bullet_pux(iy)
+			;;ld b, bullet_puy(iy)
+			;;call cpct_getScreenPtr_asm
+			
+			;;ex de, hl
+
+			;;pop hl
+
+			;;ld a, #0x00
+			;;ld c, #1
+			;;ld b, #1
+			;;call cpct_drawSolidBox_asm
+
+			;; Anterior borrado
 			ld (de), a
 		jr keepGoingDraw 				;; Saltamos 
 		leftRight:
 		ex de, hl
 		pop hl
 		pop af
-		ld (de), a 						;; Lo pintamos en la pantalla
+		call bullets_cleanOrDraw
+		;;ld (de), a 						;; Lo pintamos en la pantalla
 		keepGoingDraw:
 		inc hl							;; hl = bullets_idAsesino
 		inc hl 							;; Recuperamos bullets_x
+		call bullets_posiciones_updatePointer
 		push af 						;; Mantenemos consistencia en la pila
 		jr bucleDraw			 		;; Saltamos a incrementar la dirección de memoria
 
@@ -387,6 +440,7 @@ drawBullet::
 	inc hl 								;; hl++  hl <= bullet_direccion
 	inc hl 								;; hl++  hl <= bullet_idAsesino
 	inc hl 								;; hl++  hl <= bullet_x
+	call bullets_posiciones_updatePointer
 	jp bucleDraw 						;; Continuamos con el bucle
 	fin: 								
 	pop af 								;; hl++  hl <= bullet_y
@@ -403,6 +457,7 @@ bullets_updateBullets::
 	ret z
 
 	ld hl, #bullets 					;; hl = referencia a memoria a #bullets
+	ld iy, #bullets_posiciones
 	bucle: 								;;
 	ld a, (hl) 							;; a = hl(bullets_x)
 	cp #0x81 							;; a == 0x81
@@ -470,7 +525,26 @@ bullets_updateBullets::
 		jr increment_after_update		
 	increment: 							
 		inc hl 							;; hl++  hl <= bullet_y
-	increment_after_update:				
+	increment_after_update:
+
+		;; Actualización de las posiciones de las balas
+		ld a, bullet_ux(iy)
+		ld bullet_pux(iy), a
+
+		ld a, bullet_uy(iy)
+		ld bullet_puy(iy), a
+
+		dec hl 							;; hl-- hl <= bullet_x
+		ld a, (hl)
+		ld bullet_ux(iy), a
+
+		inc hl 							;; hl++ hl <= bullet_y
+		ld a, (hl)
+		ld bullet_uy(iy), a
+
+		;; Actualización del puntero iy a la siguiente bala
+		call bullets_posiciones_updatePointer
+
 		inc hl 							;; hl++  hl <= bullet_dirección
 		inc hl 							;; hl++  hl <= bullet_idAsesino
 		inc hl 							;; hl++  hl <= bullet_x	
