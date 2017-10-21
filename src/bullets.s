@@ -163,24 +163,24 @@ bullets_posiciones_updatePointer:
 	inc iy
 ret
 
-bullets_cleanOrDraw::º
+bullets_cleanOrDraw::
 
-	cp #0xFF
-	jr z, internal_draw
+	;;cp #0xFF
+	;;jr z, internal_draw
 
-	push hl
-	push af
+	;;push hl
+	;;push af
 
-	ld c, bullet_pux(iy)
-	ld b, bullet_puy(iy)
-	call cpct_getScreenPtr_asm
+	;;ld c, bullet_pux(iy)
+	;;ld b, bullet_puy(iy)
+	;;call cpct_getScreenPtr_asm
 
-	ex de, hl
+	;;ex de, hl
 
-	pop af
-	pop hl
+	;;pop af
+	;;pop hl
 
-	internal_draw:
+	;;internal_draw:
 	ld (de), a
 
 	fin_cleanOrDraw:
