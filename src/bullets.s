@@ -17,6 +17,19 @@ bullets:	;; Bullets (x,y,dirección,idAsesino)
 	.db #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0x81
 
+;; bullet_ux, bullet_pux, bullet_uy, bullet_puy
+bullets_posiciones:
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+
 bullet_w: .db #01
 bullet_h: .db #01
 bullet_victim: .db #09		;Valor sin importancia
@@ -30,12 +43,16 @@ bullet_victim: .db #09		;Valor sin importancia
 .equ EnemyLastMovement, 8
 .equ EnemyType, 9
 
+.equ bullet_ux, 0
+.equ bullet_pux, 1
+.equ bullet_uy, 2
+.equ bullet_puy, 3
+
 .include "hero.h.s"
 .include "enemy.h.s"
 .include "entity.h.s"
 .include "game.h.s"
 .include "cpctelera.h.s"
-.include "map.h.s"
 
 ;;===========================================
 ;;===========================================
@@ -129,6 +146,13 @@ bullets_draw::
 ;;PRIVATE FUNCTIONS
 ;;===========================================
 ;;===========================================
+bullets_posiciones_updatePointer:
+
+	inc iy
+	inc iy
+	inc iy
+	inc iy
+ret
 
 bullet_whoShots:
 	inc de  			;; de++  de <= bullet_idAsesino 
@@ -142,9 +166,11 @@ bullet_whoShots:
 	jr z, heroShoot
 		ld a, #00
 		ld (bullet_victim), a
-		ld ix, (hero_data)
+		ld ix, #hero_data
 		ret
 	heroShoot:
+		push iy
+		pop ix
 		ld a, #01
 		ld (bullet_victim), a
 		ret
@@ -159,9 +185,10 @@ bullet_checkCollision::
 	ld a, (nBullets)
 	cp #0
 	ret z
-
 	ld de, #bullets 					;; de = referencia a memoria a #bullets
-	for: 								;;
+	push ix
+	pop iy
+	for:								;;
 	ld a, (de) 							;; a = de(bullets_x)
 	cp #0x81 							;; a == 0x81
 		ret z 							;; if(a==0x81) ret
@@ -305,7 +332,7 @@ checkAvalibility:
 ;;  INPUTS: 
 ;;		A (Color)
 ;; ======================
-drawBullet:
+drawBullet::
 	push af
 	ld a, (nBullets)
 	cp #0
@@ -322,7 +349,7 @@ drawBullet:
 		ld c, a 						;; C = bullet_x
 		inc hl 							;; hl++
 		ld b, (hl) 						;; B = bullet_y
-		ld de, (puntero_video) 			;; Video memory
+		ld de, #0xC000 					;; Video memory
 		push hl 						;; Almacenamos la dirección de de bullets_y
 		call cpct_getScreenPtr_asm 		;; Get pointer to screen						
 		ex de, hl 						;; de = posicion a pintar en pantalla, hl = ni idea (no nos importa)
@@ -449,3 +476,24 @@ bullets_updateBullets::
 		inc hl 							;; hl++  hl <= bullet_x	
 	jp bucle 		
 
+;; ======================
+;;	Delete all the bullets
+;; ======================
+bullets_deleteAllBullets::
+
+	ld a, (nBullets)
+	cp #0
+	ret z
+
+	ld a, #0
+	ld (nBullets), a
+
+	ld hl, #bullets 					;; hl = referencia a memoria a #bullets
+	bucleDelete: 								;;
+	ld a, (hl) 							;; a = hl(bullets_x)
+	cp #0x81 							;; a == 0x81
+		ret z 							;; if(a==0x81) ret
+	ld a, #0xFF
+	ld (hl), a
+	inc hl
+	jr bucleDelete

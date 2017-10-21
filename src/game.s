@@ -36,7 +36,7 @@ game_start::
 game_init:
     call hero_init
     call obstacle_init
-    call scene_drawFloor
+    ;;call scene_drawFloor
 
     ret
 

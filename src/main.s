@@ -47,7 +47,7 @@ settings::
 	ld    a, #120 ;; A = map_width
 	ld    b, #0          ;; B = y tile-coordinate
 	ld    c, #0          ;; C = x tile-coordinate
-	ld    d, #46          ;; H = height in tiles of the tile-box
+	ld    d, #50          ;; H = height in tiles of the tile-box
 	ld    e, #40          ;; L =  width in tiles of the tile-box
 	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
 

@@ -16,16 +16,12 @@
 .include "entity.h.s"
 .include "macros.h.s"
 .include "game.h.s"
+.include "map.h.s"
 
-
-tempBullets: 
-	.db #0x00
 ;;Hero Data
-defineEntity hero 39, 60, 9, 25, _sprite_hero_pistol ;; Si cambiamos el ancho del hero hay que cambiar en el SpaceKey check el valor también
+defineEntity hero, 39, 60, 9, 25, _sprite_hero_pistol, 3, 0, 1, 39, 39, 60, 60 ;; Si cambiamos el ancho del hero hay que cambiar en el SpaceKey check el valor también, cambiar valor que devulve changeMap de map
 hero_jump: .db #-1
-hero_last_movement: .db #01
 hero_id: .db #00
-hero_lifes: .db #3
 hero_invencibleState: .db #0
 hero_invencibleTransitions: .db #10			;;Número de animaciones de pintar-no_pintar
 hero_invencibleDuration: .db #20	;;Duración de la animación
@@ -47,7 +43,7 @@ jumptable:
 
 
 hero_getPointerLife::
-	ld hl, #hero_lifes
+	ld hl, #hero_lives
 	ret 
 
 
@@ -56,62 +52,82 @@ hero_getPointerLife::
 ;; ======================
 hero_update::
 	
-	ld hl, #0xC232
-	ld a, (hero_lifes)
-	cp #0
-	jr z, borrar1
-	jr c, borrar1
-	ld a, #0xFF
-	ld (hl), a
-	jr pintar
-	borrar1:
-	ld a, #0x00
-	ld (hl), a
-	pintar:
-	ld hl, #0xC234
-	ld a, (hero_lifes)
-	cp #1
-	jr z, borrar2
-	jr c, borrar2
-	ld a, #0xFF
-	ld (hl), a
-	jr pintar2
-	borrar2:
-	ld a, #0x00
-	ld (hl), a
-	pintar2:
-	ld hl, #0xC236
-	ld a, (hero_lifes)
-	cp #2
-	jr z, borrar3
-	jr c, borrar3
-	ld a, #0xFF
-	ld (hl), a
-	jr pintar3
-	borrar3:
-	ld a, #0x00
-	ld (hl), a
-	pintar3:
-	ld hl, #0xC238
-	ld a, (hero_lifes)
-	cp #3
-	jr z, borrar4
-	jr c, borrar4
-	ld a, #0xFF
-	ld (hl), a
-	jr pintar4
-	borrar4:
-	ld a, #0x00
-	ld (hl), a
-	pintar4:
+	;;ld hl, #0xC232
+	;;ld a, (hero_lives)
+	;;cp #0
+	;;jr z, borrar1
+	;;jr c, borrar1
+	;;ld a, #0xFF
+	;;ld (hl), a
+	;;jr pintar
+	;;borrar1:
+	;;ld a, #0x00
+	;;ld (hl), a
+	;;pintar:
+	;;ld hl, #0xC234
+	;;ld a, (hero_lives)
+	;;cp #1
+	;;jr z, borrar2
+	;;jr c, borrar2
+	;;ld a, #0xFF
+	;;ld (hl), a
+	;;jr pintar2
+	;;borrar2:
+	;;ld a, #0x00
+	;;ld (hl), a
+	;;pintar2:
+	;;ld hl, #0xC236
+	;;ld a, (hero_lives)
+	;;cp #2
+	;;jr z, borrar3
+	;;jr c, borrar3
+	;;ld a, #0xFF
+	;;ld (hl), a
+	;;jr pintar3
+	;;borrar3:
+	;;ld a, #0x00
+	;;ld (hl), a
+	;;pintar3:
+	;;ld hl, #0xC238
+	;;ld a, (hero_lives)
+	;;cp #3
+	;;jr z, borrar4
+	;;jr c, borrar4
+	;;ld a, #0xFF
+	;;ld (hl), a
+	;;jr pintar4
+	;;borrar4:
+	;;ld a, #0x00
+	;;ld (hl), a
+	;;pintar4:
 
 
-	finPintar:
+	;;finPintar:
 
 	call jumpControl
 	call checkUserInput
 	call hero_heroDamage
-	ret
+
+	ld ix, #hero_data
+	call entity_updatePositions
+
+	;; Actualización de punteros para el doble buffer
+	;;ld a, (hero_ux)
+	;;ld hl, #hero_pux
+	;;ld (hl), a
+
+	;;ld a, (hero_uy)
+	;;ld hl, #hero_puy
+	;;ld (hl), a
+
+	;;ld a, (hero_x)
+	;;ld hl, #hero_ux
+	;;ld (hl), a
+
+	;;ld a, (hero_y)
+	;;ld hl, #hero_uy
+	;;ld (hl), a
+ret
 
 ;; ======================
 ;;	Hero Draw
@@ -147,9 +163,9 @@ hero_init::
 	ld a, #-1
 	ld (hero_jump), a
 	ld a, #01
-	ld (hero_last_movement), a
+	ld (hero_lastmovement), a
 	ld a, #03
-	ld (hero_lifes), a
+	ld (hero_lives), a
 	ld a, #0
 	ld (hero_invencibleState), a
 	ld a, #10
@@ -167,7 +183,7 @@ hero_init::
 ;; 		HL:Pointer to hero last moevement
 ;; ======================
 hero_getPointerLastMovement::
-	ld hl, #hero_last_movement 		;; Hl points to the Hero Data
+	ld hl, #hero_lastmovement 		;; Hl points to the Hero Data
 	ret
 ;; ======================
 ;;	Gets a pointer to hero last movement
@@ -275,7 +291,7 @@ moveHeroUp:
 ;; ======================
 moveHeroBottom:
 	ld a, (hero_y)	;;A = hero_y
-	cp #200-29		;;Check against right limit (screen size - hero size)
+	cp #200-26		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
 	jr nc, d_not_move_bottom
 
@@ -286,6 +302,7 @@ moveHeroBottom:
 	ld (hero_y), a 	;;Update hero_y
 
 	d_not_move_bottom:
+
 	ret
 
 ;; ======================
@@ -298,8 +315,14 @@ moveHeroRight:
 
 	inc a 			;;A++ (hero_x++)
 	ld (hero_x), a 	;;Update hero_x
-
+	ret 
+	
 	d_not_move_right:
+		ld a, #0
+		call map_changeMap
+		cp #-1
+			ret z
+		ld (hero_x), a
 	ret
 
 ;; ======================
@@ -312,8 +335,14 @@ moveHeroLeft:
 
 	dec a 			;;A-- (hero_x--)
 	ld (hero_x), a 	;;Update hero_x
+	ret 
 
 	d_not_move_left:
+		ld a, #1
+		call map_changeMap
+		cp #-1
+			ret z
+		ld (hero_x), a
 	ret
 
 ;; ======================
@@ -333,7 +362,7 @@ checkUserInput:
 
 
 	;; Temporizador - Esta primera función guarda una bala cada dos veces y realiza un efecto de temporizador
-	ld hl, #tempBullets 					;; hl <= tempBullets
+	ld hl, #hero_temp 						;; hl <= tempBullets
 	ld a, (hl) 								;; a <= (tempBullets)
 	cp #0x02 								;; a == 0x02
 	jr z, nueva 							;; if(!a==0x02){
@@ -352,7 +381,7 @@ checkUserInput:
 	;;Space is pressed
 	ld ix, #hero_data
 	call entity_setPointer
-	ld a, (hero_last_movement)
+	ld a, (hero_lastmovement)
 	call entity_setPointerLastMovement
 	ld a, (hero_id)
 	call entity_setId
@@ -368,7 +397,7 @@ checkUserInput:
 	jr z, a_not_pressed			;;Jump if A==0 (a_not_pressed)
 
 	;;A is pressed
-	ld hl, #hero_last_movement
+	ld hl, #hero_lastmovement
 	ld a, #00
 	ld (hl), a
 	call moveHeroLeft
@@ -382,7 +411,7 @@ checkUserInput:
 	jr z, d_not_pressed			;;Jump if A==0 (d_not_pressed)
 
 	;;D is pressed
-	ld hl, #hero_last_movement
+	ld hl, #hero_lastmovement
 	ld a, #01
 	ld (hl), a
 	call moveHeroRight
@@ -396,7 +425,7 @@ checkUserInput:
 	jr z, w_not_pressed			;;Jump if W==0 (w_not_pressed)
 
 	;;W is pressed
-	ld hl, #hero_last_movement
+	ld hl, #hero_lastmovement
 	ld a, #02
 	ld (hl), a
 	call moveHeroUp
@@ -409,7 +438,7 @@ checkUserInput:
 	jr z, s_not_pressed			;;Jump if S==0 (s_not_pressed)
 
 	;;S is pressed
-	ld hl, #hero_last_movement
+	ld hl, #hero_lastmovement
 	ld a, #03
 	ld (hl), a
 	call moveHeroBottom
@@ -435,29 +464,22 @@ checkUserInput:
 ;; ======================
 
 hero_decreaseLife::
-	ld a, (hero_lifes)
+	ld a, (hero_lives)
 	dec a
-	ld (hero_lifes), a
+	ld (hero_lives), a
 	ret
 
-
-
-
-;hero_invencibleState: .db #0 			;; Invencible o no
-;hero_invencibleTransitions: .db #10		;; Número de animaciones de pintar-no_pintar
-;hero_invencibleDuration: .db #20		;; Duración de la animación
-;hero_invencibleAnimState: .db #00		;; Estado actual [0-1]
 
 hero_heroDamage:
 	ld a, (hero_invencibleState)
 	cp #0
 		ret z
 
-	ld a, (hero_lifes)
+	ld a, (hero_lives)
 	cp #0
 	 	jr nz, continue
 	 	dec a
-		ld (hero_lifes), a
+		ld (hero_lives), a
 		ret
 
 	continue:
