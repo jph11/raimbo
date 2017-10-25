@@ -69,19 +69,22 @@ enemy_update::
 		jr z, Shooter
 		cp #1
 		jr z, Random
-		call Algorithm_FetchHero
-		jr collision
+		cp #2
+		jr z, Fetch
+			call Algorithm_Teletransport
+			jr collision
 		Shooter:
-		call Algorithm_Shooter
-		call enemyShoot
-		jr collision
+			call Algorithm_Shooter
+			call enemyShoot
+			jr collision
 		Random:
-		call Algorithm_Random
-
+			call Algorithm_Random
+			jr collision
+		Fetch:
+			call Algorithm_FetchHero
 		collision:
-
-		call hero_getPointer
-		call enemy_checkCollision
+			call hero_getPointer
+			call enemy_checkCollision
 	ret
 
 ;; ======================
@@ -367,6 +370,54 @@ Algorithm_Shooter:
 				ld Enemy_x(ix), a
 		endShooter:
 	ret
+
+Algorithm_Teletransport::
+	
+	ld a, EnemyTemp(ix) 								
+	cp #0x09 								
+	jr z, resetTeletransport						
+		inc a 								
+		ld EnemyTemp(ix), a 							
+		ret 								
+	resetTeletransport:									
+	ld EnemyTemp(ix), #0x00
+
+	call cpct_getRandom_lcg_u8_asm
+	cp #128
+	jp c, primerRangoTeletransport
+	cp #255
+	jp c, segundoRangoTeletransport
+
+	primerRangoTeletransport:
+		ld a, #80
+		ld b, Enemy_w(ix)
+		sub b
+		ld b, a
+		call cpct_getRandom_lcg_u8_asm
+		cp b
+		jr c, siguienteComprobacionX
+			ret
+		siguienteComprobacionX:
+			cp #0
+				ret c
+			ld Enemy_x(ix), a
+			ret
+	segundoRangoTeletransport:
+		ld a, #200
+		ld b, Enemy_h(ix)
+		sub b
+		ld b, a
+		call cpct_getRandom_lcg_u8_asm
+		cp b
+		jr c, siguienteComprobacionY
+			ret
+		siguienteComprobacionY:
+			cp #0
+				ret c
+			ld Enemy_y(ix), a
+			ret
+	
+		
 
 Algorithm_FetchHero:
 	
