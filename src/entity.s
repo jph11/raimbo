@@ -178,28 +178,31 @@ entity_draw::
 		;;ld a, #0
 		;;call cpct_drawSolidBox_asm
 
-		;; Calculamos width
-		ld a, EntPUX(ix)
-		ld c, #1
-		and c
-		ld c, #5
-		add a, c
-		ld e, a
+ 		;; Calculamos width
+		;ld a, EntPUX(ix)
+		;ld c, #1
+		;and c
+		;and #1
+		;ld c, #5
+	    ;add a, c
+		;ld e, a
 
 		;; Calculamos height
-		ld a, EntPUY(ix)
-		ld c, #3
-		and c
+		;ld d, #7
+		;ld a, EntPUY(ix)
+		;ld c, #3
+		;and c
+		;and #3
 
-		cp #0
-		ld a, #0
-		jr z, calculo_height
-		ld a, #1
+		;cp #0
+		;ld a, #0
+		;jr z, calculo_height
+		;inc d
 
 		calculo_height:
-		ld c, #7
-		add a, c
-		ld d, a
+		;ld c, #7
+		;add a, c
+		;ld d, a
 
 		;;ld d, Ent_h(ix)
 
@@ -215,9 +218,19 @@ entity_draw::
 		call divide
 		ld c, b
 
+		ld a, Ent_w(ix)
+		cp #9
+		jr nz, cargar_valores_tiles_enemy
+		ld de, #0x0705
+
+		jr continuar_calculos
+
+		cargar_valores_tiles_enemy:
+        ld de, #0x0704
+		
+        continuar_calculos:
 		;; Devolvemos y al registro b
 		ld b, l
-
 
 		;; Set Parameters on the stack
 		ld   hl, #0x4000   ;; HL = pointer to the tilemap

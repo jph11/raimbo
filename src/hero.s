@@ -275,9 +275,10 @@ startJump:
 ;; ======================
 moveHeroUp:
 	ld a, (hero_y)	;;A = hero_y
-	cp #0		;;Check against right limit (screen size - hero size)
+	cp #3		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_up	;;Hero_y == Limit, do not move
-
+	jr c, d_not_move_up	
+	
 	dec a 			;;A++ (hero_y--)
 	dec a
 	dec a
@@ -291,7 +292,7 @@ moveHeroUp:
 ;; ======================
 moveHeroBottom:
 	ld a, (hero_y)	;;A = hero_y
-	cp #200-26		;;Check against right limit (screen size - hero size)
+	cp #200-28		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
 	jr nc, d_not_move_bottom
 
