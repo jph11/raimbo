@@ -179,10 +179,6 @@ hero_init::
 	ld a, #0
 	ld (hero_invencibleAnimState), a
 
-	ld a, #0xFF
-	ld ix, #life_data
-	call entity_draw
-
 	ret	
 
 ;; ======================
