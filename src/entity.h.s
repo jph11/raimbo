@@ -11,3 +11,4 @@
 .globl entity_getPointerLastMovement
 .globl entity_setId
 .globl entity_getId
+.globl entity_updatePositions

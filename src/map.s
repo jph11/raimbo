@@ -7,12 +7,15 @@
 .area _CODE
 .include "enemy.h.s"
 .include "bullets.h.s"
+.include "cpctelera.h.s"
 .include "macros.h.s"
+
 ;;========================
 ;;========================
 ;; MAP GLOBAL POINTERS
 ;;========================
 ;;========================
+puntero_video:: .dw #0x8000
 
 .equ Enemy_x, 0
 .equ Enemy_y, 1
@@ -106,6 +109,44 @@ map_eraseAllEnemiesAndBullets::
 	jr loopMapErase
 
 
+map_switchBuffers::
+
+	modifier = .+1
+	ld l, #0x20
+	call cpct_setVideoMemoryPage_asm
+	ld hl, #modifier
+	ld a, #0x10
+	xor (hl)
+	ld (modifier), a
+
+	ld hl, #puntero_video+1
+	ld a, #0x40
+	xor (hl)
+	ld (puntero_video+1), a
+ret
+
+map_draw::
+
+	;;ld a, #40
+	;;ld c, #46
+	;;ld de, (puntero_video)
+	;;ld hl, #0x4000
+	;;call cpct_etm_drawTilemap2x4_f_asm
+
+
+	;; Set Parameters on the stack
+	ld   hl, #0x4000   ;; HL = pointer to the tilemap
+	push hl              ;; Push ptilemap to the stack
+	ld   hl, (puntero_video)  ;; HL = Pointer to video memory location where tilemap is drawn
+	push hl              ;; Push pvideomem to the stack
+	;; Set Paramters on registers
+	ld    a, #120 ;; A = map_width
+	ld    b, #0          ;; B = y tile-coordinate
+	ld    c, #0          ;; C = x tile-coordinate
+	ld    d, #50          ;; H = height in tiles of the tile-box
+	ld    e, #40          ;; L =  width in tiles of the tile-box
+	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
+ret
 ;; =============================
 ;;	Incrementador de punteros
 ;; 	INPUTS:

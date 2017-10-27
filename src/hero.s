@@ -52,62 +52,82 @@ hero_getPointerLife::
 ;; ======================
 hero_update::
 	
-	ld hl, #0xC232
-	ld a, (hero_lives)
-	cp #0
-	jr z, borrar1
-	jr c, borrar1
-	ld a, #0xFF
-	ld (hl), a
-	jr pintar
-	borrar1:
-	ld a, #0x00
-	ld (hl), a
-	pintar:
-	ld hl, #0xC234
-	ld a, (hero_lives)
-	cp #1
-	jr z, borrar2
-	jr c, borrar2
-	ld a, #0xFF
-	ld (hl), a
-	jr pintar2
-	borrar2:
-	ld a, #0x00
-	ld (hl), a
-	pintar2:
-	ld hl, #0xC236
-	ld a, (hero_lives)
-	cp #2
-	jr z, borrar3
-	jr c, borrar3
-	ld a, #0xFF
-	ld (hl), a
-	jr pintar3
-	borrar3:
-	ld a, #0x00
-	ld (hl), a
-	pintar3:
-	ld hl, #0xC238
-	ld a, (hero_lives)
-	cp #3
-	jr z, borrar4
-	jr c, borrar4
-	ld a, #0xFF
-	ld (hl), a
-	jr pintar4
-	borrar4:
-	ld a, #0x00
-	ld (hl), a
-	pintar4:
+	;;ld hl, #0xC232
+	;;ld a, (hero_lives)
+	;;cp #0
+	;;jr z, borrar1
+	;;jr c, borrar1
+	;;ld a, #0xFF
+	;;ld (hl), a
+	;;jr pintar
+	;;borrar1:
+	;;ld a, #0x00
+	;;ld (hl), a
+	;;pintar:
+	;;ld hl, #0xC234
+	;;ld a, (hero_lives)
+	;;cp #1
+	;;jr z, borrar2
+	;;jr c, borrar2
+	;;ld a, #0xFF
+	;;ld (hl), a
+	;;jr pintar2
+	;;borrar2:
+	;;ld a, #0x00
+	;;ld (hl), a
+	;;pintar2:
+	;;ld hl, #0xC236
+	;;ld a, (hero_lives)
+	;;cp #2
+	;;jr z, borrar3
+	;;jr c, borrar3
+	;;ld a, #0xFF
+	;;ld (hl), a
+	;;jr pintar3
+	;;borrar3:
+	;;ld a, #0x00
+	;;ld (hl), a
+	;;pintar3:
+	;;ld hl, #0xC238
+	;;ld a, (hero_lives)
+	;;cp #3
+	;;jr z, borrar4
+	;;jr c, borrar4
+	;;ld a, #0xFF
+	;;ld (hl), a
+	;;jr pintar4
+	;;borrar4:
+	;;ld a, #0x00
+	;;ld (hl), a
+	;;pintar4:
 
 
-	finPintar:
+	;;finPintar:
 
 	call jumpControl
 	call checkUserInput
 	call hero_heroDamage
-	ret
+
+	ld ix, #hero_data
+	call entity_updatePositions
+
+	;; Actualización de punteros para el doble buffer
+	;;ld a, (hero_ux)
+	;;ld hl, #hero_pux
+	;;ld (hl), a
+
+	;;ld a, (hero_uy)
+	;;ld hl, #hero_puy
+	;;ld (hl), a
+
+	;;ld a, (hero_x)
+	;;ld hl, #hero_ux
+	;;ld (hl), a
+
+	;;ld a, (hero_y)
+	;;ld hl, #hero_uy
+	;;ld (hl), a
+ret
 
 ;; ======================
 ;;	Hero Draw
@@ -138,7 +158,7 @@ hero_erase::
 hero_init::
 	ld a, #39
 	ld (hero_x), a
-	ld a, #60
+	ld a, #20
 	ld (hero_y), a
 	ld a, #-1
 	ld (hero_jump), a
@@ -255,9 +275,10 @@ startJump:
 ;; ======================
 moveHeroUp:
 	ld a, (hero_y)	;;A = hero_y
-	cp #0		;;Check against right limit (screen size - hero size)
+	cp #3		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_up	;;Hero_y == Limit, do not move
-
+	jr c, d_not_move_up	
+	
 	dec a 			;;A++ (hero_y--)
 	dec a
 	dec a
@@ -271,7 +292,7 @@ moveHeroUp:
 ;; ======================
 moveHeroBottom:
 	ld a, (hero_y)	;;A = hero_y
-	cp #200-26		;;Check against right limit (screen size - hero size)
+	cp #200-28		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
 	jr nc, d_not_move_bottom
 
@@ -290,7 +311,7 @@ moveHeroBottom:
 ;; ======================
 moveHeroRight:
 	ld a, (hero_x)	;;A = hero_x
-	cp #80-9		;;Check against right limit (screen size - hero size)
+	cp #80-10		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_right	;;Hero_x == Limit, do not move
 
 	inc a 			;;A++ (hero_x++)

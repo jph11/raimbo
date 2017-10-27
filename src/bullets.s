@@ -1,4 +1,7 @@
 .area _DATA
+
+.globl _sprite_bala
+
 .area _CODE
 
 ;;===========================================
@@ -17,9 +20,24 @@ bullets:	;; Bullets (x,y,dirección,idAsesino)
 	.db #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0x81
 
+;; bullet_ux, bullet_pux, bullet_uy, bullet_puy
+bullets_posiciones:
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+
 bullet_w: .db #01
 bullet_h: .db #01
 bullet_victim: .db #09		;Valor sin importancia
+
+actual_enemy: .dw #0x0000
 
 .equ Enemy_x, 0
 .equ Enemy_y, 1
@@ -30,11 +48,17 @@ bullet_victim: .db #09		;Valor sin importancia
 .equ EnemyLastMovement, 8
 .equ EnemyType, 9
 
+.equ bullet_ux, 0
+.equ bullet_pux, 1
+.equ bullet_uy, 2
+.equ bullet_puy, 3
+
 .include "hero.h.s"
 .include "enemy.h.s"
 .include "entity.h.s"
 .include "game.h.s"
 .include "cpctelera.h.s"
+.include "map.h.s"
 
 ;;===========================================
 ;;===========================================
@@ -72,6 +96,7 @@ bullets_newBullet::
 	add #14
 	ld b, a									;; b <= Entity_y + (Entity_h/2)
 	ld hl, #bullets 						;; hl = referencia a memoria a #bullets_x
+	ld iy, #bullets_posiciones
 
 	bucleNew:									
 	ld a, (hl)								;; a = hl(bullets_x)
@@ -80,6 +105,12 @@ bullets_newBullet::
 		ld (hl), c 							;; 	bullet_x <= entity_x
 		inc hl								;;  hl++  hl <= entity_y
 		ld (hl), b 							;; 	bullets_y <= entity_y 
+
+		ld bullet_ux(iy), c
+		ld bullet_uy(iy), b
+
+		ld bullet_pux(iy), c
+		ld bullet_puy(iy), b
 
 		inc hl 								;;  hl++  hl <= bullet_direccion
 		push hl 							;; Guardamos bullet_direccion, la siguiente llamada lo sobreescribe
@@ -104,7 +135,8 @@ bullets_newBullet::
 	inc hl 									;; 	hl++  hl <= bullet_y
 	inc hl 									;; 	hl++  hl <= bullet_direccion
 	inc hl									;;  hl++  hl <= bullet_idAsesino
-	inc hl									;;  hl++  hl <= bullet_x	
+	inc hl									;;  hl++  hl <= bullet_x
+	call bullets_posiciones_updatePointer	;;  Actualización puntero iy
 	jp bucleNew								;; 	Repetimos operación hasta encontrar hueco libre
 											;; }
 
@@ -128,8 +160,115 @@ bullets_draw::
 ;;PRIVATE FUNCTIONS
 ;;===========================================
 ;;===========================================
+bullets_posiciones_updateList::
 
-bullet_whoShots:
+	;; Actualización de las posiciones de las balas
+	ld a, bullet_ux(iy)
+	ld bullet_pux(iy), a
+
+	ld a, bullet_uy(iy)
+	ld bullet_puy(iy), a
+
+	;;dec hl 							;; hl-- hl <= bullet_x
+	ld a, (hl)
+	ld bullet_ux(iy), a
+
+	inc hl 							;; hl++ hl <= bullet_y
+	ld a, (hl)
+	ld bullet_uy(iy), a
+
+	dec hl
+ret
+
+bullets_posiciones_updatePointer:
+
+	inc iy
+	inc iy
+	inc iy
+	inc iy
+ret
+
+bullets_cleanOrDraw::
+
+	push hl
+	push af
+
+	ld de, (puntero_video)
+	ld c, bullet_pux(iy)
+	ld b, bullet_puy(iy)
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	pop af
+	pop hl
+
+	internal_draw:
+	ld a, #0x00
+	ld (de), a
+
+	fin_cleanOrDraw:
+ret
+
+bullets_eraseBulletOnCollision::
+
+	push hl
+	push de
+
+	ld de, #0x8000
+	ld c, bullet_ux(iy)
+	ld b, bullet_uy(iy)
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld a, #0x00
+	ld (de), a
+
+	ld de, #0xC000
+	ld c, bullet_ux(iy)
+	ld b, bullet_uy(iy)
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld a, #0x00
+	ld (de), a
+
+	pop de
+	pop hl
+ret
+
+bullets_eraseBulletOnCollisionWithEntity::
+
+	push hl
+	push de
+
+	ld de, #0x8000
+	ld c, bullet_pux(iy)
+	ld b, bullet_puy(iy)
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld a, #0x00
+	ld (de), a
+
+	ld de, #0xC000
+	ld c, bullet_pux(iy)
+	ld b, bullet_puy(iy)
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld a, #0x00
+	ld (de), a
+
+	pop de
+	pop hl
+ret
+
+bullet_whoShots::
 	inc de  			;; de++  de <= bullet_idAsesino 
 	inc de
 	inc de
@@ -144,8 +283,25 @@ bullet_whoShots:
 		ld ix, #hero_data
 		ret
 	heroShoot:
-		push iy
+		push hl
+		push de
+
+		ld hl, #actual_enemy
+		ld e, (hl)
+
+		inc hl
+
+		ld d, (hl)
+
+		push de
 		pop ix
+
+		pop de
+		pop hl
+
+		;;push iy
+		;;pop ix
+
 		ld a, #01
 		ld (bullet_victim), a
 		ret
@@ -161,14 +317,28 @@ bullet_checkCollision::
 	cp #0
 	ret z
 	ld de, #bullets 					;; de = referencia a memoria a #bullets
+	ld iy, #bullets_posiciones
+
+	push hl
+
 	push ix
-	pop iy
+	pop bc
+
+	ld hl, #actual_enemy
+	ld (hl), c
+
+	inc hl
+	ld (hl), b
+
+	pop hl
+	;;push ix
+	;;pop iy
 	for:								;;
 	ld a, (de) 							;; a = de(bullets_x)
 	cp #0x81 							;; a == 0x81
 		ret z 							;; if(a==0x81) ret
 	cp #0xFF 							;; else a == 0xFF
-	jr z, incr		 					;; Si la condición de arriba es verdadera salta a incrementar la dirección de memoria
+	jp z, incr		 					;; Si la condición de arriba es verdadera salta a incrementar la dirección de memoria
 
 	call bullet_whoShots
 
@@ -242,6 +412,8 @@ bullet_checkCollision::
 				ld (hl), a
 				call hero_decreaseLife
 
+				call bullets_eraseBulletOnCollisionWithEntity
+
 				ld a, #0xFF			;;||
 				ld (de), a			;;|| Borramos la bala 
 				inc de 				;;|| que ha matado a enemy
@@ -258,6 +430,8 @@ bullet_checkCollision::
 				ld a, EnemyLives(ix)	;;|| Si el enemigo ya está muerto finalizamos
 				cp #0					;;||
 				ret z
+
+				call bullets_eraseBulletOnCollisionWithEntity
 
 				ld a, #0xFF				;;||
 				ld (de), a				;;|| Borramos la bala 
@@ -281,6 +455,7 @@ bullet_checkCollision::
 		inc de 							;; de++  de <= bullet_dirección
 		inc de 							;; de++  de <= bullet_idAsesino
 		inc de 							;; de++  de <= bullet_x
+		call bullets_posiciones_updatePointer
 	jp for	 							
 
 	ret
@@ -307,13 +482,14 @@ checkAvalibility:
 ;;  INPUTS: 
 ;;		A (Color)
 ;; ======================
-drawBullet:
-	push af
+drawBullet::
+	push af 							;; Guardamos el color
 	ld a, (nBullets)
 	cp #0
 		jr z, fin
-	 									;; Guardamos el color
+
 	ld hl, #bullets 					;; hl = referencia a memoria a #bullets_x
+	ld iy, #bullets_posiciones
 
 	bucleDraw: 							
 	ld a, (hl)  						;; A = (hl) Guardamos el primer valor de #bullets_x
@@ -324,48 +500,63 @@ drawBullet:
 		ld c, a 						;; C = bullet_x
 		inc hl 							;; hl++
 		ld b, (hl) 						;; B = bullet_y
-		ld de, #0xC000 					;; Video memory
+		ld de, (puntero_video) 					;; Video memory
 		push hl 						;; Almacenamos la dirección de de bullets_y
 		call cpct_getScreenPtr_asm 		;; Get pointer to screen						
 		ex de, hl 						;; de = posicion a pintar en pantalla, hl = ni idea (no nos importa)
 		pop hl 							;; hl = bullets_y
-		inc hl 							;; hl = bullets_dirección
-		ld a, (hl) 						;; A = dirección
-		push hl
-		ex de, hl  						;; hl = posicion a pintar en pantalla, de = ni idea (no nos importa)
-		cp #2 							;; Comparamos con 2
-		jr c, leftRight 				;; Si 2 mayor que dirección pintamos izquierda-derecha modo
-		ex de, hl
-		pop hl
 		pop af
-		cp #00
+		push af
+		cp #0
 		jr z, borrar
-			ld a, #0xAA 
-			ld (de), a
-		borrar:
-			ld (de), a
-		jr keepGoingDraw 				;; Saltamos 
-		leftRight:
-		ex de, hl
-		pop hl
-		pop af
-		ld (de), a 						;; Lo pintamos en la pantalla
-		keepGoingDraw:
-		inc hl							;; hl = bullets_idAsesino
-		inc hl 							;; Recuperamos bullets_x
-		push af 						;; Mantenemos consistencia en la pila
-		jr bucleDraw			 		;; Saltamos a incrementar la dirección de memoria
 
+			push hl
+
+			ld hl, #_sprite_bala
+
+			;;Draw sprite
+			;;ld c, #1
+			;;ld b, #2
+			;;call cpct_drawSprite_asm
+			ld a, #0xFF
+			ld (de), a
+
+			pop hl
+			jr increment_after_draw
+		borrar:
+			;;ld (de), a
+			call bullets_cleanOrDraw
+			jr increment_after_draw
+			;;BORRAR
+			;;push hl
+
+			;;ld de, (puntero_video)
+			;;ld c, bullet_pux(iy)
+			;;ld b, bullet_puy(iy)
+			;;call cpct_getScreenPtr_asm
+			
+			;;ex de, hl
+
+			;;pop hl
+
+			;;ld a, #0x00
+			;;ld c, #1
+			;;ld b, #1
+			;;call cpct_drawSolidBox_asm
+
+
+			;; Mirar el puntero de hl a ver dónde hay que saltar
 	incrementDraw: 						
 	inc hl  							;; hl++  hl <= bullet_y
 	increment_after_draw: 				
 	inc hl 								;; hl++  hl <= bullet_direccion
 	inc hl 								;; hl++  hl <= bullet_idAsesino
 	inc hl 								;; hl++  hl <= bullet_x
+	call bullets_posiciones_updatePointer
 	jp bucleDraw 						;; Continuamos con el bucle
 	fin: 								
 	pop af 								;; hl++  hl <= bullet_y
-	ret 
+ret 
 
 
 ;; ======================
@@ -378,6 +569,7 @@ bullets_updateBullets::
 	ret z
 
 	ld hl, #bullets 					;; hl = referencia a memoria a #bullets
+	ld iy, #bullets_posiciones
 	bucle: 								;;
 	ld a, (hl) 							;; a = hl(bullets_x)
 	cp #0x81 							;; a == 0x81
@@ -408,14 +600,20 @@ bullets_updateBullets::
 					jr z, resetVertical
 						add a, #1
 						ld (hl), a
-						jr increment_after_update
+
+						dec hl 	;; hl = bullets_x
+						call bullets_posiciones_updateList
+						jr increment
 				up:
 					ld a, (hl)
 					cp #0
 					jr z, resetVertical
 						sub a, #1
 						ld (hl), a
-						jr increment_after_update
+
+						dec hl 	;; hl = bullets_x
+						call bullets_posiciones_updateList
+						jr increment
 		left:
 			pop hl		;; hl = bullets_x
 			ld a, (hl)
@@ -423,6 +621,7 @@ bullets_updateBullets::
 			jr z,  reset
 				dec a
 				ld (hl), a
+				call bullets_posiciones_updateList
 				jr increment
 			right:
 				pop hl	;; hl = bullets_x
@@ -431,10 +630,13 @@ bullets_updateBullets::
 				jr z,  reset
 					inc a
 					ld (hl), a
+					call bullets_posiciones_updateList
 					jr increment
 	resetVertical:
 		dec hl 							;; hl = bullet_x
 	reset:
+		call bullets_eraseBulletOnCollision
+
 		ld (hl), #0xFF					;; bullet_x reiniciado
 		inc hl							;; hl++	hl<= bullet_y
 		ld (hl), #0xFF					;; bullet_y reiniciado
@@ -445,7 +647,11 @@ bullets_updateBullets::
 		jr increment_after_update		
 	increment: 							
 		inc hl 							;; hl++  hl <= bullet_y
-	increment_after_update:				
+	increment_after_update:
+
+		;; Actualización del puntero iy a la siguiente bala
+		call bullets_posiciones_updatePointer
+
 		inc hl 							;; hl++  hl <= bullet_dirección
 		inc hl 							;; hl++  hl <= bullet_idAsesino
 		inc hl 							;; hl++  hl <= bullet_x	

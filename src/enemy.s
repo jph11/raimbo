@@ -58,6 +58,7 @@ death_animState: .db #00	;;Estado actual [0-1]
 ;; 		IX: Enemy data
 ;; ======================
 enemy_update::
+
 	ld a, EnemyLives(ix)
 	cp #0
 	;push ix
@@ -83,9 +84,12 @@ enemy_update::
 		Fetch:
 			call Algorithm_FetchHero
 		collision:
-			call hero_getPointer
-			call enemy_checkCollision
-	ret
+
+		call hero_getPointer
+		call enemy_checkCollision
+
+		call entity_updatePositions
+ret
 
 ;; ======================
 ;;	Enemy Draw
