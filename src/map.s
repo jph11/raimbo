@@ -56,8 +56,8 @@ arrayEnemyA::
 
 M1:
 	defineMap M1 0, -1, M2
-	;defineEnemy 0, 170, 7, 25, _sprite_oldman_left, 5, 0, 1, 1
-	;defineEnemyLastOne 70, 170, 7, 25, _sprite_oldman_left, 5, 0, 0, 70, 70, 170, 170, 3
+	defineEnemy 0, 170, 7, 25, _sprite_oldMan_left, 5, 0, 1, 1
+	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 3
 	.db #0x81
 
 M2:
