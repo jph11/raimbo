@@ -46,19 +46,18 @@ arrayEnemyA::
 ;;========================
 ;;========================
 ;; MAPS DATA
+; 	Map:
+; 		name, ptilemap, puertaIzquierda, puertaDerecha
+; 	Enemy:
+;		x,  y,  w,  h, sprite, lives,  temp, lastmovement, type 
 ;;========================
 ;;========================
-
-
- 	; Map:
- 	; 	name, ptilemap, puertaIzquierda, puertaDerecha
- 	; Enemy:
- 	;	x,  y,  w,  h, sprite, lives,  temp, lastmovement, type 
 
 M1:
 	defineMap M1 0, -1, M2
-	defineEnemy 70, 170, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 3
-	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 3
+	;defineEnemy 70, 170, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 3
+	;defineEnemyLastOne 70, 170, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 3
+	.db #0x81
 
 M2:
 	defineMap M2 0, M1, M3
@@ -69,6 +68,11 @@ M3:
 	defineEnemy 0, 170, 7, 25, _sprite_oldMan_orange_left, 5, 0, 1, 70, 70, 170, 170, 1
 	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 0, 70, 70, 170, 170, 0
 
+;;========================
+;;========================
+;
+;;========================
+;;========================
 map_updateAllEnemiesAndBullets::
 	call bullets_updateBullets
 	ld ix, (arrayEnemyA)
@@ -85,6 +89,11 @@ map_updateAllEnemiesAndBullets::
 	add ix, de
 	jr loopMapUpdate
 
+;;========================
+;;========================
+;
+;;========================
+;;========================
 map_drawAllEnemiesAndBullets::
 	ld ix, (arrayEnemyA)
 	loopMapDraw:
@@ -97,6 +106,11 @@ map_drawAllEnemiesAndBullets::
 	add ix, de
 	jr loopMapDraw
 
+;;========================
+;;========================
+;
+;;========================
+;;========================
 map_eraseAllEnemiesAndBullets::
 	ld ix, (arrayEnemyA)
 	loopMapErase:
@@ -109,7 +123,11 @@ map_eraseAllEnemiesAndBullets::
 	add ix, de
 	jr loopMapErase
 
-
+;;========================
+;;========================
+;
+;;========================
+;;========================
 map_switchBuffers::
 
 	modifier = .+1
@@ -126,10 +144,15 @@ map_switchBuffers::
 	ld (puntero_video+1), a
 ret
 
+;;========================
+;;========================
+;
+;;========================
+;;========================
 map_draw::
 
 	;; Set Parameters on the stack
-	ld   hl, #0x4000   ;; HL = pointer to the tilemap
+	ld   hl, #0x300   ;; HL = pointer to the tilemap
 	push hl              ;; Push ptilemap to the stack
 	ld   hl, (puntero_video)  ;; HL = Pointer to video memory location where tilemap is drawn
 	push hl              ;; Push pvideomem to the stack
@@ -142,6 +165,7 @@ map_draw::
 	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
 	
 ret
+
 ;; =============================
 ;;	Incrementador de punteros
 ;; 	INPUTS:

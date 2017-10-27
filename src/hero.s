@@ -19,13 +19,17 @@
 .include "map.h.s"
 
 ;;Hero Data
-defineEntity hero, 39, 60, 9, 25, _sprite_hero_right_pistol, 3, 0, 1, 39, 39, 60, 60 ;; Si cambiamos el ancho del hero hay que cambiar en el SpaceKey check el valor también, cambiar valor que devulve changeMap de map
+;;===================================================
+;; ¡Si cambiamos el ancho del hero hay que cambiar
+;;	 en el SpaceKey check el valor también!
+;;===================================================
+defineEntity hero, 39, 60, 9, 25, _sprite_hero_right_pistol, 3, 0, 1, 39, 39, 60, 60
 hero_jump: .db #-1
 hero_id: .db #00
 hero_invencibleState: .db #0
 hero_invencibleTransitions: .db #10			;;Número de animaciones de pintar-no_pintar
-hero_invencibleDuration: .db #20	;;Duración de la animación
-hero_invencibleAnimState: .db #00	;;Estado actual [0-1]
+hero_invencibleDuration: .db #20			;;Duración de la animación
+hero_invencibleAnimState: .db #00			;;Estado actual [0-1]
 
 ;;Jump Table
 jumptable:
@@ -174,6 +178,11 @@ hero_init::
 	ld (hero_invencibleDuration), a
 	ld a, #0
 	ld (hero_invencibleAnimState), a
+
+	ld a, #0xFF
+	ld ix, #life_data
+	call entity_draw
+
 	ret	
 
 ;; ======================

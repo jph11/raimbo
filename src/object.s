@@ -15,8 +15,8 @@
 .include "entity.h.s"
 .include "macros.h.s"
 
-;;Obstacle Data
-defineDeath obs 72, 76, 6, 12, _sprite_jar
+;;Object Data
+defineObject obj, 0, 184, 80, 16, _sprite_jar
 
 ;;===========================================
 ;;===========================================
@@ -25,79 +25,60 @@ defineDeath obs 72, 76, 6, 12, _sprite_jar
 ;;===========================================
 
 ;; ======================
-;;	Obstacle update
+;;	Object draw
 ;; ======================
-obstacle_update::
-	 ;;Move obstacle to the left
-	 ld a, (obs_x) 			;; |
-	 dec a					;; | Obs_x--
-	 jr nz, not_restart_x	;; | If (Obs_x = 0) then restart
-
-	 ;; Restart_x when it is 0
-	  ld a, #72
-
-
-	 not_restart_x:
-		ld (obs_x), a 		;; Update
-	 
-	 ret
-
-
-;; ======================
-;;	Obstacle draw
-;; ======================
-obstacle_draw::
+object_draw::
 	ld a, #0x0F
-	ld ix, #obs_data
+	ld ix, #obj_data
 	call entity_draw
 	ret
 
 ;; ======================
-;;	Obstacle erase
+;;	Object erase
 ;; ======================
-obstacle_erase::
+object_erase::
 	ld a, #0x00
-	ld ix, #obs_data
+	ld ix, #obj_data
 	call entity_draw
 	ret
 
 ;; ======================
-;;	Obstacle init
-;;  Start obstacle values
+;;	Object init
+;;  Start object values
 ;; ======================
-obstacle_init::
-	ld a, #72		
-	ld (obs_x), a
-	ld a, #76
-	ld (obs_y),a
+object_init::
+	ld a, #0		
+	ld (obj_x), a
+	ld a, #184
+	ld (obj_y),a
 
 	ret		
 
 ;; ======================
-;; Obstacle check collision
+;; Object check collision
 ;; 	Inputs:
 ;; 	HL : Points to the other 
 ;;	Return:
 ;;		XXXXXXXX
 ;; ======================
-obstacle_checkCollision::
+object_checkCollision::
 	
 	;;
-	;;	If (obs_x + obs_w <= hero_x ) no_collision
-	;;	obs_x + obs_w - hero_x <= 0
+	;;	If (obj_x + obj_w <= hero_x ) no_collision
+	;;	obj_x + obj_w - hero_x <= 0
 	;; 
 
-	ld a, (obs_x)		;; | obs_x
+	ld a, (obj_x)		;; | obj_x
 	ld c, a 			;; | +
-	ld a, (obs_w)	 	;; | obx_w
+	ld a, (obj_w)	 	;; | obx_w
 	add c 				;; | -
 	sub (hl)			;; | hero_x			
 	jr z, not_collision ;; | if(==0)
 	jp m, not_collision 	;; | if(<0)
 
 	;;
-	;; 	If (hero_x + hero_w <= obs_x)
-	;; 	hero_x + hero_w - obs_x <= 0
+	;; 	If (hero_x + hero_w <= obj_x)
+	;; 	hero_x + hero_w - obj_x <= 0
 	;;
 
 	ld a, (hl)
@@ -105,7 +86,7 @@ obstacle_checkCollision::
 	inc hl
 	add (hl)
 	ld c, a
-	ld a, (obs_x)
+	ld a, (obj_x)
 	ld b, a
 	ld a, c
 	sub b
@@ -113,13 +94,13 @@ obstacle_checkCollision::
 	jp m, not_collision 	;; | if(<0)
 
 	;;
-	;;	If (obs_y + obs_h <= hero_y ) no_collision
-	;;	obs_y + obs_h - hero_y <= 0
+	;;	If (obj_y + obj_h <= hero_y ) no_collision
+	;;	obj_y + obj_h - hero_y <= 0
 	;;
 
-	ld a, (obs_y)		;; | obs_x
+	ld a, (obj_y)		;; | obj_x
 	ld c, a 			;; | +
-	ld a, (obs_h)	 	;; | obx_w
+	ld a, (obj_h)	 	;; | obx_w
 	add c
 	dec hl				;; | -
 	sub (hl)			;; | hero_x			
@@ -127,8 +108,8 @@ obstacle_checkCollision::
 	jp m, not_collision 	;; | if(<0)
 
 	;;
-	;; 	If (hero_y + hero_h <= obs_x)
-	;; 	hero_y + hero_h - obs_y <= 0
+	;; 	If (hero_y + hero_h <= obj_x)
+	;; 	hero_y + hero_h - obj_y <= 0
 	;;
 
 	ld a, (hl)
@@ -136,7 +117,7 @@ obstacle_checkCollision::
 	inc hl
 	add (hl)
 	ld c, a
-	ld a, (obs_y)
+	ld a, (obj_y)
 	ld b, a
 	ld a, c
 	sub b
@@ -150,9 +131,3 @@ obstacle_checkCollision::
 	not_collision:
 		ld a, #0x00
 	ret
-
-;;===========================================
-;;===========================================
-;;PRIVATE FUNCTIONS
-;;===========================================
-;;===========================================

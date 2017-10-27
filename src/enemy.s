@@ -38,7 +38,7 @@ enemy_id:
 .equ EnemyType, 13
 
 ;;Death Data
-defineDeath death 0, 0, 8, 16, _sprite_death
+defineObject death 0, 0, 8, 16, _sprite_death
 death_isDraw: .db #00
 ;;Death Data Animation
 death_anim: .db #10			;;Número de animaciones de pintar-no_pintar

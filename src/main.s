@@ -39,7 +39,7 @@ settings::
 
 	call map_draw
 	;; Set Parameters on the stack
-	ld   hl, #0x4000   		;; HL = pointer to the tilemap
+	ld   hl, #0x300   		;; HL = pointer to the tilemap
 	push hl              	;; Push ptilemap to the stack
 	ld   hl, #0xC000  		;; HL = Pointer to video memory location where tilemap is drawn
 	push hl              	;; Push pvideomem to the stack

@@ -1,11 +1,11 @@
 .area _DATA
+
 .area _CODE
 
 .include "hero.h.s"
-.include "scene.h.s"
-.include "obstacle.h.s"
-.include "enemy.h.s"
 .include "engine.h.s"
+.include "entity.h.s"
+.include "macros.h.s"
 .include "cpctelera.h.s"
 .include "keyboard.s"
 .include "map.h.s"
@@ -22,6 +22,7 @@
 game_start::
     call game_init
 	call game_run
+
     ret
 
 ;;===========================================
@@ -35,8 +36,6 @@ game_start::
 ;; ======================
 game_init:
     call hero_init
-    call obstacle_init
-    ;;call scene_drawFloor
 
     ret
 
@@ -51,9 +50,6 @@ game_run:
 	ld a, (hl)
 	cp #0
 	jr z, gameOver
-
-	;;call hero_getPointer
-	;;call obstacle_checkCollision
 
     call engine_drawAll
 

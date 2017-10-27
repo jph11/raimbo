@@ -14,7 +14,7 @@
         name'_puy:        .db puy
 .endm
 
-.macro defineDeath name, x, y, w, h, spr
+.macro defineObject name, x, y, w, h, spr
     name'_data::
         name'_x:          .db x   ;[0-80]
         name'_y:          .db y   ;[0-200]
