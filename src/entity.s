@@ -238,7 +238,7 @@ entity_draw::
 		ld   hl, (puntero_video)  ;; HL = Pointer to video memory location where tilemap is drawn
 		push hl              ;; Push pvideomem to the stack
 		;; Set Paramters on registers
-		ld    a, #120 ;; A = map_width
+		ld    a, #40 ;; A = map_width
 		;;ld    b, #0          ;; B = y tile-coordinate
 		;;ld    c, #0          ;; C = x tile-coordinate
 		;;ld    d, #46          ;; H = height in tiles of the tile-box

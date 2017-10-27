@@ -1,6 +1,6 @@
 .area _DATA
 
-.globl _sprite_oldman_left
+.globl _sprite_oldMan_left
 .globl _sprite_death
 
 .area _CODE

@@ -39,16 +39,16 @@ settings::
 
 	call map_draw
 	;; Set Parameters on the stack
-	ld   hl, #0x4000   ;; HL = pointer to the tilemap
-	push hl              ;; Push ptilemap to the stack
-	ld   hl, #0xC000  ;; HL = Pointer to video memory location where tilemap is drawn
-	push hl              ;; Push pvideomem to the stack
+	ld   hl, #0x4000   		;; HL = pointer to the tilemap
+	push hl              	;; Push ptilemap to the stack
+	ld   hl, #0xC000  		;; HL = Pointer to video memory location where tilemap is drawn
+	push hl              	;; Push pvideomem to the stack
 	;; Set Paramters on registers
-	ld    a, #120 ;; A = map_width
-	ld    b, #0          ;; B = y tile-coordinate
-	ld    c, #0          ;; C = x tile-coordinate
-	ld    d, #50          ;; H = height in tiles of the tile-box
-	ld    e, #40          ;; L =  width in tiles of the tile-box
+	ld    a, #40 			;; A = map_width
+	ld    b, #0          	;; B = y tile-coordinate
+	ld    c, #0          	;; C = x tile-coordinate
+	ld    d, #50          	;; H = height in tiles of the tile-box
+	ld    e, #40          	;; L =  width in tiles of the tile-box
 	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
 
 ret

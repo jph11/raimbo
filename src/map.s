@@ -1,8 +1,8 @@
 .area _DATA
 
-.globl _sprite_oldman_left
+.globl _sprite_oldMan_left
 .globl _sprite_death
-.globl _sprite_viejoNaranja 
+.globl _sprite_oldMan_orange_left
 
 .area _CODE
 .include "enemy.h.s"
@@ -57,16 +57,17 @@ arrayEnemyA::
 M1:
 	defineMap M1 0, -1, M2
 	;defineEnemy 0, 170, 7, 25, _sprite_oldman_left, 5, 0, 1, 1
-	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldman_left, 5, 0, 0, 70, 70, 170, 170, 3
+	;defineEnemyLastOne 70, 170, 7, 25, _sprite_oldman_left, 5, 0, 0, 70, 70, 170, 170, 3
+	.db #0x81
 
 M2:
 	defineMap M2 0, M1, M3
-	defineEnemyLastOne 70, 170, 7, 25, _sprite_viejoNaranja, 5, 0, 1, 70, 70, 170, 170, 1
+	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldMan_orange_left, 5, 0, 1, 70, 70, 170, 170, 1
 
 M3:
 	defineMap M3 0, M2, -1
-	defineEnemy 0, 170, 7, 25, _sprite_viejoNaranja, 5, 0, 1, 70, 70, 170, 170, 1
-	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldman_left, 5, 0, 1, 70, 70, 170, 170, 1
+	defineEnemy 0, 170, 7, 25, _sprite_oldMan_orange_left, 5, 0, 1, 70, 70, 170, 170, 1
+	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldMan_left, 5, 0, 1, 70, 70, 170, 170, 1
 
 map_updateAllEnemiesAndBullets::
 	call bullets_updateBullets
@@ -140,7 +141,7 @@ map_draw::
 	ld   hl, (puntero_video)  ;; HL = Pointer to video memory location where tilemap is drawn
 	push hl              ;; Push pvideomem to the stack
 	;; Set Paramters on registers
-	ld    a, #120 ;; A = map_width
+	ld    a, #40 ;; A = map_width
 	ld    b, #0          ;; B = y tile-coordinate
 	ld    c, #0          ;; C = x tile-coordinate
 	ld    d, #50          ;; H = height in tiles of the tile-box

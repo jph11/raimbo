@@ -65,12 +65,30 @@ PALETTE={0 1 3 6 7 9 12 13 14 15 16 18 19 24 25 26}
 ##    The palette used for conversion is given through the PALETTE variable and
 ##    a pre_palette[16] array will be generated with the 16 palette colours as 
 ##	  hardware colour values.
+##HERO
+$(eval $(call IMG2SPRITES,assets/Hero/hero_right_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,hwpalette))
+$(eval $(call IMG2SPRITES,assets/Hero/hero_left_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,))
 
-$(eval $(call IMG2SPRITES,assets/hero_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,hwpalette))
-$(eval $(call IMG2SPRITES,assets/hero_left.png,0,sprite,14,25,$(PALETTE),,src/sprites,))
-$(eval $(call IMG2SPRITES,assets/oldman_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
-$(eval $(call IMG2SPRITES,assets/jar.png,0,sprite,12,12,$(PALETTE),,src/sprites,))
-$(eval $(call IMG2SPRITES,assets/death.png,0,sprite,16,16,$(PALETTE),,src/sprites,))
-$(eval $(call IMG2SPRITES,assets/tiles.png,0,g,4,4,$(PALETTE),tileset,src/sprites,))
-$(eval $(call IMG2SPRITES,assets/viejoNaranja.png,0,sprite,14,25,$(PALETTE),,src/sprites,))
-$(eval $(call IMG2SPRITES,assets/bala.png,0,sprite,2,2,$(PALETTE),mask,src/sprites,))
+##ENEMIES
+$(eval $(call IMG2SPRITES,assets/Enemies/oldMan_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/oldMan_orange_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
+
+#$(eval $(call IMG2SPRITES,assets/Enemies/octopus_forward.png,0,sprite,18,18,$(PALETTE),mask,src/sprites,))
+#$(eval $(call IMG2SPRITES,assets/Enemies/octopus_back.png,0,sprite,18,18,$(PALETTE),mask,src/sprites,))
+#$(eval $(call IMG2SPRITES,assets/Enemies/octopus_left.png,0,sprite,18,18,$(PALETTE),mask,src/sprites,))
+#$(eval $(call IMG2SPRITES,assets/Enemies/octopus_right.png,0,sprite,18,18,$(PALETTE),mask,src/sprites,))
+
+#$(eval $(call IMG2SPRITES,assets/Enemies/octopus_whip_forward.png,0,sprite,30,22,$(PALETTE),mask,src/sprites,))
+#$(eval $(call IMG2SPRITES,assets/Enemies/octopus_whip_back.png,0,sprite,30,22,$(PALETTE),mask,src/sprites,))
+#$(eval $(call IMG2SPRITES,assets/Enemies/octopus_whip_left.png,0,sprite,30,22,$(PALETTE),mask,src/sprites,))
+#$(eval $(call IMG2SPRITES,assets/Enemies/octopus_whip_right.png,0,sprite,30,22,$(PALETTE),mask,src/sprites,))
+
+##OBJECTS
+$(eval $(call IMG2SPRITES,assets/Objects/jar.png,0,sprite,12,12,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Objects/death.png,0,sprite,16,16,$(PALETTE),mask,src/sprites,))
+#$(eval $(call IMG2SPRITES,assets/Objects/flower.png,0,sprite,15,15,$(PALETTE),mask,src/sprites,))
+#$(eval $(call IMG2SPRITES,assets/Objects/petal.png,0,sprite,12,12,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Objects/bala.png,0,sprite,2,2,$(PALETTE),mask,src/sprites,))
+
+##MAP
+$(eval $(call IMG2SPRITES,assets/Maps/tiles.png,0,g,4,4,$(PALETTE),tileset,src/sprites,))

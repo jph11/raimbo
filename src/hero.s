@@ -1,6 +1,6 @@
 .area _DATA
 
-.globl _sprite_hero_pistol
+.globl _sprite_hero_right_pistol
 
 .area _CODE
 
@@ -19,7 +19,7 @@
 .include "map.h.s"
 
 ;;Hero Data
-defineEntity hero, 39, 60, 9, 25, _sprite_hero_pistol, 3, 0, 1, 39, 39, 60, 60 ;; Si cambiamos el ancho del hero hay que cambiar en el SpaceKey check el valor también, cambiar valor que devulve changeMap de map
+defineEntity hero, 39, 60, 9, 25, _sprite_hero_right_pistol, 3, 0, 1, 39, 39, 60, 60 ;; Si cambiamos el ancho del hero hay que cambiar en el SpaceKey check el valor también, cambiar valor que devulve changeMap de map
 hero_jump: .db #-1
 hero_id: .db #00
 hero_invencibleState: .db #0
