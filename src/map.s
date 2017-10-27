@@ -4,7 +4,7 @@
 .globl _sprite_death
 .globl _sprite_oldMan_orange_left
 .globl _sprite_oldMan_orange_left_pistol
-
+.globl _g_tilemap
 .area _CODE
 .include "enemy.h.s"
 .include "bullets.h.s"
@@ -151,7 +151,7 @@ ret
 map_draw::
 
 	;; Set Parameters on the stack
-	ld   hl, #0x300   ;; HL = pointer to the tilemap
+	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
 	push hl              ;; Push ptilemap to the stack
 	ld   hl, (puntero_video)  ;; HL = Pointer to video memory location where tilemap is drawn
 	push hl              ;; Push pvideomem to the stack
