@@ -3,6 +3,7 @@
 .globl _sprite_oldMan_left
 .globl _sprite_death
 .globl _sprite_oldMan_orange_left
+.globl _sprite_oldMan_orange_left_pistol
 
 .area _CODE
 .include "enemy.h.s"
@@ -61,12 +62,12 @@ M1:
 
 M2:
 	defineMap M2 0, M1, M3
-	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldMan_orange_left, 5, 0, 1, 70, 70, 170, 170, 1
+	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 1, 70, 70, 170, 170, 0
 
 M3:
 	defineMap M3 0, M2, -1
 	defineEnemy 0, 170, 7, 25, _sprite_oldMan_orange_left, 5, 0, 1, 70, 70, 170, 170, 1
-	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldMan_left, 5, 0, 1, 70, 70, 170, 170, 1
+	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 1, 70, 70, 170, 170, 0
 
 map_updateAllEnemiesAndBullets::
 	call bullets_updateBullets
@@ -127,13 +128,6 @@ ret
 
 map_draw::
 
-	;;ld a, #40
-	;;ld c, #46
-	;;ld de, (puntero_video)
-	;;ld hl, #0x4000
-	;;call cpct_etm_drawTilemap2x4_f_asm
-
-
 	;; Set Parameters on the stack
 	ld   hl, #0x4000   ;; HL = pointer to the tilemap
 	push hl              ;; Push ptilemap to the stack
@@ -146,6 +140,7 @@ map_draw::
 	ld    d, #50          ;; H = height in tiles of the tile-box
 	ld    e, #40          ;; L =  width in tiles of the tile-box
 	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
+	
 ret
 ;; =============================
 ;;	Incrementador de punteros

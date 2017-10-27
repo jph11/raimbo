@@ -72,6 +72,7 @@ $(eval $(call IMG2SPRITES,assets/Hero/hero_left_pistol.png,0,sprite,18,25,$(PALE
 ##ENEMIES
 $(eval $(call IMG2SPRITES,assets/Enemies/oldMan_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Enemies/oldMan_orange_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/oldMan_orange_left_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,))
 
 #$(eval $(call IMG2SPRITES,assets/Enemies/octopus_forward.png,0,sprite,18,18,$(PALETTE),mask,src/sprites,))
 #$(eval $(call IMG2SPRITES,assets/Enemies/octopus_back.png,0,sprite,18,18,$(PALETTE),mask,src/sprites,))
