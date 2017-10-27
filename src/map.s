@@ -62,12 +62,12 @@ M1:
 
 M2:
 	defineMap M2 0, M1, M3
-	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 1, 70, 70, 170, 170, 0
+	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 0, 70, 70, 170, 170, 0
 
 M3:
 	defineMap M3 0, M2, -1
 	defineEnemy 0, 170, 7, 25, _sprite_oldMan_orange_left, 5, 0, 1, 70, 70, 170, 170, 1
-	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 1, 70, 70, 170, 170, 0
+	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 0, 70, 70, 170, 170, 0
 
 map_updateAllEnemiesAndBullets::
 	call bullets_updateBullets
