@@ -1,5 +1,6 @@
 .area _DATA
 
+.globl _g_tilemap
 .globl _sprite_bala
 
 .area _CODE
@@ -33,8 +34,8 @@ bullets_posiciones:
 	.db #0x00, #0x00, #0x00, #0x00
 	.db #0x00, #0x00, #0x00, #0x00
 
-bullet_w: .db #01
-bullet_h: .db #01
+bullet_w: .db #03
+bullet_h: .db #05
 bullet_victim: .db #09		;Valor sin importancia
 
 actual_enemy: .dw #0x0000
@@ -213,58 +214,114 @@ ret
 bullets_eraseBulletOnCollision::
 
 	push hl
+	push bc
 	push de
+	push af
 
-	ld de, #0x8000
-	ld c, bullet_ux(iy)
+	;; Calculamos y
 	ld b, bullet_uy(iy)
-	call cpct_getScreenPtr_asm
+	srl b
+	srl b
 
-	ex de, hl
-
-	ld a, #0x00
-	ld (de), a
-
-	ld de, #0xC000
+	;; Calculamos x
 	ld c, bullet_ux(iy)
+	srl c
+
+	;; Set Parameters on the stack
+	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+	push hl              ;; Push ptilemap to the stack
+	ld   hl, #0xC000  ;; HL = Pointer to video memory location where tilemap is drawn
+	push hl              ;; Push pvideomem to the stack
+	;; Set Paramters on registers
+	ld    a, #40 ;; A = map_width
+	;;ld    b, #0          ;; B = y tile-coordinate
+	;;ld    c, #0          ;; C = x tile-coordinate
+	ld    d, #2          ;; H = height in tiles of the tile-box
+	ld    e, #2          ;; L =  width in tiles of the tile-box
+	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
+
+	;; Calculamos y
 	ld b, bullet_uy(iy)
-	call cpct_getScreenPtr_asm
+	srl b
+	srl b
 
-	ex de, hl
+	;; Calculamos x
+	ld c, bullet_ux(iy)
+	srl c
 
-	ld a, #0x00
-	ld (de), a
+	;; Set Parameters on the stack
+	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+	push hl              ;; Push ptilemap to the stack
+	ld   hl, #0x8000  ;; HL = Pointer to video memory location where tilemap is drawn
+	push hl              ;; Push pvideomem to the stack
+	;; Set Paramters on registers
+	ld    a, #40 ;; A = map_width
+	;;ld    b, #0          ;; B = y tile-coordinate
+	;;ld    c, #0          ;; C = x tile-coordinate
+	ld    d, #2          ;; H = height in tiles of the tile-box
+	ld    e, #2          ;; L =  width in tiles of the tile-box
+	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
 
+	pop af
 	pop de
+	pop bc
 	pop hl
 ret
 
 bullets_eraseBulletOnCollisionWithEntity::
 
 	push hl
+	push bc
 	push de
+	push af
 
-	ld de, #0x8000
-	ld c, bullet_pux(iy)
+	;; Calculamos y
 	ld b, bullet_puy(iy)
-	call cpct_getScreenPtr_asm
+	srl b
+	srl b
 
-	ex de, hl
-
-	ld a, #0x00
-	ld (de), a
-
-	ld de, #0xC000
+	;; Calculamos x
 	ld c, bullet_pux(iy)
+	srl c
+
+	;; Set Parameters on the stack
+	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+	push hl              ;; Push ptilemap to the stack
+	ld   hl, #0xC000  ;; HL = Pointer to video memory location where tilemap is drawn
+	push hl              ;; Push pvideomem to the stack
+	;; Set Paramters on registers
+	ld    a, #40 ;; A = map_width
+	;;ld    b, #0          ;; B = y tile-coordinate
+	;;ld    c, #0          ;; C = x tile-coordinate
+	ld    d, #2          ;; H = height in tiles of the tile-box
+	ld    e, #2          ;; L =  width in tiles of the tile-box
+	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
+
+	;; Calculamos y
 	ld b, bullet_puy(iy)
-	call cpct_getScreenPtr_asm
+	srl b
+	srl b
 
-	ex de, hl
+	;; Calculamos x
+	ld c, bullet_pux(iy)
+	srl c
 
-	ld a, #0x00
-	ld (de), a
+	;; Set Parameters on the stack
+	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+	push hl              ;; Push ptilemap to the stack
+	ld   hl, #0x8000  ;; HL = Pointer to video memory location where tilemap is drawn
+	push hl              ;; Push pvideomem to the stack
+	;; Set Paramters on registers
+	ld    a, #40 ;; A = map_width
+	;;ld    b, #0          ;; B = y tile-coordinate
+	;;ld    c, #0          ;; C = x tile-coordinate
+	ld    d, #2          ;; H = height in tiles of the tile-box
+	ld    e, #2          ;; L =  width in tiles of the tile-box
+	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
 
+	pop af
 	pop de
+	pop bc
 	pop hl
 ret
 
@@ -511,21 +568,55 @@ drawBullet::
 		jr z, borrar
 
 			push hl
+			push af
+			push bc
+			push de
 
 			ld hl, #_sprite_bala
 
 			;;Draw sprite
-			;;ld c, #1
-			;;ld b, #2
-			;;call cpct_drawSprite_asm
-			ld a, #0xFF
-			ld (de), a
+			ld c, #3
+			ld b, #5
+			call cpct_drawSprite_asm
 
+			pop de
+			pop bc
+			pop af
 			pop hl
 			jr increment_after_draw
 		borrar:
-			;;ld (de), a
-			call bullets_cleanOrDraw
+			push hl
+			push bc
+			push de
+			push af
+
+			;; Calculamos y
+			ld b, bullet_puy(iy)
+			srl b
+			srl b
+
+			;; Calculamos x
+			ld c, bullet_pux(iy)
+			srl c
+
+			;; Set Parameters on the stack
+			ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+			push hl              ;; Push ptilemap to the stack
+			ld   hl, (puntero_video)  ;; HL = Pointer to video memory location where tilemap is drawn
+			push hl              ;; Push pvideomem to the stack
+			;; Set Paramters on registers
+			ld    a, #40 ;; A = map_width
+			;;ld    b, #0          ;; B = y tile-coordinate
+			;;ld    c, #0          ;; C = x tile-coordinate
+			ld    d, #2          ;; H = height in tiles of the tile-box
+			ld    e, #2          ;; L =  width in tiles of the tile-box
+			call  cpct_etm_drawTileBox2x4_asm ;; Call the function
+
+			pop af
+			pop de
+			pop bc
+			pop hl
+
 			jr increment_after_draw
 			;;BORRAR
 			;;push hl
@@ -638,7 +729,7 @@ bullets_updateBullets::
 			right:
 				pop hl	;; hl = bullets_x
 				ld a, (hl)
-				cp #80-1
+				cp #80-3
 				jr z,  reset
 					inc a
 					ld (hl), a
