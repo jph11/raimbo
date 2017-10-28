@@ -41,7 +41,7 @@
         name'_arrayEnemy:
 .endm
 
-.macro defineEnemy x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type
+.macro defineEnemy x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern
         .db x
         .db y
         .db w
@@ -55,10 +55,11 @@
         .db uy
         .db puy
         .db type
+        .dw pattern
 
 .endm
 
-.macro defineEnemyLastOne x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type
+.macro defineEnemyLastOne x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern
         .db x
         .db y
         .db w
@@ -72,5 +73,6 @@
         .db uy
         .db puy
         .db type
+        .dw pattern
         .db #0x81
 .endm

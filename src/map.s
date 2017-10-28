@@ -5,6 +5,7 @@
 .globl _sprite_oldMan_orange_left
 .globl _sprite_oldMan_orange_left_pistol
 .globl _g_tilemap
+.globl _pattern1
 .area _CODE
 .include "enemy.h.s"
 .include "bullets.h.s"
@@ -31,9 +32,11 @@ puntero_video:: .dw #0x8000
 .equ EnemyPUX, 10
 .equ EnemyUY, 11
 .equ EnemyPUY, 12
+.equ EnemyPatternL, 14
+.equ EnemyPatternH, 15
 
 NextEnemy:
-	.db #14
+	.db #16
 ptilemapA::
 	.dw #0x0000 ;Cambiar al mapa correspondiente
 puertaIzquierdaA::
@@ -42,6 +45,9 @@ puertaDerechaA::
 	.dw M2
 arrayEnemyA::
 	.dw M1_arrayEnemy
+
+;; ========================
+;; ========================
 
 ;;========================
 ;;========================
@@ -55,17 +61,17 @@ arrayEnemyA::
 
 M1:
 	defineMap M1 0, -1, M2
-	defineEnemy 70, 170, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 3
-	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 3
+	defineEnemy 70, 170, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 4, _pattern1
+	defineEnemyLastOne 70, 170, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 4, _pattern1
 
 M2:
 	defineMap M2 0, M1, M3
-	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 0, 70, 70, 170, 170, 0
+	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 0, 70, 70, 170, 170, 0, _pattern1
 
 M3:
 	defineMap M3 0, M2, -1
-	defineEnemy 0, 170, 7, 25, _sprite_oldMan_orange_left, 5, 0, 1, 70, 70, 170, 170, 1
-	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 0, 70, 70, 170, 170, 0
+	defineEnemy 0, 170, 7, 25, _sprite_oldMan_orange_left, 5, 0, 1, 70, 70, 170, 170, 1, 0
+	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 0, 70, 70, 170, 170, 0, _pattern1
 
 ;;========================
 ;;========================

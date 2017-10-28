@@ -36,6 +36,8 @@ enemy_id:
 .equ EnemyUY, 11
 .equ EnemyPUY, 12
 .equ EnemyType, 13
+.equ EnemyPatternL, 14
+.equ EnemyPatternH, 15
 
 ;;Death Data
 defineObject death 0, 0, 8, 16, _sprite_death
@@ -44,6 +46,11 @@ death_isDraw: .db #00
 death_anim: .db #10			;;Número de animaciones de pintar-no_pintar
 death_anim2: .db #20		;;Duración de la animación
 death_animState: .db #00	;;Estado actual [0-1]
+
+;; ========================
+;; Patterns. Cada pattern es un conjunto de tuplas (x,y)
+;; ========================
+_pattern1:: .db #60, #60, #50, #50, #60, #60, #50, #50, #0xFF
 
 ;;===========================================
 ;;===========================================
@@ -72,6 +79,8 @@ enemy_update::
 		jr z, Random
 		cp #2
 		jr z, Fetch
+		cp #3
+		jr z, Pattern1 
 			call Algorithm_Teletransport
 			jr collision
 		Shooter:
@@ -83,6 +92,9 @@ enemy_update::
 			jr collision
 		Fetch:
 			call Algorithm_FetchHero
+			jr collision
+		Pattern1:
+			call Algorithm_Pattern
 		collision:
 
 		call hero_getPointer
@@ -546,6 +558,33 @@ Algorithm_Random:
 		add a, #3
 		ld Enemy_y(ix), a
 		ret
+
+Algorithm_Pattern::
+
+	push hl
+
+	ld l, EnemyPatternL(ix)
+	ld h, EnemyPatternH(ix)
+
+	ld a, (hl)
+	cp #0xFF
+	jr nz, fin_algorith_pattern
+	
+	ld Enemy_x(ix), a
+
+	inc hl
+
+	ld a, (hl)
+	ld Enemy_y(ix), a
+
+	inc hl
+
+	ld EnemyPatternL(ix), l
+	ld EnemyPatternH(ix), h
+
+	fin_algorith_pattern:
+	pop hl
+ret
 
 enemyShoot:	
 	ld a, EnemyTemp(ix)  			
