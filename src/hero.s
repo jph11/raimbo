@@ -1,6 +1,14 @@
 .area _DATA
 
-.globl _sprite_hero_right_pistol
+.globl _sprite_hero_upLeft_diag_pistol
+.globl _sprite_hero_upRight_diag_pistol
+.globl _sprite_hero_downLeft_diag_pistol
+.globl _sprite_hero_downRight_diag_pistol  
+.globl _sprite_hero_forward_pistol        
+.globl _sprite_hero_back_pistol          
+.globl _sprite_hero_left_pistol
+.globl _sprite_hero_right_pistol         
+
 
 .area _CODE
 
@@ -362,11 +370,23 @@ moveHeroLeft:
 		ld (hero_x), a
 	ret
 
+;; ============================
+;; 	Changes the hero sprite
+;; 	INPUTS: 
+;;		de: hero_spritePointer
+;; =============================
+cambiarSprite:
+	ld hl, #hero_sprite
+	ld (hl), e
+	inc hl 
+	ld (hl), d
+ret
+
 ;; ======================
 ;;	Checks User Input and Reacts
 ;;	DESTROYS:
 ;; ======================
-checkUserInput::
+checkUserInput:
 	;;Scan the whole keyboard
 	call cpct_scanKeyboard_asm ;;keyboard.s
 
@@ -414,7 +434,8 @@ checkUserInput::
 
 	;;A is pressed
 	call moveHeroLeft
-
+	ld de, #_sprite_hero_left_pistol
+	call cambiarSprite
 	a_not_pressed:
 
 	;;Check for key 'D' being pressed
@@ -425,6 +446,8 @@ checkUserInput::
 
 	;;D is pressed
 	call moveHeroRight
+	ld de, #_sprite_hero_right_pistol
+	call cambiarSprite
 
 	d_not_pressed:
 
@@ -436,7 +459,8 @@ checkUserInput::
 
 	;;W is pressed
 	call moveHeroUp
-
+	ld de, #_sprite_hero_back_pistol
+	call cambiarSprite
 	w_not_pressed:
 
 	;;Check for key 'S' being pressed
@@ -447,7 +471,8 @@ checkUserInput::
 
 	;;S is pressed	
 	call moveHeroBottom
-
+	ld de, #_sprite_hero_forward_pistol
+	call cambiarSprite
 	s_not_pressed:
 
 	;;Check for key 'Shift' being pressed
@@ -481,16 +506,23 @@ checkUserInput::
  		;; Right pressed too
 		ld a, #05
 		ld (hl), a
+		ld de, #_sprite_hero_upRight_diag_pistol
+		call cambiarSprite
 		ret
 	leftPressedUp:
 		;; Left pressed too
 		ld a, #04
 		ld (hl), a
+		ld hl, #hero_sprite
+		ld de, #_sprite_hero_upLeft_diag_pistol
+		call cambiarSprite
 		ret
 	;; Only up arrow pressed
 	up_arrow_pressed:
 		ld a, #2 
 		ld (hl), a
+		ld de, #_sprite_hero_back_pistol
+		call cambiarSprite
 		ret
 
 	up_arrow_not_pressed:
@@ -513,16 +545,22 @@ checkUserInput::
  		;; Right pressed too
 		ld a, #07
 		ld (hl), a
+		ld de, #_sprite_hero_downRight_diag_pistol
+		call cambiarSprite
 		ret
 	leftPressedDown:
 		;; Left pressed too
 		ld a, #06
 		ld (hl), a
+		ld de, #_sprite_hero_downLeft_diag_pistol
+		call cambiarSprite
 		ret
 	;; Only down pressed
 	down_arrow_pressed:
 		ld a, #03 
 		ld (hl), a
+		ld de, #_sprite_hero_forward_pistol
+		call cambiarSprite
 		ret
 	down_arrow_not_pressed:
 
@@ -536,11 +574,15 @@ checkUserInput::
  		;; Right pressed only
 		ld a, #01
 		ld (hl), a
+		ld de, #_sprite_hero_right_pistol
+		call cambiarSprite
 		ret
 	leftPressedOnly:
 		;; Left pressed only
 		ld a, #00
 		ld (hl), a
+		ld de, #_sprite_hero_left_pistol
+		call cambiarSprite
 	nothing_pressed:
 	ret
 
