@@ -209,16 +209,19 @@ entity_draw::
 		;;ld d, Ent_h(ix)
 
 		;; Calculamos y
-		ld a, EntPUY(ix)
-		ld c, #4
-		call divide
-		ld l, b
+		;;ld a, EntPUY(ix)
+		ld b, EntPUY(ix)
+		srl b
+		srl b
+		;;call divide
+		;;ld l, b
 
 		;; Calculamos x
-		ld a, EntPUX(ix)
-		ld c, #2
-		call divide
-		ld c, b
+		;;ld a, EntPUX(ix)
+		ld c, EntPUX(ix)
+		srl c
+		;;call divide
+		;;ld c, b
 
 		ld a, Ent_w(ix)
 		cp #9
@@ -232,7 +235,7 @@ entity_draw::
 		
         continuar_calculos:
 		;; Devolvemos y al registro b
-		ld b, l
+		;;ld b, l
 
 		;; Set Parameters on the stack
 		ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap

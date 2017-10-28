@@ -89,7 +89,7 @@ $(eval $(call IMG2SPRITES,assets/Objects/jar.png,0,sprite,12,12,$(PALETTE),mask,
 $(eval $(call IMG2SPRITES,assets/Objects/death.png,0,sprite,16,16,$(PALETTE),mask,src/sprites,))
 #$(eval $(call IMG2SPRITES,assets/Objects/flower.png,0,sprite,16,15,$(PALETTE),mask,src/sprites,))
 #$(eval $(call IMG2SPRITES,assets/Objects/petal.png,0,sprite,12,12,$(PALETTE),mask,src/sprites,))
-$(eval $(call IMG2SPRITES,assets/Objects/bala.png,0,sprite,2,2,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Objects/bala.png,0,sprite,6,5,$(PALETTE),,src/sprites,))
 #$(eval $(call IMG2SPRITES,assets/Objects/score_life.png,0,sprite,160,16,$(PALETTE),mask,src/sprites,))
 
 ##MAP
