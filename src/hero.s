@@ -395,7 +395,6 @@ checkUserInput:
 
 	space_not_pressed:
 
-
 	;;Check for key 'A' being pressed
 	ld hl, #Key_A 				;;HL = Key_A
 	call cpct_isKeyPressed_asm	;;Check if Key_A is presed
@@ -403,9 +402,6 @@ checkUserInput:
 	jr z, a_not_pressed			;;Jump if A==0 (a_not_pressed)
 
 	;;A is pressed
-	ld hl, #hero_lastmovement
-	ld a, #00
-	ld (hl), a
 	call moveHeroLeft
 
 	a_not_pressed:
@@ -417,9 +413,6 @@ checkUserInput:
 	jr z, d_not_pressed			;;Jump if A==0 (d_not_pressed)
 
 	;;D is pressed
-	ld hl, #hero_lastmovement
-	ld a, #01
-	ld (hl), a
 	call moveHeroRight
 
 	d_not_pressed:
@@ -431,10 +424,8 @@ checkUserInput:
 	jr z, w_not_pressed			;;Jump if W==0 (w_not_pressed)
 
 	;;W is pressed
-	ld hl, #hero_lastmovement
-	ld a, #02
-	ld (hl), a
 	call moveHeroUp
+
 	w_not_pressed:
 
 	;;Check for key 'S' being pressed
@@ -443,14 +434,10 @@ checkUserInput:
 	cp #0						;;Check S == 0
 	jr z, s_not_pressed			;;Jump if S==0 (s_not_pressed)
 
-	;;S is pressed
-	ld hl, #hero_lastmovement
-	ld a, #03
-	ld (hl), a
+	;;S is pressed	
 	call moveHeroBottom
-	s_not_pressed:
 
-	
+	s_not_pressed:
 
 	;;Check for key 'Shift' being pressed
 	ld hl, #Key_Shift 				;;HL = Key_Shift
@@ -463,8 +450,63 @@ checkUserInput:
 	call startJump
 	shift_not_pressed:
 
-	ret
+	;;Check for key 'Up Arrow' being pressed
+	ld hl, #Key_CursorUp 				;;HL = Key_Shift
+	call cpct_isKeyPressed_asm	;;Check if Key_Shift is presed
+	cp #0						;;Check Shift == 0
+	jr z, up_arrow_not_pressed			;;Jump if Shift==0 (shift_not_pressed)
 
+	;;Up Arrow is pressed
+	
+	ld hl, #hero_lastmovement
+	ld a, #02
+	ld (hl), a
+
+	up_arrow_not_pressed:
+
+	;;Check for key 'Down Arrow' being pressed
+	ld hl, #Key_CursorDown 				;;HL = Key_Shift
+	call cpct_isKeyPressed_asm	;;Check if Key_Shift is presed
+	cp #0						;;Check Shift == 0
+	jr z, down_arrow_not_pressed			;;Jump if Shift==0 (shift_not_pressed)
+
+	;;Down Arrow is pressed
+	
+	ld hl, #hero_lastmovement
+	ld a, #03
+	ld (hl), a
+
+	down_arrow_not_pressed:
+
+	;;Check for key 'Left Arrow' being pressed
+	ld hl, #Key_CursorLeft 				;;HL = Key_Shift
+	call cpct_isKeyPressed_asm	;;Check if Key_Shift is presed
+	cp #0						;;Check Shift == 0
+	jr z, left_arrow_not_pressed			;;Jump if Shift==0 (shift_not_pressed)
+
+	;;Left Arrow is pressed
+	
+	ld hl, #hero_lastmovement
+	ld a, #00
+	ld (hl), a
+
+	left_arrow_not_pressed:
+
+	;;Check for key 'Right Arrow' being pressed
+	ld hl, #Key_CursorRight 				;;HL = Key_Shift
+	call cpct_isKeyPressed_asm	;;Check if Key_Shift is presed
+	cp #0						;;Check Shift == 0
+	jr z, right_arrow_not_pressed			;;Jump if Shift==0 (shift_not_pressed)
+
+	;;Right Arrow is pressed
+	
+	ld hl, #hero_lastmovement
+	ld a, #01
+	ld (hl), a
+
+	right_arrow_not_pressed:
+
+	ret
 ;; ======================
 ;;	Hero is death
 ;; ======================

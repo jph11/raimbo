@@ -85,11 +85,11 @@ $(eval $(call IMG2SPRITES,assets/Enemies/oldMan_orange_left_pistol.png,0,sprite,
 #$(eval $(call IMG2SPRITES,assets/Enemies/octopus_whip_right.png,0,sprite,30,22,$(PALETTE),mask,src/sprites,))
 
 ##OBJECTS
-#$(eval $(call IMG2SPRITES,assets/Objects/jar.png,0,sprite,12,12,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Objects/jar.png,0,sprite,12,12,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Objects/death.png,0,sprite,16,16,$(PALETTE),mask,src/sprites,))
 #$(eval $(call IMG2SPRITES,assets/Objects/flower.png,0,sprite,16,15,$(PALETTE),mask,src/sprites,))
 #$(eval $(call IMG2SPRITES,assets/Objects/petal.png,0,sprite,12,12,$(PALETTE),mask,src/sprites,))
-$(eval $(call IMG2SPRITES,assets/Objects/bala.png,0,sprite,2,2,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Objects/bala.png,0,sprite,6,5,$(PALETTE),,src/sprites,))
 #$(eval $(call IMG2SPRITES,assets/Objects/score_life.png,0,sprite,160,16,$(PALETTE),mask,src/sprites,))
 
 ##MAP
