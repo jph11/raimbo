@@ -68,6 +68,12 @@ PALETTE={0 1 3 6 7 9 12 13 14 15 16 18 19 24 25 26}
 ##HERO
 $(eval $(call IMG2SPRITES,assets/Hero/hero_right_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,hwpalette))
 $(eval $(call IMG2SPRITES,assets/Hero/hero_left_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Hero/hero_back_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Hero/hero_forward_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Hero/hero_downRight-diag_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Hero/hero_downLeft-diag_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Hero/hero_upRight-diag_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Hero/hero_upLeft-diag_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,))
 
 ##ENEMIES
 $(eval $(call IMG2SPRITES,assets/Enemies/oldMan_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
