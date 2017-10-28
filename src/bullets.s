@@ -666,7 +666,7 @@ bullets_updateBullets::
 	cp #0x81 							;; a == 0x81
 		ret z 							;; if(a==0x81) ret
 	cp #0xFF 							;; else a == 0xFF
-	jr z, increment 					;; Si la condición de arriba es verdadera
+	jp z, increment 					;; Si la condición de arriba es verdadera
 										;; salta a incrementar la dirección de memoria
 
 	startSwitch:
@@ -680,31 +680,43 @@ bullets_updateBullets::
 			;; Derecha
 			cp #1
 			jr z, right
-				;;Arriba-Abajo
-				pop hl 	;; hl = bullets_x
-				inc hl 	;; hl = bullets_y
-				cp #2
-				jr z, up
-					;; Down
-					ld a, (hl)
-					cp #200-5 
-					jr z, resetVertical
-						add a, #1
-						ld (hl), a
+				;; Arriba-Izquierda
+				cp #4
+				jr z, up_left
+					;; Arriba-Derecha
+					cp #5
+					jr z, up_right
+						;; Abajo-Izquierda
+						cp #6
+						jr z, down_left
+							;; Abajo-Derecha
+							cp #7
+							jp z, down_right
+								;;Arriba-Abajo
+								pop hl 	;; hl = bullets_x
+								inc hl 	;; hl = bullets_y
+								cp #2
+								jr z, up
+									;; Down
+									ld a, (hl)
+									cp #200-5 
+									jp z, resetVertical
+										add a, #1
+										ld (hl), a
 
-						dec hl 	;; hl = bullets_x
-						call bullets_posiciones_updateList
-						jr increment
-				up:
-					ld a, (hl)
-					cp #0
-					jr z, resetVertical
-						sub a, #1
-						ld (hl), a
+										dec hl 	;; hl = bullets_x
+										call bullets_posiciones_updateList
+										jp increment
+								up:
+									ld a, (hl)
+									cp #0
+									jp z, resetVertical
+										sub a, #1
+										ld (hl), a
 
-						dec hl 	;; hl = bullets_x
-						call bullets_posiciones_updateList
-						jr increment
+										dec hl 	;; hl = bullets_x
+										call bullets_posiciones_updateList
+										jp increment
 		left:
 			pop hl		;; hl = bullets_x
 			ld a, (hl)
@@ -723,6 +735,75 @@ bullets_updateBullets::
 					ld (hl), a
 					call bullets_posiciones_updateList
 					jr increment
+				up_left:
+					pop hl		;; hl = bullets_x
+					ld a, (hl)
+					cp #0
+					jr z, reset
+						inc hl 		;; hl = bullets_y
+						ld a, (hl)
+						cp #0
+						jr z, resetVertical
+						sub a, #1
+						ld (hl), a
+						dec hl 			;; hl = bullets_x
+						ld a, (hl) 
+						dec a
+						ld (hl), a
+						call bullets_posiciones_updateList
+						jr increment
+						up_right:
+							pop hl		;; hl = bullets_x
+							ld a, (hl)
+							cp #80-3
+							jr z, reset
+								inc hl 		;; hl = bullets_y
+								ld a, (hl)
+								cp #0
+								jr z, resetVertical
+								sub a, #1
+								ld (hl), a
+								dec hl 			;; hl = bullets_x
+								ld a, (hl) 
+								inc a
+								ld (hl), a
+								call bullets_posiciones_updateList
+								jr increment
+								down_left:
+									pop hl		;; hl = bullets_x
+									ld a, (hl)
+									cp #0
+									jr z, reset
+										inc hl 		;; hl = bullets_y
+										ld a, (hl)
+										cp #200-5
+										jr z, resetVertical
+										add a, #1
+										ld (hl), a
+										dec hl 			;; hl = bullets_x
+										ld a, (hl) 
+										dec a
+										ld (hl), a
+										call bullets_posiciones_updateList
+										jr increment
+										down_right:
+											pop hl		;; hl = bullets_x
+											ld a, (hl)
+											cp #80-3
+											jr z, reset
+												inc hl 		;; hl = bullets_y
+												ld a, (hl)
+												cp #200-5
+												jr z, resetVertical
+												add a, #1
+												ld (hl), a
+												dec hl 			;; hl = bullets_x
+												ld a, (hl) 
+												inc a
+												ld (hl), a
+												call bullets_posiciones_updateList
+												jr increment
+
 	resetVertical:
 		dec hl 							;; hl = bullet_x
 	reset:

@@ -24,7 +24,7 @@ settings::
 	ld de, #16
 	call cpct_setPalette_asm
 
-	;; Trabajo provisional hardware_scrolling
+	;; MAP
 	ld hl, #_g_tileset
 	call cpct_etm_setTileset2x4_asm
 
@@ -38,7 +38,13 @@ settings::
 	ld bc, #0x4000
 	call cpct_memset_asm
 
-	call map_draw
+ret
+
+;; =================================
+;;	Menú principal
+;; =================================
+drawMenu::
+
 
 ret
 
@@ -49,4 +55,5 @@ _main::
 	ld sp, #0x8000
 
 	call settings
+	call map_draw
 	call game_start
