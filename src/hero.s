@@ -18,6 +18,17 @@
 .include "game.h.s"
 .include "map.h.s"
 
+;;Last Movement Info:
+;;	- 0: Left
+;;	- 1: Right
+;;	- 2: Up
+;;	- 3: Down
+;;	- 4: Up-Left
+;;	- 5: Up-Right
+;;	- 6: Down-Left
+;;	- 7: Down-Right
+
+
 ;;Hero Data
 ;;===================================================
 ;; ¡Si cambiamos el ancho del hero hay que cambiar
@@ -167,7 +178,7 @@ hero_init::
 	ld a, #-1
 	ld (hero_jump), a
 	ld a, #01
-	ld (hero_lastmovement), a
+	ld (hero_directionBullet), a
 	ld a, #03
 	ld (hero_lives), a
 	ld a, #0
@@ -182,19 +193,19 @@ hero_init::
 	ret	
 
 ;; ======================
-;;	Gets a pointer to hero last movement
+;;	Gets a pointer to hero directionBullet
 ;;	
 ;;	RETURNS:
-;; 		HL:Pointer to hero last moevement
+;; 		HL:Pointer to hero directionBullet
 ;; ======================
 hero_getPointerLastMovement::
-	ld hl, #hero_lastmovement 		;; Hl points to the Hero Data
+	ld hl, #hero_directionBullet 		;; Hl points to the Hero Data
 	ret
 ;; ======================
-;;	Gets a pointer to hero last movement
+;;	Gets a pointer to hero directionBullet
 ;;	
 ;;	RETURNS:
-;; 		HL:Pointer to hero last moevement
+;; 		HL:Pointer to hero directionBullet
 ;; ======================
 hero_getPointerInvecible::
 	ld hl , #hero_invencibleState
@@ -387,7 +398,7 @@ checkUserInput:
 	;;Space is pressed
 	ld ix, #hero_data
 	call entity_setPointer
-	ld a, (hero_lastmovement)
+	ld a, (hero_directionBullet)
 	call entity_setPointerLastMovement
 	ld a, (hero_id)
 	call entity_setId
@@ -450,33 +461,97 @@ checkUserInput:
 	call startJump
 	shift_not_pressed:
 
-	;;Check for key 'Up Arrow' being pressed
-	ld hl, #Key_CursorUp 				;;HL = Key_Shift
-	call cpct_isKeyPressed_asm	;;Check if Key_Shift is presed
-	cp #0						;;Check Shift == 0
-	jr z, up_arrow_not_pressed			;;Jump if Shift==0 (shift_not_pressed)
+	;;========================================================= Shot Direcction =========================================================
 
-	;;Up Arrow is pressed
-	
-	ld hl, #hero_lastmovement
-	ld a, #02
-	ld (hl), a
+	;;Check for key 'Up Arrow' being pressed
+	ld hl, #Key_CursorUp 				
+	call cpct_isKeyPressed_asm
+	cp #0								
+	jr z, up_arrow_not_pressed
+
+	;;Up Arrow is pressed - Check if RightOrLeft is pressed too
+	call checkLeftRight
+	ld hl, #hero_directionBullet
+	cp #0
+	jr z, up_arrow_pressed:
+
+	;; RightOrLeft is pressed too
+	cp #1
+	jr z, leftPressedUp
+ 		;; Right pressed too
+		ld a, #05
+		ld (hl), a
+		ret
+	leftPressedUp:
+		;; Left pressed too
+		ld a, #04
+		ld (hl), a
+		ret
+	;; Only up arrow pressed
+	up_arrow_pressed:
+		ld a, #2 
+		ld (hl), a
+		ret
 
 	up_arrow_not_pressed:
 
 	;;Check for key 'Down Arrow' being pressed
-	ld hl, #Key_CursorDown 				;;HL = Key_Shift
-	call cpct_isKeyPressed_asm	;;Check if Key_Shift is presed
-	cp #0						;;Check Shift == 0
-	jr z, down_arrow_not_pressed			;;Jump if Shift==0 (shift_not_pressed)
+	ld hl, #Key_CursorDown 				
+	call cpct_isKeyPressed_asm	
+	cp #0						
+	jr z, down_arrow_not_pressed
 
-	;;Down Arrow is pressed
-	
-	ld hl, #hero_lastmovement
-	ld a, #03
-	ld (hl), a
+	;;Up Arrow is pressed - Check if RightOrLeft is pressed too
+	call checkLeftRight
+	ld hl, #hero_directionBullet
+	cp #0
+	jr z, down_arrow_pressed:
 
+	;; RightOrLeft is pressed too
+	cp #1
+	jr z, leftPressedDown
+ 		;; Right pressed too
+		ld a, #07
+		ld (hl), a
+		ret
+	leftPressedDown:
+		;; Left pressed too
+		ld a, #06
+		ld (hl), a
+		ret
+	;; Only down pressed
+	down_arrow_pressed:
+		ld a, #03 
+		ld (hl), a
+		ret
 	down_arrow_not_pressed:
+
+	;;LEFT RIGHT ONLY COMPROBATION
+	call checkLeftRight
+	cp #0
+	jr z, nothing_pressed
+	ld hl, #hero_directionBullet
+	cp #1
+	jr z, leftPressedOnly
+ 		;; Right pressed only
+		ld a, #01
+		ld (hl), a
+		ret
+	leftPressedOnly:
+		;; Left pressed only
+		ld a, #00
+		ld (hl), a
+	nothing_pressed:
+	ret
+
+;; ================================
+;;	Check left or right pressed
+;;	OUTPUTS:
+;;		A: 0 if none is pressed
+;;		   1 if left arrow pressed
+;;		   2 if right arrow pressed
+;; ================================
+checkLeftRight:
 
 	;;Check for key 'Left Arrow' being pressed
 	ld hl, #Key_CursorLeft 				;;HL = Key_Shift
@@ -486,9 +561,8 @@ checkUserInput:
 
 	;;Left Arrow is pressed
 	
-	ld hl, #hero_lastmovement
-	ld a, #00
-	ld (hl), a
+	ld a, #1
+	ret 
 
 	left_arrow_not_pressed:
 
@@ -500,13 +574,13 @@ checkUserInput:
 
 	;;Right Arrow is pressed
 	
-	ld hl, #hero_lastmovement
-	ld a, #01
-	ld (hl), a
+	ld a, #2 
+	ret 
 
 	right_arrow_not_pressed:
-
+	ld a, #0
 	ret
+
 ;; ======================
 ;;	Hero is death
 ;; ======================
