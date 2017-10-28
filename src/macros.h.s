@@ -7,7 +7,7 @@
         name'_sprite:     .dw spr
         name'_lives:      .db lives
         name'_temp:       .db temp
-        name'_lastmovement: .db lastmovement
+        name'_directionBullet:: .db lastmovement
         name'_ux:         .db ux
         name'_pux:         .db pux
         name'_uy:         .db uy
