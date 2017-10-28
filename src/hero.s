@@ -366,7 +366,7 @@ moveHeroLeft:
 ;;	Checks User Input and Reacts
 ;;	DESTROYS:
 ;; ======================
-checkUserInput:
+checkUserInput::
 	;;Scan the whole keyboard
 	call cpct_scanKeyboard_asm ;;keyboard.s
 
@@ -473,7 +473,7 @@ checkUserInput:
 	call checkLeftRight
 	ld hl, #hero_directionBullet
 	cp #0
-	jr z, up_arrow_pressed:
+	jr z, up_arrow_pressed
 
 	;; RightOrLeft is pressed too
 	cp #1
@@ -505,7 +505,7 @@ checkUserInput:
 	call checkLeftRight
 	ld hl, #hero_directionBullet
 	cp #0
-	jr z, down_arrow_pressed:
+	jr z, down_arrow_pressed
 
 	;; RightOrLeft is pressed too
 	cp #1
