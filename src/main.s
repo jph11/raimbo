@@ -3,7 +3,9 @@
 .globl _sprite_palette
 .globl _g_tileset
 .globl _g_tilemap
-.globl _sprite_bala
+.globl _menu_PRESS
+.globl _menu_G
+.globl _menu_TO_PLAY
 
 .area _CODE
 
@@ -11,6 +13,27 @@
 .include "cpctelera.h.s"
 .include "map.h.s"
 .include "keyboard.s"
+
+.macro defineMenu name, x, y, w, h, spr
+	name'_data::
+		name'_x: 	  	.db x
+		name'_y:	    .db y  
+		name'_w:	    .db w
+		name'_h:	    .db h
+		name'_sprite:  	.dw spr
+.endm
+
+defineMenu m1, 20, 40, 40, 20, _menu_PRESS
+defineMenu m2, 20, 80, 40, 20, _menu_G
+defineMenu m3, 20, 110, 40, 20, _menu_TO_PLAY
+
+.equ M_x, 0
+.equ M_y, 1
+.equ M_w, 2
+.equ M_h, 3	
+.equ M_spr_l, 4
+.equ M_spr_h, 5	
+
 
 ;; =================================
 ;;	Settings, mode video and palette
@@ -46,7 +69,53 @@ ret
 ;; =================================
 drawMenu::
 
-    ld hl, #0xC000
+		ld ix, #m1_data
+		call drawSprite
+		ld ix, #m2_data
+		call drawSprite
+		ld ix, #m3_data
+		call drawSprite
+		
+		loop:
+			;;Scan the whole keyboard
+			call cpct_scanKeyboard_asm ;;keyboard.s
+
+			;;Check for key 'Enter' being pressed
+			ld hl, #Key_G
+			call cpct_isKeyPressed_asm	;;Check if Key_Enter is presed
+			cp #0						;;Check A == 0
+			jr z, loop					;;Jump if A==0 (space_not_pressed)
+
+			;;Enter is pressed
+			ret
+
+;; =================================
+;;	Draw Sprite
+;; =================================
+drawSprite:
+	ld de, #0xC000			;;Video memory
+
+	ld c, M_x(ix)			;;\ C=entity_x
+	ld b, M_y(ix)			;;\ B=entity_y
+
+	call cpct_getScreenPtr_asm	;;Get pointer to screen
+	ex de, hl
+
+	;; Draw a box
+	ld b, M_h(ix)
+	ld c, M_w(ix)
+	;;Draw sprite
+	ld h, M_spr_h(ix)
+	ld l, M_spr_l(ix)
+	call cpct_drawSpriteMasked_asm
+
+ret
+
+;; =================================
+;;	Draw background
+;; =================================
+drawBackground:
+	ld hl, #0xC000
 	push hl
 	ld de, #0x0800
  	ld c, #8
@@ -54,7 +123,7 @@ drawMenu::
  	 	oneFor:
  	  		ld b, #80			;;píxeles a lo ancho de x
 		twoFor:
-			ld (hl), #0x68		;;pinto un píxel de color amarillo
+			ld (hl), #0xF0		;;pinto un píxel de color amarillo
 			inc hl				;;paso a la siguiente posición de memoria
 			dec b				;;b--
 			jr nz, twoFor		;;si b es el final de la fila terminamos el bucle
@@ -77,20 +146,7 @@ drawMenu::
 		dec a
 		cp #0
 		jr nz, oneFor
-	pop hl
-
-		;;Scan the whole keyboard
-		call cpct_scanKeyboard_asm ;;keyboard.s
-
-		;;Check for key 'Enter' being pressed
-		ld hl, #Key_P
-		call cpct_isKeyPressed_asm	;;Check if Key_Enter is presed
-		cp #0						;;Check A == 0
-		jr z, drawMenu				;;Jump if A==0 (space_not_pressed)
-
-		;;Enter is pressed
-		ret
-
+	pop hl	
 
 ;; ======================
 ;;	Main program entry
