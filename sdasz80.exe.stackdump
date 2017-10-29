@@ -1,9 +1,0 @@
-Exception: STATUS_ACCESS_VIOLATION at eip=0040D71F
-eax=80049540 ebx=00000000 ecx=00000400 edx=000003FF esi=80049540 edi=000003FF
-ebp=0028CC68 esp=0028CBE0 program=C:\cygwin\home\Robert\cpctelera\cpctelera\tools\sdcc-3.6.8-r9946\bin\sdasz80.exe, pid 7364, thread main
-cs=0023 ds=002B es=002B fs=0053 gs=002B ss=002B
-Stack trace:
-Frame     Function  Args
-0028CC68  0040D71F (00000008, 0028CC8C, 800000D0, 6115C646)
-0028CD28  61007A67 (00000000, 0028CD84, 61006A60, 00000000)
-End of stack trace
