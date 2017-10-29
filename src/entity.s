@@ -19,6 +19,7 @@
 .include "cpctelera.h.s"
 .include "macros.h.s"
 .include "map.h.s"
+.include "game.h.s"
 
 defineInitEntity entity 0, 0, 0, 0
 entity_last_movement: .db #00

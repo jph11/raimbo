@@ -13,6 +13,7 @@
 .include "bullets.h.s"
 .include "cpctelera.h.s"
 .include "macros.h.s"
+.include "game.h.s"
 
 ;;========================
 ;;========================
@@ -195,6 +196,7 @@ map_draw::
 	ld    d, #50          	;; H = height in tiles of the tile-box
 	ld    e, #40          	;; L =  width in tiles of the tile-box
 	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
+	call drawScore
 	
 ret
 

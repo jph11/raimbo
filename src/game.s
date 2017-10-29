@@ -49,7 +49,11 @@ game_start::
 ;; ======================
 game_init:
     call hero_init
+	call map_draw
+	call drawScore
+ret
 
+drawScore::
 	ld ix, #score_data
 	ld de, #0xFEE0
 	call drawScoreLife
@@ -62,8 +66,6 @@ game_init:
 	ld de, #0x873A
 	call drawScoreLife
 
-	call map_draw
-    ret
 ret
 
 drawScoreLife::
