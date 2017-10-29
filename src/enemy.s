@@ -19,6 +19,8 @@
 .include "bullets.h.s"
 .include "map.h.s"
 
+shootTemp:
+	.db #0x00
 enemy_memory::
 	.dw #arrayEnemyA
 enemy_id: 
@@ -550,14 +552,15 @@ Algorithm_Random:
 		ret
 
 enemyShoot:	
-	ld a, EnemyTemp(ix)  			
+	ld a, (shootTemp)  			
 	cp #0x30 			
 	jr z, plus 			
 		inc a 			
-		ld EnemyTemp(ix), a 		
+		ld (shootTemp), a 		
 		ret 			
-	plus:				
-	ld EnemyTemp(ix), #0x00
+	plus:		
+	ld a, #0		
+	ld (shootTemp), a
 
 	call entity_setPointer
 
