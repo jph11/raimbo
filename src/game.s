@@ -13,15 +13,6 @@
 .include "keyboard.s"
 .include "map.h.s"
 
-.macro defineScoreLife name, x, y, w, h, spr
-	name'_data::
-		name'_x: 	  	.db x
-		name'_y:	    .db y  
-		name'_w:	    .db w
-		name'_h:	    .db h
-		name'_sprite:  	.dw spr
-.endm
-
 .equ S_x, 0
 .equ S_y, 1
 .equ S_w, 2

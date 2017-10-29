@@ -650,8 +650,6 @@ checkLeftRight:
 ;; ======================
 
 hero_drawLife:
-	push AF
-
 	ld a, (hl)
 	ld S_spr_l(ix), a
 	inc hl
@@ -662,18 +660,23 @@ hero_drawLife:
 	call drawScoreLife
 	ld de, #0x873A
 	call drawScoreLife
-	
-	pop AF
+
 ret
 
 
 hero_decreaseLife::
+	push HL
+	push IX
+	push BC 
+	push AF
+	
 	call game_getPointerLife
 
 	ld hl, #life_sprites
 
 	ld a, (hero_lives)
 	dec a
+	ld (hero_lives), a
 
 	cp #3
 	jr z, draw75
@@ -700,12 +703,15 @@ hero_decreaseLife::
 		ld bc, #0x0004
 		add hl, bc
 		call hero_drawLife
-		jr endDraw
 
 	endDraw:
-		ld (hero_lives), a
-
+		pop AF 
+		pop BC 
+		pop IX 
+		pop HL
 ret
+
+
 
 
 hero_heroDamage:

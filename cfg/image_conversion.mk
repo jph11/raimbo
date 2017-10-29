@@ -100,9 +100,9 @@ $(eval $(call IMG2SPRITES,assets/Objects/flower_25.png,0,game,16,15,$(PALETTE),m
 #$(eval $(call IMG2SPRITES,assets/Objects/petal.png,0,sprite,12,12,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Objects/bala.png,0,sprite,6,5,$(PALETTE),,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Objects/score_life.png,0,game,160,17,$(PALETTE),mask,src/sprites,))
-$(eval $(call IMG2SPRITES,assets/Objects/PRESS.png,0,menu,80,20,$(PALETTE),mask,src/sprites,))
-$(eval $(call IMG2SPRITES,assets/Objects/TO_PLAY.png,0,menu,80,20,$(PALETTE),mask,src/sprites,))
-$(eval $(call IMG2SPRITES,assets/Objects/G.png,0,menu,80,20,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Objects/PRESS.png,0,menu,38,10,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Objects/G.png,0,menu,16,12,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Objects/TO_PLAY.png,0,menu,52,10,$(PALETTE),mask,src/sprites,))
 
 ##MAP
 $(eval $(call IMG2SPRITES,assets/Maps/tiles.png,0,g,4,4,$(PALETTE),tileset,src/sprites,))
