@@ -70,7 +70,7 @@ M2:
 M3:
 	defineMap M3 #_g_tilemap1, M2, M4
 	defineEnemy 60, 87, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
-	defineEnemy 54, 174, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
+	defineEnemy 54, 124, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2
 
 M4:
@@ -196,6 +196,7 @@ map_draw::
 	ld    d, #50          	;; H = height in tiles of the tile-box
 	ld    e, #40          	;; L =  width in tiles of the tile-box
 	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
+	
 	call drawScore
 	
 ret

@@ -587,9 +587,9 @@ hero_drawLife:
 	ld a, (hl)
 	ld S_spr_h(ix), a
 
-	ld de, #0xC73A
+	ld de, #0xC746
 	call drawScoreLife
-	ld de, #0x873A
+	ld de, #0x8746
 	call drawScoreLife
 
 ret

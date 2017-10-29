@@ -61,9 +61,9 @@ drawScore::
 	call drawScoreLife
 
 	ld ix, #life_data
-	ld de, #0xC73A
+	ld de, #0xC746
 	call drawScoreLife
-	ld de, #0x873A
+	ld de, #0x8746
 	call drawScoreLife
 
 ret
