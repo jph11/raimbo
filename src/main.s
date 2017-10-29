@@ -2,9 +2,8 @@
 
 .globl _sprite_palette
 .globl _g_tileset
-.globl _g_tilemap
 .globl _sprite_bala
-
+.globl ptilemapA
 .area _CODE
 
 .include "game.h.s"
@@ -55,5 +54,4 @@ _main::
 	ld sp, #0x8000
 
 	call settings
-	call map_draw
 	call game_start
