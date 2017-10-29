@@ -289,7 +289,7 @@ map_changeMap::
 		ld a, b
 		cp #0
 		jr z, endMap
-			ld a, #80-9
+			ld a, #80-10
 			ret 
 		endMap:
 			ret 
