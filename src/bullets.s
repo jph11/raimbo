@@ -576,7 +576,7 @@ drawBullet::
 			;;Draw sprite
 			ld c, #3
 			ld b, #5
-			call cpct_drawSprite_asm
+			call cpct_drawSpriteMasked_asm
 
 			pop de
 			pop bc
