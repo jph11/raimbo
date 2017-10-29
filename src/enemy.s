@@ -293,6 +293,7 @@ enemy_checkCollision:
 		ld a, #1
 		ld (hl), a
 		call hero_decreaseLife
+		call map_substractScore
 	
 	not_collision:
 

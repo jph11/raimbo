@@ -24,6 +24,7 @@
 engine_drawAll::
     call hero_draw
     call map_drawAllEnemiesAndBullets
+    call map_drawScore
 
     ret
 

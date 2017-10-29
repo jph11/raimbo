@@ -5,6 +5,10 @@
 .globl _sprite_oldMan_orange_left
 .globl _sprite_oldMan_orange_left_pistol
 .globl _g_tilemap
+
+score_char: .db #48, #48, #48, #0
+score: .db #0
+
 .area _CODE
 .include "enemy.h.s"
 .include "bullets.h.s"
@@ -31,6 +35,13 @@ puntero_video:: .dw #0x8000
 .equ EnemyPUX, 10
 .equ EnemyUY, 11
 .equ EnemyPUY, 12
+
+;; ------------------------
+;; Equivalencias del score que nada tienen que ver con el enemy
+;; ------------------------
+.equ score_digito_menos_significativo, 2
+.equ score_segundo_digito_menos_significativo, 1
+.equ score_tercer_digito_menos_significativo, 0
 
 NextEnemy:
 	.db #14
@@ -163,6 +174,7 @@ map_draw::
 	ld    e, #40          ;; L =  width in tiles of the tile-box
 	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
 
+
 	;; Set Parameters on the stack
 	ld   hl, #_g_tilemap   		;; HL = pointer to the tilemap
 	push hl              	;; Push ptilemap to the stack
@@ -175,7 +187,120 @@ map_draw::
 	ld    d, #50          	;; H = height in tiles of the tile-box
 	ld    e, #40          	;; L =  width in tiles of the tile-box
 	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
+
+	call map_drawScore
+ret
+
+map_drawScore::
+
+	push af
+	push bc
+	push de
+	push hl
+
+	ld de, #0xC000
+	ld c, #68
+	ld b, #188
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #score_char
+	ld b, #0
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+	ld de, #0x8000
+	ld c, #68
+	ld b, #188
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #score_char
+	ld b, #0
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+	pop hl
+	pop de
+	pop bc
+	pop af
+ret
+
+map_addScore::
 	
+	push ix
+
+	;; Actualización del score numérico para llevar control
+	ld ix, #score
+	inc (ix)
+
+	ld ix, #score_char
+	ld a, score_digito_menos_significativo(ix)
+
+	;; if (digito_menos_significativo == 9 == 57 EN ASCII)
+	;; --------------------------------------------------
+	cp #57
+	jr nz, no_modificar_segundo_digito_ascore
+	
+	;; then digito_menos_significativo = 0 = 48 EN ASCII
+	;; --------------------------------------------------
+	ld score_digito_menos_significativo(ix), #48
+
+	;; and segundo_digito_menos_significativo += 1
+	;; --------------------------------------------------
+	inc score_segundo_digito_menos_significativo(ix)
+	jr add_score_fin
+
+	;; else
+	no_modificar_segundo_digito_ascore:
+	inc score_digito_menos_significativo(ix)
+
+	add_score_fin:
+
+	pop ix
+ret
+
+map_substractScore::
+
+	push ix
+
+	;; if (score == 0) then end
+	;; -------------------------
+	ld ix, #score
+	ld a, (ix)
+	cp #0
+	jr z, substract_score_fin
+
+	;; Actualización del score numérico para llevar control
+	dec (ix)
+
+	ld ix, #score_char
+	ld a, score_digito_menos_significativo(ix)
+
+	;; if (digito_menos_significativo == 0 == 48 EN ASCII)
+	;; --------------------------------------------------
+	cp #48
+	jr nz, no_modificar_segundo_digito_sscore
+	
+	;; then digito_menos_significativo = 9 = 57 EN ASCII
+	;; --------------------------------------------------
+	ld score_digito_menos_significativo(ix), #57
+
+	;; and segundo_digito_menos_significativo += 1
+	;; --------------------------------------------------
+	dec score_segundo_digito_menos_significativo(ix)
+	jr substract_score_fin
+
+	;; else
+	no_modificar_segundo_digito_sscore:
+	dec score_digito_menos_significativo(ix)
+
+	substract_score_fin:
+
+	pop ix
+
 ret
 
 ;; =============================

@@ -6,3 +6,6 @@
 .globl puntero_video
 .globl map_draw
 .globl map_changeMap
+.globl map_drawScore
+.globl map_addScore
+.globl map_substractScore

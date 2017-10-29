@@ -479,6 +479,8 @@ bullet_checkCollision::
 				ld a, (nBullets)
 				dec a
 				ld (nBullets), a
+
+				call map_substractScore
 				
 				ret
 
@@ -501,6 +503,8 @@ bullet_checkCollision::
 
 				call enemy_erase
 				call enemy_enemyKill
+
+				call map_addScore
 
 				ret
 
