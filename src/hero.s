@@ -1,6 +1,17 @@
 .area _DATA
 
-.globl _sprite_hero_right_pistol
+.globl _sprite_hero_upLeft_diag_pistol
+.globl _sprite_hero_upRight_diag_pistol
+.globl _sprite_hero_downLeft_diag_pistol
+.globl _sprite_hero_downRight_diag_pistol  
+.globl _sprite_hero_forward_pistol        
+.globl _sprite_hero_back_pistol          
+.globl _sprite_hero_left_pistol
+.globl _sprite_hero_right_pistol         
+.globl nEnemyA
+.globl _game_flower_75
+.globl _game_flower_50
+.globl _game_flower_25
 
 .area _CODE
 
@@ -34,7 +45,7 @@
 ;; ¡Si cambiamos el ancho del hero hay que cambiar
 ;;	 en el SpaceKey check el valor también!
 ;;===================================================
-defineEntity hero, 39, 60, 9, 25, _sprite_hero_right_pistol, 3, 0, 1, 39, 39, 60, 60
+defineEntity hero, 39, 60, 9, 25, _sprite_hero_right_pistol, 4, 0, 1, 39, 39, 60, 60
 hero_jump: .db #-1
 hero_id: .db #00
 hero_invencibleState: .db #0
@@ -50,12 +61,19 @@ jumptable:
 	.db #01, #02, #04, #05
 	.db #0x80
 
+life_sprites:
+	.dw _game_flower_75
+	.dw _game_flower_50
+	.dw _game_flower_25
+
+.equ S_spr_l, 4
+.equ S_spr_h, 5		
+
 ;;===========================================
 ;;===========================================
 ;;PUBLIC FUNTIONS
 ;;===========================================
 ;;===========================================
-
 
 hero_getPointerLife::
 	ld hl, #hero_lives
@@ -67,81 +85,12 @@ hero_getPointerLife::
 ;; ======================
 hero_update::
 	
-	;;ld hl, #0xC232
-	;;ld a, (hero_lives)
-	;;cp #0
-	;;jr z, borrar1
-	;;jr c, borrar1
-	;;ld a, #0xFF
-	;;ld (hl), a
-	;;jr pintar
-	;;borrar1:
-	;;ld a, #0x00
-	;;ld (hl), a
-	;;pintar:
-	;;ld hl, #0xC234
-	;;ld a, (hero_lives)
-	;;cp #1
-	;;jr z, borrar2
-	;;jr c, borrar2
-	;;ld a, #0xFF
-	;;ld (hl), a
-	;;jr pintar2
-	;;borrar2:
-	;;ld a, #0x00
-	;;ld (hl), a
-	;;pintar2:
-	;;ld hl, #0xC236
-	;;ld a, (hero_lives)
-	;;cp #2
-	;;jr z, borrar3
-	;;jr c, borrar3
-	;;ld a, #0xFF
-	;;ld (hl), a
-	;;jr pintar3
-	;;borrar3:
-	;;ld a, #0x00
-	;;ld (hl), a
-	;;pintar3:
-	;;ld hl, #0xC238
-	;;ld a, (hero_lives)
-	;;cp #3
-	;;jr z, borrar4
-	;;jr c, borrar4
-	;;ld a, #0xFF
-	;;ld (hl), a
-	;;jr pintar4
-	;;borrar4:
-	;;ld a, #0x00
-	;;ld (hl), a
-	;;pintar4:
-
-
-	;;finPintar:
-
 	call jumpControl
 	call checkUserInput
 	call hero_heroDamage
 
 	ld ix, #hero_data
 	call entity_updatePositions
-
-	;; Actualización de punteros para el doble buffer
-	;;ld a, (hero_ux)
-	;;ld hl, #hero_pux
-	;;ld (hl), a
-
-	;;ld a, (hero_uy)
-	;;ld hl, #hero_puy
-	;;ld (hl), a
-
-	;;ld a, (hero_x)
-	;;ld hl, #hero_ux
-	;;ld (hl), a
-
-	;;ld a, (hero_y)
-	;;ld hl, #hero_uy
-	;;ld (hl), a
 ret
 
 ;; ======================
@@ -179,7 +128,7 @@ hero_init::
 	ld (hero_jump), a
 	ld a, #01
 	ld (hero_directionBullet), a
-	ld a, #03
+	ld a, #04
 	ld (hero_lives), a
 	ld a, #0
 	ld (hero_invencibleState), a
@@ -225,7 +174,6 @@ hero_getPointer::
 ;;PRIVATE FUNCTIONS
 ;;===========================================
 ;;===========================================
-
 
 ;; ======================
 ;;	Controls Jump movements
@@ -308,7 +256,7 @@ moveHeroUp:
 ;; ======================
 moveHeroBottom:
 	ld a, (hero_y)	;;A = hero_y
-	cp #200-28		;;Check against right limit (screen size - hero size)
+	cp #200-28-18		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
 	jr nc, d_not_move_bottom
 
@@ -335,6 +283,10 @@ moveHeroRight:
 	ret 
 	
 	d_not_move_right:
+		ld hl, (nEnemyA)
+		ld a, (hl)
+		cp #0
+		 ret nz
 		ld a, #0
 		call map_changeMap
 		cp #-1
@@ -345,7 +297,7 @@ moveHeroRight:
 ;; ======================
 ;; Move hero to the left
 ;; ======================
-moveHeroLeft:
+moveHeroLeft::
 	ld a, (hero_x)	;;A = hero_x
 	cp #0		;;Check against left limit (screen size - hero size)
 	jr z, d_not_move_left	;;Hero_x == Limit, do not move
@@ -355,12 +307,28 @@ moveHeroLeft:
 	ret 
 
 	d_not_move_left:
+		ld hl, (nEnemyA)
+		ld a, (hl)
+		cp #0
+		 ret nz
 		ld a, #1
 		call map_changeMap
 		cp #-1
 			ret z
 		ld (hero_x), a
 	ret
+
+;; ============================
+;; 	Changes the hero sprite
+;; 	INPUTS: 
+;;		de: hero_spritePointer
+;; =============================
+cambiarSprite:
+	ld hl, #hero_sprite
+	ld (hl), e
+	inc hl 
+	ld (hl), d
+ret
 
 ;; ======================
 ;;	Checks User Input and Reacts
@@ -381,7 +349,7 @@ checkUserInput::
 	;; Temporizador - Esta primera función guarda una bala cada dos veces y realiza un efecto de temporizador
 	ld hl, #hero_temp 						;; hl <= tempBullets
 	ld a, (hl) 								;; a <= (tempBullets)
-	cp #0x02 								;; a == 0x02
+	cp #0x05 								;; a == 0x02
 	jr z, nueva 							;; if(!a==0x02){
 		inc a 								;; 	a++
 		ld (hl), a 							;; 	Actualizamos tempBullets
@@ -413,8 +381,13 @@ checkUserInput::
 	jr z, a_not_pressed			;;Jump if A==0 (a_not_pressed)
 
 	;;A is pressed
-	call moveHeroLeft
 
+	call moveHeroLeft
+	ld hl, #hero_directionBullet
+	ld a, #0
+	ld (hl), a 
+	ld de, #_sprite_hero_left_pistol
+	call cambiarSprite
 	a_not_pressed:
 
 	;;Check for key 'D' being pressed
@@ -425,6 +398,11 @@ checkUserInput::
 
 	;;D is pressed
 	call moveHeroRight
+	ld hl, #hero_directionBullet
+	ld a, #1
+	ld (hl), a 
+	ld de, #_sprite_hero_right_pistol
+	call cambiarSprite
 
 	d_not_pressed:
 
@@ -436,7 +414,11 @@ checkUserInput::
 
 	;;W is pressed
 	call moveHeroUp
-
+	ld hl, #hero_directionBullet
+	ld a, #2
+	ld (hl), a 
+	ld de, #_sprite_hero_back_pistol
+	call cambiarSprite
 	w_not_pressed:
 
 	;;Check for key 'S' being pressed
@@ -447,7 +429,11 @@ checkUserInput::
 
 	;;S is pressed	
 	call moveHeroBottom
-
+	ld hl, #hero_directionBullet
+	ld a, #3
+	ld (hl), a 
+	ld de, #_sprite_hero_forward_pistol
+	call cambiarSprite
 	s_not_pressed:
 
 	;;Check for key 'Shift' being pressed
@@ -481,16 +467,23 @@ checkUserInput::
  		;; Right pressed too
 		ld a, #05
 		ld (hl), a
+		ld de, #_sprite_hero_upRight_diag_pistol
+		call cambiarSprite
 		ret
 	leftPressedUp:
 		;; Left pressed too
 		ld a, #04
 		ld (hl), a
+		ld hl, #hero_sprite
+		ld de, #_sprite_hero_upLeft_diag_pistol
+		call cambiarSprite
 		ret
 	;; Only up arrow pressed
 	up_arrow_pressed:
 		ld a, #2 
 		ld (hl), a
+		ld de, #_sprite_hero_back_pistol
+		call cambiarSprite
 		ret
 
 	up_arrow_not_pressed:
@@ -513,16 +506,22 @@ checkUserInput::
  		;; Right pressed too
 		ld a, #07
 		ld (hl), a
+		ld de, #_sprite_hero_downRight_diag_pistol
+		call cambiarSprite
 		ret
 	leftPressedDown:
 		;; Left pressed too
 		ld a, #06
 		ld (hl), a
+		ld de, #_sprite_hero_downLeft_diag_pistol
+		call cambiarSprite
 		ret
 	;; Only down pressed
 	down_arrow_pressed:
 		ld a, #03 
 		ld (hl), a
+		ld de, #_sprite_hero_forward_pistol
+		call cambiarSprite
 		ret
 	down_arrow_not_pressed:
 
@@ -536,11 +535,15 @@ checkUserInput::
  		;; Right pressed only
 		ld a, #01
 		ld (hl), a
+		ld de, #_sprite_hero_right_pistol
+		call cambiarSprite
 		ret
 	leftPressedOnly:
 		;; Left pressed only
 		ld a, #00
 		ld (hl), a
+		ld de, #_sprite_hero_left_pistol
+		call cambiarSprite
 	nothing_pressed:
 	ret
 
@@ -585,11 +588,73 @@ checkLeftRight:
 ;;	Hero is death
 ;; ======================
 
+hero_drawLife:
+	ld a, (hl)
+	ld S_spr_l(ix), a
+	inc hl
+	ld a, (hl)
+	ld S_spr_h(ix), a
+
+	ld de, #0xC746
+	call drawScoreLife
+	ld de, #0x8746
+	call drawScoreLife
+
+ret
+
+
 hero_decreaseLife::
+	push DE
+	push HL
+	push IX
+	push AF
+	
+	call game_getPointerLife
+
+	ld hl, #life_sprites
+
 	ld a, (hero_lives)
 	dec a
 	ld (hero_lives), a
-	ret
+
+	cp #3
+	jr z, draw75
+
+	cp #2
+	jr z, draw50
+
+	cp #1
+	jr z, draw25
+
+		jr endDraw
+
+	draw75:
+		call hero_drawLife
+		jr endDraw
+
+	draw50:
+		push BC
+		ld bc, #0x0002
+		add hl, bc
+		call hero_drawLife
+		pop BC
+		jr endDraw
+
+	draw25:
+		push BC
+		ld bc, #0x0004
+		add hl, bc
+		call hero_drawLife
+		pop BC
+
+	endDraw:
+		pop AF 
+		pop IX 
+		pop HL
+		pop DE
+ret
+
+
 
 
 hero_heroDamage:
@@ -607,7 +672,7 @@ hero_heroDamage:
 	continue:
 	ld a, (hero_invencibleTransitions)		;;Cargamos nº alteraciones
 		cp #0				
-		jr z, end				;;Si nº alteraciones==0 terminamos ==> end
+		jr z, end							;;Si nº alteraciones==0 terminamos ==> end
 		ld a, (hero_invencibleDuration)		;;sino cargamos la duración de la animación i
 								;;y entramos en el loop
 		loop:

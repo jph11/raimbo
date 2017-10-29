@@ -9,7 +9,7 @@
         name'_temp:       .db temp
         name'_directionBullet:: .db lastmovement
         name'_ux:         .db ux
-        name'_pux:         .db pux
+        name'_pux:        .db pux
         name'_uy:         .db uy
         name'_puy:        .db puy
 .endm
@@ -31,13 +31,15 @@
         name'_h:    .db h
 .endm
 
-.macro defineMap name, ptilemap, puertaIzquierda, puertaDerecha
+.macro defineMap name, ptilemap, puertaIzquierda, puertaDerecha, nEnemy
         name'_ptilemap:
             .dw ptilemap
         name'_puertaIzquierda:
             .dw puertaIzquierda
         name'_puertaDerecha:
             .dw puertaDerecha
+        name'_nEnemyMap:
+            .db nEnemy
         name'_arrayEnemy:
 .endm
 
@@ -80,10 +82,6 @@
         .db #0x81
 .endm
 
-.macro definePattern nombre_patron
-        nombre_patron::
-.endm
-
 .macro definePatternAction numero_veces, aumento_x, aumento_y, sprite, disparo1, disparo2, disparo3
         .db numero_veces
         .db aumento_x
@@ -103,4 +101,13 @@
         .db disparo2
         .db disparo3
         .db #0xFF
+.endm
+
+.macro defineScoreLife name, x, y, w, h, spr
+	name'_data::
+		name'_x: 	  	.db x
+		name'_y:	    .db y  
+		name'_w:	    .db w
+		name'_h:	    .db h
+		name'_sprite:  	.dw spr
 .endm

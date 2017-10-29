@@ -2,7 +2,7 @@
 
 .globl _sprite_oldMan_left
 .globl _sprite_death
-
+.globl nEnemyA
 .area _CODE
 
 ;;===========================================
@@ -19,6 +19,8 @@
 .include "bullets.h.s"
 .include "map.h.s"
 
+shootTemp:
+	.db #0x00
 enemy_memory::
 	.dw #arrayEnemyA
 enemy_id: 
@@ -56,8 +58,8 @@ death_animState: .db #00	;;Estado actual [0-1]
 ;; Patterns. Cada pattern es un conjunto de tuplas (número de veces, aumento en x, aumento en y, sprite, disparo1, disparo2, disparo3)
 ;; ========================
 pattern1::
-definePatternAction #1, #1, #1, #_sprite_death, #5, #0xFF, #0xFF
-definePatternLastAction #2, #0, #0, #_sprite_death, #0xFF, #0xFF, #0xFF
+definePatternAction #1, #-1, #-1, #_sprite_death, #5, #0xFF, #0xFF
+definePatternLastAction #30, #0, #0, #_sprite_death, #0xFF, #0xFF, #0xFF
 
 pattern2::
 definePatternAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
@@ -113,6 +115,7 @@ enemy_update::
 		cp #3
 		jr z, Pattern1 
 			call Algorithm_Teletransport
+			call enemyShoot
 			jr collision
 		Shooter:
 			call Algorithm_Shooter
@@ -126,6 +129,7 @@ enemy_update::
 			jr collision
 		Pattern1:
 			call Algorithm_Pattern
+
 		collision:
 
 		call hero_getPointer
@@ -185,7 +189,12 @@ enemy_enemyKill::
 		ld (death_x), a
 		ld a, Enemy_y(ix)
 		ld (death_y), a
-	ret 	
+
+		ld hl, (nEnemyA)
+		ld a, (hl)
+		dec a
+		ld (hl), a
+		ret 	
 
 ;;===========================================
 ;;===========================================
@@ -450,7 +459,7 @@ Algorithm_Teletransport::
 			ld Enemy_x(ix), a
 			ret
 	segundoRangoTeletransport:
-		ld a, #200
+		ld a, #200-18
 		ld b, Enemy_h(ix)
 		sub b
 		ld b, a
@@ -547,7 +556,7 @@ Algorithm_Random:
 	jp c, primerRango
 	cp #128
 	jp c, segundoRango
-	cp #192
+	cp #172
 	jp c, tercerRango
 		;; cuartoRango
 		ld a, Enemy_y(ix)
@@ -580,11 +589,11 @@ Algorithm_Random:
 		ret
 	tercerRango:
 		ld a, Enemy_y(ix)
-		cp #200-26
+		cp #200-26-18
 		ret z
-		cp #200-27
+		cp #200-27-18
 		ret z
-		cp #200-25
+		cp #200-25-18
 			ret z
 		add a, #3
 		ld Enemy_y(ix), a
@@ -810,14 +819,15 @@ enemyShootParametrizada:
 ret
 
 enemyShoot:	
-	ld a, EnemyTemp(ix)  			
+	ld a, (shootTemp)  			
 	cp #0x30 			
 	jr z, plus 			
 		inc a 			
-		ld EnemyTemp(ix), a 		
+		ld (shootTemp), a 		
 		ret 			
-	plus:				
-	ld EnemyTemp(ix), #0x00
+	plus:		
+	ld a, #0		
+	ld (shootTemp), a
 
 	call entity_setPointer
 

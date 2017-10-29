@@ -1,7 +1,5 @@
 .area _DATA
-
-.globl _g_tilemap
-
+.globl ptilemapA
 .area _CODE
 
 .equ Ent_x, 0
@@ -21,6 +19,7 @@
 .include "cpctelera.h.s"
 .include "macros.h.s"
 .include "map.h.s"
+.include "game.h.s"
 
 defineInitEntity entity 0, 0, 0, 0
 entity_last_movement: .db #00
@@ -223,22 +222,30 @@ entity_draw::
 		;;call divide
 		;;ld c, b
 
-		ld a, Ent_w(ix)
-		cp #9
-		jr nz, cargar_valores_tiles_enemy
-		ld de, #0x0705
+		;;ld a, Ent_w(ix)
+		;;cp #9
+		;;jr nz, cargar_valores_tiles_enemy
+		;;ld de, #0x0705
 
-		jr continuar_calculos
+		;;jr continuar_calculos
 
-		cargar_valores_tiles_enemy:
-        ld de, #0x0704
+		;;cargar_valores_tiles_enemy:
+        ;;ld de, #0x0704
 		
-        continuar_calculos:
+        ;;continuar_calculos:
 		;; Devolvemos y al registro b
 		;;ld b, l
+		ld d, Ent_h(ix)
+		srl d
+		srl d
+		inc d
+
+		ld e, Ent_w(ix)
+		srl e
+		inc e
 
 		;; Set Parameters on the stack
-		ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+		ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
 		push hl              ;; Push ptilemap to the stack
 		ld   hl, (puntero_video)  ;; HL = Pointer to video memory location where tilemap is drawn
 		push hl              ;; Push pvideomem to the stack

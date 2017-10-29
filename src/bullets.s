@@ -1,8 +1,7 @@
 .area _DATA
-
-.globl _g_tilemap
 .globl _sprite_bala
-
+.globl ptilemapA
+.globl nEnemyA
 .area _CODE
 
 ;;===========================================
@@ -12,13 +11,14 @@
 ;;===========================================
 
 ;; Bullets - Cantidad máxima de balas en pantalla 10
-nBullets:
+nBullets::
 	.db #0x00
 bullets:	;; Bullets (x,y,dirección,idAsesino)
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
-	.db #0xFF, #0xFF, #0xFF, #0xFF
+	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
+	.db #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF, #0xFF
 	.db #0x81
 
 ;; bullet_ux, bullet_pux, bullet_uy, bullet_puy
@@ -228,7 +228,7 @@ bullets_eraseBulletOnCollision::
 	srl c
 
 	;; Set Parameters on the stack
-	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+	ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
 	push hl              ;; Push ptilemap to the stack
 	ld   hl, #0xC000  ;; HL = Pointer to video memory location where tilemap is drawn
 	push hl              ;; Push pvideomem to the stack
@@ -250,7 +250,7 @@ bullets_eraseBulletOnCollision::
 	srl c
 
 	;; Set Parameters on the stack
-	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+	ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
 	push hl              ;; Push ptilemap to the stack
 	ld   hl, #0x8000  ;; HL = Pointer to video memory location where tilemap is drawn
 	push hl              ;; Push pvideomem to the stack
@@ -285,7 +285,7 @@ bullets_eraseBulletOnCollisionWithEntity::
 	srl c
 
 	;; Set Parameters on the stack
-	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+	ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
 	push hl              ;; Push ptilemap to the stack
 	ld   hl, #0xC000  ;; HL = Pointer to video memory location where tilemap is drawn
 	push hl              ;; Push pvideomem to the stack
@@ -307,7 +307,7 @@ bullets_eraseBulletOnCollisionWithEntity::
 	srl c
 
 	;; Set Parameters on the stack
-	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+	ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
 	push hl              ;; Push ptilemap to the stack
 	ld   hl, #0x8000  ;; HL = Pointer to video memory location where tilemap is drawn
 	push hl              ;; Push pvideomem to the stack
@@ -501,7 +501,6 @@ bullet_checkCollision::
 
 				call enemy_erase
 				call enemy_enemyKill
-
 				ret
 
 	not_collision_dec1DE:
@@ -525,7 +524,7 @@ bullet_checkCollision::
 ;; ======================
 checkAvalibility:
 	ld a, (nBullets)
-	cp #10
+	cp #15
 	jr z, noHayHueco
 	hayHueco: 							;;	Hueco
 	ld a, #1 							;;	Devolvemos 1
@@ -577,7 +576,7 @@ drawBullet::
 			;;Draw sprite
 			ld c, #3
 			ld b, #5
-			call cpct_drawSprite_asm
+			call cpct_drawSpriteMasked_asm
 
 			pop de
 			pop bc
@@ -600,7 +599,7 @@ drawBullet::
 			srl c
 
 			;; Set Parameters on the stack
-			ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+			ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
 			push hl              ;; Push ptilemap to the stack
 			ld   hl, (puntero_video)  ;; HL = Pointer to video memory location where tilemap is drawn
 			push hl              ;; Push pvideomem to the stack
@@ -688,7 +687,7 @@ bullets_updateBullets::
 					jr z, up_right
 						;; Abajo-Izquierda
 						cp #6
-						jr z, down_left
+						jp z, down_left
 							;; Abajo-Derecha
 							cp #7
 							jp z, down_right
@@ -699,9 +698,9 @@ bullets_updateBullets::
 								jr z, up
 									;; Down
 									ld a, (hl)
-									cp #200-1 
-									jp z, resetVertical
-										add a, #1
+									cp #200-14-18 
+									jp nc, resetVertical
+										add a, #9
 										ld (hl), a
 
 										dec hl 	;; hl = bullets_x
@@ -709,9 +708,9 @@ bullets_updateBullets::
 										jp increment
 								up:
 									ld a, (hl)
-									cp #0
-									jp z, resetVertical
-										sub a, #1
+									cp #9
+									jp c, resetVertical
+										sub a, #9
 										ld (hl), a
 
 										dec hl 	;; hl = bullets_x
@@ -720,17 +719,21 @@ bullets_updateBullets::
 		left:
 			pop hl		;; hl = bullets_x
 			ld a, (hl)
-			cp #0
-			jr z,  reset
+			cp #3
+			jp c,  reset
+				dec a
+				dec a
 				dec a
 				ld (hl), a
 				call bullets_posiciones_updateList
-				jr increment
+				jp increment
 			right:
 				pop hl	;; hl = bullets_x
 				ld a, (hl)
-				cp #80-3
-				jr z,  reset
+				cp #80-6
+				jr nc,  reset
+					inc a
+					inc a
 					inc a
 					ld (hl), a
 					call bullets_posiciones_updateList
@@ -738,16 +741,18 @@ bullets_updateBullets::
 				up_left:
 					pop hl		;; hl = bullets_x
 					ld a, (hl)
-					cp #0
-					jr z, reset
+					cp #3
+					jr c, reset
 						inc hl 		;; hl = bullets_y
 						ld a, (hl)
-						cp #0
-						jr z, resetVertical
-						sub a, #1
+						cp #9
+						jr c, resetVertical
+						sub a, #9
 						ld (hl), a
 						dec hl 			;; hl = bullets_x
 						ld a, (hl) 
+						dec a
+						dec a
 						dec a
 						ld (hl), a
 						call bullets_posiciones_updateList
@@ -755,16 +760,18 @@ bullets_updateBullets::
 						up_right:
 							pop hl		;; hl = bullets_x
 							ld a, (hl)
-							cp #80-1
-							jr z, reset
+							cp #80-6
+							jr nc, reset
 								inc hl 		;; hl = bullets_y
 								ld a, (hl)
-								cp #0
-								jr z, resetVertical
-								sub a, #1
+								cp #9
+								jr c, resetVertical
+								sub a, #9
 								ld (hl), a
 								dec hl 			;; hl = bullets_x
 								ld a, (hl) 
+								inc a
+								inc a
 								inc a
 								ld (hl), a
 								call bullets_posiciones_updateList
@@ -772,16 +779,18 @@ bullets_updateBullets::
 								down_left:
 									pop hl		;; hl = bullets_x
 									ld a, (hl)
-									cp #0
-									jr z, reset
+									cp #3
+									jr c, reset
 										inc hl 		;; hl = bullets_y
 										ld a, (hl)
-										cp #200-1
-										jr z, resetVertical
-										add a, #1
+										cp #200-14-18
+										jr nc, resetVertical
+										add a, #9
 										ld (hl), a
 										dec hl 			;; hl = bullets_x
 										ld a, (hl) 
+										dec a
+										dec a
 										dec a
 										ld (hl), a
 										call bullets_posiciones_updateList
@@ -789,16 +798,18 @@ bullets_updateBullets::
 										down_right:
 											pop hl		;; hl = bullets_x
 											ld a, (hl)
-											cp #80-1
-											jr z, reset
+											cp #80-6
+											jr nc, reset
 												inc hl 		;; hl = bullets_y
 												ld a, (hl)
-												cp #200-1
-												jr z, resetVertical
-												add a, #1
+												cp #200-14-18
+												jr nc, resetVertical
+												add a, #9
 												ld (hl), a
 												dec hl 			;; hl = bullets_x
 												ld a, (hl) 
+												inc a
+												inc a
 												inc a
 												ld (hl), a
 												call bullets_posiciones_updateList
