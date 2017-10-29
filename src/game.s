@@ -36,7 +36,7 @@ game_start::
 ;; ======================
 game_init:
     call hero_init
-
+    call map_draw
     ret
 
 ;; ======================

@@ -1,8 +1,6 @@
 .area _DATA
-
-.globl _g_tilemap
 .globl _sprite_bala
-
+.globl ptilemapA
 .area _CODE
 
 ;;===========================================
@@ -228,7 +226,7 @@ bullets_eraseBulletOnCollision::
 	srl c
 
 	;; Set Parameters on the stack
-	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+	ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
 	push hl              ;; Push ptilemap to the stack
 	ld   hl, #0xC000  ;; HL = Pointer to video memory location where tilemap is drawn
 	push hl              ;; Push pvideomem to the stack
@@ -250,7 +248,7 @@ bullets_eraseBulletOnCollision::
 	srl c
 
 	;; Set Parameters on the stack
-	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+	ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
 	push hl              ;; Push ptilemap to the stack
 	ld   hl, #0x8000  ;; HL = Pointer to video memory location where tilemap is drawn
 	push hl              ;; Push pvideomem to the stack
@@ -285,7 +283,7 @@ bullets_eraseBulletOnCollisionWithEntity::
 	srl c
 
 	;; Set Parameters on the stack
-	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+	ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
 	push hl              ;; Push ptilemap to the stack
 	ld   hl, #0xC000  ;; HL = Pointer to video memory location where tilemap is drawn
 	push hl              ;; Push pvideomem to the stack
@@ -307,7 +305,7 @@ bullets_eraseBulletOnCollisionWithEntity::
 	srl c
 
 	;; Set Parameters on the stack
-	ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+	ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
 	push hl              ;; Push ptilemap to the stack
 	ld   hl, #0x8000  ;; HL = Pointer to video memory location where tilemap is drawn
 	push hl              ;; Push pvideomem to the stack
@@ -600,7 +598,7 @@ drawBullet::
 			srl c
 
 			;; Set Parameters on the stack
-			ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+			ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
 			push hl              ;; Push ptilemap to the stack
 			ld   hl, (puntero_video)  ;; HL = Pointer to video memory location where tilemap is drawn
 			push hl              ;; Push pvideomem to the stack
