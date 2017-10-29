@@ -5,9 +5,9 @@
 .globl _sprite_oldMan_orange_left
 .globl _sprite_oldMan_orange_left_pistol
 .globl _g_tilemap
-.globl _pattern1
-.globl _pattern2
-.globl _pattern3
+.globl pattern1
+.globl pattern2
+.globl pattern3
 
 .area _CODE
 .include "enemy.h.s"
@@ -37,10 +37,12 @@ puntero_video:: .dw #0x8000
 .equ EnemyPUY, 12
 .equ EnemyPatternL, 14
 .equ EnemyPatternH, 15
-.equ EnemyPatternContador, 16
+.equ EnemyPatternAntiguoL, 16
+.equ EnemyPatternAntiguoH, 17
+.equ EnemyPatternContador, 18
 
 NextEnemy:
-	.db #17
+	.db #19
 ptilemapA::
 	.dw #0x0000 ;Cambiar al mapa correspondiente
 puertaIzquierdaA::
@@ -65,18 +67,18 @@ arrayEnemyA::
 
 M1:
 	defineMap M1 0, -1, M2
-	defineEnemy 50, 20, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 2, _pattern2, 0
-	defineEnemy 60, 100, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 1, _pattern3, 0
-	defineEnemyLastOne 70, 150, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 3, _pattern1, 0
+	defineEnemy 50, 20, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 3, pattern1, pattern1, 0
+	defineEnemy 60, 100, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 3, pattern1, pattern1, 0
+	defineEnemyLastOne 40, 100, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 170, 170, 3, pattern1, pattern1, 0
 
 M2:
 	defineMap M2 0, M1, M3
-	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 0, 70, 70, 170, 170, 0, _pattern1, 0
+	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 0, 70, 70, 170, 170, 0, pattern1, pattern1, 0
 
 M3:
 	defineMap M3 0, M2, -1
-	defineEnemy 0, 170, 7, 25, _sprite_oldMan_orange_left, 5, 0, 1, 70, 70, 170, 170, 1, _pattern1, 0
-	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 0, 70, 70, 170, 170, 0, _pattern1, 0
+	defineEnemy 0, 170, 7, 25, _sprite_oldMan_orange_left, 5, 0, 1, 70, 70, 170, 170, 1, pattern1, pattern1, 0
+	defineEnemyLastOne 70, 170, 9, 25, _sprite_oldMan_orange_left_pistol, 5, 0, 0, 70, 70, 170, 170, 0, pattern1, pattern1, 0
 
 ;;========================
 ;;========================

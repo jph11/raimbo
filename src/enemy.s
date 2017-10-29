@@ -28,6 +28,8 @@ enemy_id:
 .equ Enemy_y, 1
 .equ Enemy_w, 2
 .equ Enemy_h, 3	
+.equ Enemy_spriteL, 4
+.equ Enemy_spriteH, 5
 .equ EnemyLives, 6
 .equ EnemyTemp, 7
 .equ EnemyLastMovement, 8
@@ -38,7 +40,9 @@ enemy_id:
 .equ EnemyType, 13
 .equ EnemyPatternL, 14
 .equ EnemyPatternH, 15
-.equ EnemyPatternContador, 16
+.equ EnemyPatternAntiguoL, 16
+.equ EnemyPatternAntiguoH, 17
+.equ EnemyPatternContador, 18
 
 ;;Death Data
 defineObject death 0, 0, 8, 16, _sprite_death
@@ -49,11 +53,35 @@ death_anim2: .db #20		;;Duración de la animación
 death_animState: .db #00	;;Estado actual [0-1]
 
 ;; ========================
-;; Patterns. Cada pattern es un conjunto de tuplas (número de veces, aumento en x, aumento en y)
+;; Patterns. Cada pattern es un conjunto de tuplas (número de veces, aumento en x, aumento en y, sprite, disparo1, disparo2, disparo3)
 ;; ========================
-_pattern1:: .db #70, #-1, #0, #30, #1, #-1, #0xFF
-_pattern2:: .db #70, #-1, #0, #30, #1, #1, #0xFF
-_pattern3:: .db #5, #1, #1, #5, #-1, #-1, #0xFF
+pattern1::
+definePatternAction #1, #1, #1, #_sprite_death, #5, #0xFF, #0xFF
+definePatternLastAction #2, #0, #0, #_sprite_death, #0xFF, #0xFF, #0xFF
+
+pattern2::
+definePatternAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
+definePatternAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
+definePatternLastAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
+
+pattern3::
+definePatternAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
+definePatternAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
+definePatternLastAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
+
+;;_pattern1:: .dw #70, #-1, #0, #_sprite_death, #0xFF
+;;_pattern2:: .dw #70, #-1, #0, #30, #1, #1, #0xFF
+;;_pattern3:: .dw #5, #1, #1, #5, #-1, #-1, #0xFF
+
+.equ Pattern_NumeroVeces, 0
+.equ Pattern_AumentoEnX, 1
+.equ Pattern_AumentoEnY, 2
+.equ Pattern_SpriteL, 3
+.equ Pattern_SpriteH, 4
+.equ Pattern_Disparo1, 5
+.equ Pattern_Disparo2, 6
+.equ Pattern_Disparo3, 7
+
 
 ;;===========================================
 ;;===========================================
@@ -565,6 +593,8 @@ Algorithm_Random:
 Algorithm_Pattern::
 
 	push hl
+	push iy
+	push bc
 
 	;; ---------------------------------
 	;; HL = Puntero al patrón
@@ -572,20 +602,33 @@ Algorithm_Pattern::
 	ld l, EnemyPatternL(ix)
 	ld h, EnemyPatternH(ix)
 
+	push hl
+	pop iy
+
 	;; ---------------------------------
 	;; IF A == 0xFF
 	;; ---------------------------------
-	ld a, (hl)
+	ld a, Pattern_NumeroVeces(iy)
 	cp #0xFF
+	jr nz, nos_mantenemos_en_pattern_actual
 
 	;; ---------------------------------
-	;; THEN se acabó el patrón
+	;; THEN se acabó el patrón, hay que reiniciarlo
 	;; ---------------------------------
-	jr z, nuevo_enemigo
+	ld a, EnemyPatternAntiguoL(ix)
+	ld EnemyPatternL(ix), a
+
+	ld a, EnemyPatternAntiguoH(ix)
+	ld EnemyPatternH(ix), a
+
+	ld EnemyPatternContador(ix), #0
+	ld EnemyTemp(ix), #0
+	jr fin_algorith_pattern
 	
 	;; ---------------------------------
 	;; ELSE el patrón no se ha acabado, seguimos haciendo comprobaciones
 	;; ---------------------------------
+	nos_mantenemos_en_pattern_actual:
 
 	;; ---------------------------------
 	;; IF número de veces del movimiento == contador del patrón
@@ -597,58 +640,100 @@ Algorithm_Pattern::
 	;; ---------------------------------
 	;; THEN toca pasar al siguiente movimiento del patrón
 	;; ---------------------------------
-	inc hl
-	inc hl
-	inc hl
+	ld l, EnemyPatternL(ix)
+	ld h, EnemyPatternH(ix)
+	ld bc, #8
+	add hl, bc
 
 	ld EnemyPatternL(ix), l
 	ld EnemyPatternH(ix), h
 	ld EnemyPatternContador(ix), #0
+	ld EnemyTemp(ix), #0
 	jr fin_algorith_pattern
 
 	;; ---------------------------------
 	;; ELSE nos mantenemos en este movimiento
+	;; ---------------------------------
+
+	;; ---------------------------------
+	;; IF es hora de realizar movimiento por el temporizador
 	;; ---------------------------------
 	actualizar_contador:
 	ld a, EnemyTemp(ix)  			
 	cp #1
 	jr nz, actualizar_temporizador
 
+	;; ---------------------------------
+	;; THEN Lo realizamos
+	;; ---------------------------------
+	;; Restauramos el temporizador
 	ld EnemyTemp(ix), #0
 
 	;; Guardamos número de veces actualizada
 	inc EnemyPatternContador(ix)
 	
 	;; Guardamos x
-	inc hl
-
 	ld a, Enemy_x(ix)
-	add a, (hl)
+	add a, Pattern_AumentoEnX(iy)
 	ld Enemy_x(ix), a
 
 	;; Guardamos y
-	inc hl
-
 	ld a, Enemy_y(ix)
-	add a, (hl)
+	add a, Pattern_AumentoEnY(iy)
 	ld Enemy_y(ix), a
+
+	;; Cargamos el sprite
+	;;ld a, Pattern_SpriteL(iy)
+	;;ld Enemy_spriteL(ix), a
+
+	;;ld a, Pattern_SpriteH(iy)
+	;;ld Enemy_spriteH(ix), a
+
+	;; ---------------------------------
+	;; y además hacemos comprobaciones de si tenemos que disparar
+	;; ---------------------------------
+	ld a, Pattern_Disparo1(iy)
+	cp #0xFF
+	jr z, fin_algorith_pattern
+
+	;; Lanzamos primer disparo y comprobamos segundo
+	push iy
+	ld c, Pattern_Disparo1(iy)
+	call enemyShootParametrizada
+	pop iy
+
+	ld a, Pattern_Disparo2(iy)
+	cp #0xFF
+	jr z, fin_algorith_pattern
+
+	;; Lanzamos segundo disparo y comprobamos tercero
+	push iy
+	ld c, Pattern_Disparo2(iy)
+	call enemyShootParametrizada
+	pop iy
+
+	ld a, Pattern_Disparo3(iy)
+	cp #0xFF
+	jr z, fin_algorith_pattern
+
+	;; Tercer disparo
+	push iy
+	ld c, Pattern_Disparo3(iy)
+	call enemyShootParametrizada
+	pop iy
 
 	jr fin_algorith_pattern
 
+	;; ---------------------------------
+	;; ELSE actualizamos el temporizador y no hacemos nada más
+	;; ---------------------------------
 	actualizar_temporizador:				
 	inc a
 	ld EnemyTemp(ix), a
 
-	jr fin_algorith_pattern
-
-	;; ---------------------------------
-	;; Generación de un nuevo enemigo ya que se ha acabado el patrón o el enemigo ha muerto
-	;; ---------------------------------
-	nuevo_enemigo:
-
-	call generateNewRandomEnemy
-
 	fin_algorith_pattern:
+	pop bc
+	pop iy
 	pop hl
 ret
 
@@ -673,7 +758,7 @@ generateNewRandomEnemy::
 		ld Enemy_x(ix), #23
 		ld Enemy_y(ix), #23
 
-		ld hl, #_pattern3
+		ld hl, #pattern3
 		ld EnemyPatternL(ix), l
 		ld EnemyPatternH(ix), h
 
@@ -684,7 +769,7 @@ generateNewRandomEnemy::
 		ld Enemy_x(ix), #23
 		ld Enemy_y(ix), #23
 
-		ld hl, #_pattern3
+		ld hl, #pattern3
 		ld EnemyPatternL(ix), l
 		ld EnemyPatternH(ix), h
 
@@ -695,7 +780,7 @@ generateNewRandomEnemy::
 		ld Enemy_x(ix), #23
 		ld Enemy_y(ix), #23
 
-		ld hl, #_pattern3
+		ld hl, #pattern3
 		ld EnemyPatternL(ix), l
 		ld EnemyPatternH(ix), h
 
@@ -706,9 +791,22 @@ generateNewRandomEnemy::
 		ld Enemy_x(ix), #23
 		ld Enemy_y(ix), #23
 
-		ld hl, #_pattern3
+		ld hl, #pattern3
 		ld EnemyPatternL(ix), l
 		ld EnemyPatternH(ix), h
+ret
+
+enemyShootParametrizada:
+	call entity_setPointer
+
+	ld a, c
+	call entity_setPointerLastMovement
+
+	ld a, (enemy_id)
+	call entity_setId
+
+	call bullets_newBullet
+
 ret
 
 enemyShoot:	

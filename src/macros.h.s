@@ -41,7 +41,7 @@
         name'_arrayEnemy:
 .endm
 
-.macro defineEnemy x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern, contador
+.macro defineEnemy x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern, pattern_antiguo, contador
         .db x
         .db y
         .db w
@@ -56,10 +56,11 @@
         .db puy
         .db type
         .dw pattern
+        .dw pattern_antiguo
         .db contador
 .endm
 
-.macro defineEnemyLastOne x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern, contador
+.macro defineEnemyLastOne x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern, pattern_antiguo, contador
         .db x
         .db y
         .db w
@@ -74,6 +75,32 @@
         .db puy
         .db type
         .dw pattern
+        .dw pattern_antiguo
         .db contador
         .db #0x81
+.endm
+
+.macro definePattern nombre_patron
+        nombre_patron::
+.endm
+
+.macro definePatternAction numero_veces, aumento_x, aumento_y, sprite, disparo1, disparo2, disparo3
+        .db numero_veces
+        .db aumento_x
+        .db aumento_y
+        .dw sprite
+        .db disparo1
+        .db disparo2
+        .db disparo3
+.endm
+
+.macro definePatternLastAction numero_veces, aumento_x, aumento_y, sprite, disparo1, disparo2, disparo3
+        .db numero_veces
+        .db aumento_x
+        .db aumento_y
+        .dw sprite
+        .db disparo1
+        .db disparo2
+        .db disparo3
+        .db #0xFF
 .endm
