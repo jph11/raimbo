@@ -332,7 +332,7 @@ checkUserInput::
 	;; Temporizador - Esta primera función guarda una bala cada dos veces y realiza un efecto de temporizador
 	ld hl, #hero_temp 						;; hl <= tempBullets
 	ld a, (hl) 								;; a <= (tempBullets)
-	cp #0x02 								;; a == 0x02
+	cp #0x05 								;; a == 0x02
 	jr z, nueva 							;; if(!a==0x02){
 		inc a 								;; 	a++
 		ld (hl), a 							;; 	Actualizamos tempBullets
