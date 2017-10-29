@@ -85,81 +85,12 @@ hero_getPointerLife::
 ;; ======================
 hero_update::
 	
-	;;ld hl, #0xC232
-	;;ld a, (hero_lives)
-	;;cp #0
-	;;jr z, borrar1
-	;;jr c, borrar1
-	;;ld a, #0xFF
-	;;ld (hl), a
-	;;jr pintar
-	;;borrar1:
-	;;ld a, #0x00
-	;;ld (hl), a
-	;;pintar:
-	;;ld hl, #0xC234
-	;;ld a, (hero_lives)
-	;;cp #1
-	;;jr z, borrar2
-	;;jr c, borrar2
-	;;ld a, #0xFF
-	;;ld (hl), a
-	;;jr pintar2
-	;;borrar2:
-	;;ld a, #0x00
-	;;ld (hl), a
-	;;pintar2:
-	;;ld hl, #0xC236
-	;;ld a, (hero_lives)
-	;;cp #2
-	;;jr z, borrar3
-	;;jr c, borrar3
-	;;ld a, #0xFF
-	;;ld (hl), a
-	;;jr pintar3
-	;;borrar3:
-	;;ld a, #0x00
-	;;ld (hl), a
-	;;pintar3:
-	;;ld hl, #0xC238
-	;;ld a, (hero_lives)
-	;;cp #3
-	;;jr z, borrar4
-	;;jr c, borrar4
-	;;ld a, #0xFF
-	;;ld (hl), a
-	;;jr pintar4
-	;;borrar4:
-	;;ld a, #0x00
-	;;ld (hl), a
-	;;pintar4:
-
-
-	;;finPintar:
-
 	call jumpControl
 	call checkUserInput
 	call hero_heroDamage
 
 	ld ix, #hero_data
 	call entity_updatePositions
-
-	;; Actualización de punteros para el doble buffer
-	;;ld a, (hero_ux)
-	;;ld hl, #hero_pux
-	;;ld (hl), a
-
-	;;ld a, (hero_uy)
-	;;ld hl, #hero_puy
-	;;ld (hl), a
-
-	;;ld a, (hero_x)
-	;;ld hl, #hero_ux
-	;;ld (hl), a
-
-	;;ld a, (hero_y)
-	;;ld hl, #hero_uy
-	;;ld (hl), a
 ret
 
 ;; ======================
@@ -395,7 +326,7 @@ ret
 ;;	Checks User Input and Reacts
 ;;	DESTROYS:
 ;; ======================
-checkUserInput:
+checkUserInput::
 	;;Scan the whole keyboard
 	call cpct_scanKeyboard_asm ;;keyboard.s
 
@@ -410,7 +341,7 @@ checkUserInput:
 	;; Temporizador - Esta primera función guarda una bala cada dos veces y realiza un efecto de temporizador
 	ld hl, #hero_temp 						;; hl <= tempBullets
 	ld a, (hl) 								;; a <= (tempBullets)
-	cp #0x02 								;; a == 0x02
+	cp #0x05 								;; a == 0x02
 	jr z, nueva 							;; if(!a==0x02){
 		inc a 								;; 	a++
 		ld (hl), a 							;; 	Actualizamos tempBullets

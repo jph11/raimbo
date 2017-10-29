@@ -1,7 +1,5 @@
 .area _DATA
-
-.globl _g_tilemap
-
+.globl ptilemapA
 .area _CODE
 
 .equ Ent_x, 0
@@ -238,7 +236,7 @@ entity_draw::
 		;;ld b, l
 
 		;; Set Parameters on the stack
-		ld   hl, #_g_tilemap   ;; HL = pointer to the tilemap
+		ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
 		push hl              ;; Push ptilemap to the stack
 		ld   hl, (puntero_video)  ;; HL = Pointer to video memory location where tilemap is drawn
 		push hl              ;; Push pvideomem to the stack

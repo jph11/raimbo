@@ -61,6 +61,9 @@ game_init:
 	call drawScoreLife
 	ld de, #0x873A
 	call drawScoreLife
+
+	call map_draw
+    ret
 ret
 
 drawScoreLife::

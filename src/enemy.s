@@ -73,6 +73,7 @@ enemy_update::
 		cp #2
 		jr z, Fetch
 			call Algorithm_Teletransport
+			call enemyShoot
 			jr collision
 		Shooter:
 			call Algorithm_Shooter
@@ -83,6 +84,7 @@ enemy_update::
 			jr collision
 		Fetch:
 			call Algorithm_FetchHero
+			call enemyShoot
 		collision:
 
 		call hero_getPointer

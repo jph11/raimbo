@@ -2,11 +2,11 @@
 
 .globl _sprite_palette
 .globl _g_tileset
-.globl _g_tilemap
+.globl _sprite_bala
+.globl ptilemapA
 .globl _menu_PRESS
 .globl _menu_G
 .globl _menu_TO_PLAY
-
 .area _CODE
 
 .include "game.h.s"
@@ -157,5 +157,4 @@ _main::
 	ld sp, #0x8000
 	call settings
 	call drawMenu
-	call map_draw
 	call game_start
