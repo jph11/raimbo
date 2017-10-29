@@ -58,7 +58,7 @@ arrayEnemyA::
 ;;========================
 
 M1:
-	defineMap M1 0, -1, M2
+	defineMap M1 #_g_tilemap, -1, M2
 	defineEnemy 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 
