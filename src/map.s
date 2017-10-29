@@ -76,7 +76,7 @@ M3:
 M4:
 	defineMap M4 #_g_tilemap1, M3, M5
 	defineEnemy 20, 140, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
-	defineEnemy 60, 180, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
+	defineEnemy 60, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2
 
 M5:
