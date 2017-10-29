@@ -1,6 +1,7 @@
 .area _DATA
 .globl _sprite_bala
 .globl ptilemapA
+.globl nEnemyA
 .area _CODE
 
 ;;===========================================
@@ -500,7 +501,6 @@ bullet_checkCollision::
 
 				call enemy_erase
 				call enemy_enemyKill
-
 				ret
 
 	not_collision_dec1DE:

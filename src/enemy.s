@@ -2,7 +2,7 @@
 
 .globl _sprite_oldMan_left
 .globl _sprite_death
-
+.globl nEnemyA
 .area _CODE
 
 ;;===========================================
@@ -144,7 +144,12 @@ enemy_enemyKill::
 		ld (death_x), a
 		ld a, Enemy_y(ix)
 		ld (death_y), a
-	ret 	
+
+		ld hl, (nEnemyA)
+		ld a, (hl)
+		dec a
+		ld (hl), a
+		ret 	
 
 ;;===========================================
 ;;===========================================

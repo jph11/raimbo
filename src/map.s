@@ -38,6 +38,8 @@ puntero_video:: .dw #0x8000
 
 NextEnemy:
 	.dw #0x000E
+nEnemyA::
+	.dw #M1_nEnemyMap
 ptilemapA::
 	.dw #_g_tilemap ;Cambiar al mapa correspondiente
 puertaIzquierdaA::
@@ -58,34 +60,34 @@ arrayEnemyA::
 ;;========================
 
 M1:
-	defineMap M1 #_g_tilemap, -1, M2
+	defineMap M1 #_g_tilemap, -1, M2, 2
 	defineEnemy 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 
 M2:
-	defineMap M2 #_g_tilemap1, M1, M3
+	defineMap M2 #_g_tilemap1, M1, M3, 2
 	defineEnemy 30, 100, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2
 
 M3:
-	defineMap M3 #_g_tilemap1, M2, M4
+	defineMap M3 #_g_tilemap1, M2, M4, 3
 	defineEnemy 60, 87, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 	defineEnemy 54, 174, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2
 
 M4:
-	defineMap M4 #_g_tilemap1, M3, M5
+	defineMap M4 #_g_tilemap1, M3, M5, 3
 	defineEnemy 20, 140, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 	defineEnemy 60, 180, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2
 
 M5:
-	defineMap M5 #_g_tilemap1, M4, M6
+	defineMap M5 #_g_tilemap1, M4, M6, 2
 	defineEnemy 50, 50, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2
 
 M6:
-	defineMap M6 #_g_tilemap3, M5, -1
+	defineMap M6 #_g_tilemap3, M5, -1, 1
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3
 
 ;;========================
@@ -260,6 +262,14 @@ map_changeMap::
 		ld hl, #puertaDerechaA
 		;; Cambiamos: puertaDerechaA
 		call changePointer
+
+		;; Cargamos: nEnemyA
+		ld hl, #nEnemyA
+		;; Cambiamos: nEnemyA
+		ld (hl), e
+		inc hl
+		ld (hl), d
+		inc de
 
 		;; Cargamos: arrayEnemyA
 		ld hl, #arrayEnemyA
