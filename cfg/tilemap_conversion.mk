@@ -68,5 +68,3 @@
 $(eval $(call TMX2C,assets/Maps/tilemap.tmx,g_tilemap,src/sprites))
 $(eval $(call TMX2C,assets/Maps/tilemap1.tmx,g_tilemap1,src/sprites))
 $(eval $(call TMX2C,assets/Maps/tilemap3.tmx,g_tilemap3,src/sprites))
-
-
