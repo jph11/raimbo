@@ -2,7 +2,7 @@
 
 .globl _sprite_oldMan_left
 .globl _sprite_death
-
+.globl nEnemyA
 .area _CODE
 
 ;;===========================================
@@ -19,6 +19,8 @@
 .include "bullets.h.s"
 .include "map.h.s"
 
+shootTemp:
+	.db #0x00
 enemy_memory::
 	.dw #arrayEnemyA
 enemy_id: 
@@ -144,7 +146,12 @@ enemy_enemyKill::
 		ld (death_x), a
 		ld a, Enemy_y(ix)
 		ld (death_y), a
-	ret 	
+
+		ld hl, (nEnemyA)
+		ld a, (hl)
+		dec a
+		ld (hl), a
+		ret 	
 
 ;;===========================================
 ;;===========================================
@@ -550,14 +557,15 @@ Algorithm_Random:
 		ret
 
 enemyShoot:	
-	ld a, EnemyTemp(ix)  			
+	ld a, (shootTemp)  			
 	cp #0x30 			
 	jr z, plus 			
 		inc a 			
-		ld EnemyTemp(ix), a 		
+		ld (shootTemp), a 		
 		ret 			
-	plus:				
-	ld EnemyTemp(ix), #0x00
+	plus:		
+	ld a, #0		
+	ld (shootTemp), a
 
 	call entity_setPointer
 

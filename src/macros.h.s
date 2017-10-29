@@ -31,13 +31,15 @@
         name'_h:	.db h
 .endm
 
-.macro defineMap name, ptilemap, puertaIzquierda, puertaDerecha
+.macro defineMap name, ptilemap, puertaIzquierda, puertaDerecha, nEnemy
         name'_ptilemap:
             .dw ptilemap
         name'_puertaIzquierda:
             .dw puertaIzquierda
         name'_puertaDerecha:
             .dw puertaDerecha
+        name'_nEnemyMap:
+            .db nEnemy
         name'_arrayEnemy:
 .endm
 
