@@ -68,6 +68,7 @@ ret
 ;;	Menú principal
 ;; =================================
 drawMenu::
+		call drawBackground
 
 		ld ix, #m1_data
 		call drawSprite
@@ -147,6 +148,7 @@ drawBackground:
 		cp #0
 		jr nz, oneFor
 	pop hl	
+ret
 
 ;; ======================
 ;;	Main program entry
