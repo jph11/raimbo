@@ -9,7 +9,7 @@
         name'_temp:       .db temp
         name'_directionBullet:: .db lastmovement
         name'_ux:         .db ux
-        name'_pux:         .db pux
+        name'_pux:        .db pux
         name'_uy:         .db uy
         name'_puy:        .db puy
 .endm
