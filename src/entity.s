@@ -222,19 +222,27 @@ entity_draw::
 		;;call divide
 		;;ld c, b
 
-		ld a, Ent_w(ix)
-		cp #9
-		jr nz, cargar_valores_tiles_enemy
-		ld de, #0x0705
+		;;ld a, Ent_w(ix)
+		;;cp #9
+		;;jr nz, cargar_valores_tiles_enemy
+		;;ld de, #0x0705
 
-		jr continuar_calculos
+		;;jr continuar_calculos
 
-		cargar_valores_tiles_enemy:
-        ld de, #0x0704
+		;;cargar_valores_tiles_enemy:
+        ;;ld de, #0x0704
 		
-        continuar_calculos:
+        ;;continuar_calculos:
 		;; Devolvemos y al registro b
 		;;ld b, l
+		ld d, Ent_h(ix)
+		srl d
+		srl d
+		inc d
+
+		ld e, Ent_w(ix)
+		srl e
+		inc e
 
 		;; Set Parameters on the stack
 		ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
