@@ -433,7 +433,11 @@ checkUserInput:
 	jr z, a_not_pressed			;;Jump if A==0 (a_not_pressed)
 
 	;;A is pressed
+
 	call moveHeroLeft
+	ld hl, #hero_directionBullet
+	ld a, #0
+	ld (hl), a 
 	ld de, #_sprite_hero_left_pistol
 	call cambiarSprite
 	a_not_pressed:
@@ -446,6 +450,9 @@ checkUserInput:
 
 	;;D is pressed
 	call moveHeroRight
+	ld hl, #hero_directionBullet
+	ld a, #1
+	ld (hl), a 
 	ld de, #_sprite_hero_right_pistol
 	call cambiarSprite
 
@@ -459,6 +466,9 @@ checkUserInput:
 
 	;;W is pressed
 	call moveHeroUp
+	ld hl, #hero_directionBullet
+	ld a, #2
+	ld (hl), a 
 	ld de, #_sprite_hero_back_pistol
 	call cambiarSprite
 	w_not_pressed:
@@ -471,6 +481,9 @@ checkUserInput:
 
 	;;S is pressed	
 	call moveHeroBottom
+	ld hl, #hero_directionBullet
+	ld a, #3
+	ld (hl), a 
 	ld de, #_sprite_hero_forward_pistol
 	call cambiarSprite
 	s_not_pressed:
