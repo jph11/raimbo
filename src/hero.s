@@ -596,9 +596,9 @@ ret
 
 
 hero_decreaseLife::
+	push DE
 	push HL
 	push IX
-	push BC 
 	push AF
 	
 	call game_getPointerLife
@@ -625,21 +625,25 @@ hero_decreaseLife::
 		jr endDraw
 
 	draw50:
+		push BC
 		ld bc, #0x0002
 		add hl, bc
 		call hero_drawLife
+		pop BC
 		jr endDraw
 
 	draw25:
+		push BC
 		ld bc, #0x0004
 		add hl, bc
 		call hero_drawLife
+		pop BC
 
 	endDraw:
 		pop AF 
-		pop BC 
 		pop IX 
 		pop HL
+		pop DE
 ret
 
 
