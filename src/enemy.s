@@ -409,7 +409,7 @@ Algorithm_Teletransport::
 			ld Enemy_x(ix), a
 			ret
 	segundoRangoTeletransport:
-		ld a, #200
+		ld a, #200-18
 		ld b, Enemy_h(ix)
 		sub b
 		ld b, a
@@ -506,7 +506,7 @@ Algorithm_Random:
 	jp c, primerRango
 	cp #128
 	jp c, segundoRango
-	cp #192
+	cp #172
 	jp c, tercerRango
 		;; cuartoRango
 		ld a, Enemy_y(ix)
@@ -539,11 +539,11 @@ Algorithm_Random:
 		ret
 	tercerRango:
 		ld a, Enemy_y(ix)
-		cp #200-26
+		cp #200-26-18
 		ret z
-		cp #200-27
+		cp #200-27-18
 		ret z
-		cp #200-25
+		cp #200-25-18
 			ret z
 		add a, #3
 		ld Enemy_y(ix), a

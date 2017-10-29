@@ -698,9 +698,9 @@ bullets_updateBullets::
 								jr z, up
 									;; Down
 									ld a, (hl)
-									cp #200-15
-									jp nc, resetVertical
-										add a, #9
+									cp #200-5-18 
+									jp z, resetVertical
+										add a, #1
 										ld (hl), a
 
 										dec hl 	;; hl = bullets_x
@@ -783,9 +783,9 @@ bullets_updateBullets::
 									jr c, reset
 										inc hl 		;; hl = bullets_y
 										ld a, (hl)
-										cp #200-15
-										jr nc, resetVertical
-										add a, #9
+										cp #200-5-18
+										jr z, resetVertical
+										add a, #1
 										ld (hl), a
 										dec hl 			;; hl = bullets_x
 										ld a, (hl) 
@@ -802,9 +802,9 @@ bullets_updateBullets::
 											jr nc, reset
 												inc hl 		;; hl = bullets_y
 												ld a, (hl)
-												cp #200-15
-												jr nc, resetVertical
-												add a, #9
+												cp #200-5-18
+												jr z, resetVertical
+												add a, #1
 												ld (hl), a
 												dec hl 			;; hl = bullets_x
 												ld a, (hl) 

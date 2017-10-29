@@ -9,6 +9,9 @@
 .globl _sprite_hero_left_pistol
 .globl _sprite_hero_right_pistol         
 
+.globl _game_flower_75
+.globl _game_flower_50
+.globl _game_flower_25
 
 .area _CODE
 
@@ -42,7 +45,7 @@
 ;; ¡Si cambiamos el ancho del hero hay que cambiar
 ;;	 en el SpaceKey check el valor también!
 ;;===================================================
-defineEntity hero, 39, 60, 9, 25, _sprite_hero_right_pistol, 3, 0, 1, 39, 39, 60, 60
+defineEntity hero, 39, 60, 9, 25, _sprite_hero_right_pistol, 4, 0, 1, 39, 39, 60, 60
 hero_jump: .db #-1
 hero_id: .db #00
 hero_invencibleState: .db #0
@@ -58,12 +61,19 @@ jumptable:
 	.db #01, #02, #04, #05
 	.db #0x80
 
+life_sprites:
+	.dw _game_flower_75
+	.dw _game_flower_50
+	.dw _game_flower_25
+
+.equ S_spr_l, 4
+.equ S_spr_h, 5		
+
 ;;===========================================
 ;;===========================================
 ;;PUBLIC FUNTIONS
 ;;===========================================
 ;;===========================================
-
 
 hero_getPointerLife::
 	ld hl, #hero_lives
@@ -118,7 +128,7 @@ hero_init::
 	ld (hero_jump), a
 	ld a, #01
 	ld (hero_directionBullet), a
-	ld a, #03
+	ld a, #04
 	ld (hero_lives), a
 	ld a, #0
 	ld (hero_invencibleState), a
@@ -164,7 +174,6 @@ hero_getPointer::
 ;;PRIVATE FUNCTIONS
 ;;===========================================
 ;;===========================================
-
 
 ;; ======================
 ;;	Controls Jump movements
@@ -247,7 +256,7 @@ moveHeroUp:
 ;; ======================
 moveHeroBottom:
 	ld a, (hero_y)	;;A = hero_y
-	cp #200-28		;;Check against right limit (screen size - hero size)
+	cp #200-28-18		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
 	jr nc, d_not_move_bottom
 
@@ -571,11 +580,69 @@ checkLeftRight:
 ;;	Hero is death
 ;; ======================
 
+hero_drawLife:
+	ld a, (hl)
+	ld S_spr_l(ix), a
+	inc hl
+	ld a, (hl)
+	ld S_spr_h(ix), a
+
+	ld de, #0xC73A
+	call drawScoreLife
+	ld de, #0x873A
+	call drawScoreLife
+
+ret
+
+
 hero_decreaseLife::
+	push HL
+	push IX
+	push BC 
+	push AF
+	
+	call game_getPointerLife
+
+	ld hl, #life_sprites
+
 	ld a, (hero_lives)
 	dec a
 	ld (hero_lives), a
-	ret
+
+	cp #3
+	jr z, draw75
+
+	cp #2
+	jr z, draw50
+
+	cp #1
+	jr z, draw25
+
+		jr endDraw
+
+	draw75:
+		call hero_drawLife
+		jr endDraw
+
+	draw50:
+		ld bc, #0x0002
+		add hl, bc
+		call hero_drawLife
+		jr endDraw
+
+	draw25:
+		ld bc, #0x0004
+		add hl, bc
+		call hero_drawLife
+
+	endDraw:
+		pop AF 
+		pop BC 
+		pop IX 
+		pop HL
+ret
+
+
 
 
 hero_heroDamage:
@@ -593,7 +660,7 @@ hero_heroDamage:
 	continue:
 	ld a, (hero_invencibleTransitions)		;;Cargamos nº alteraciones
 		cp #0				
-		jr z, end				;;Si nº alteraciones==0 terminamos ==> end
+		jr z, end							;;Si nº alteraciones==0 terminamos ==> end
 		ld a, (hero_invencibleDuration)		;;sino cargamos la duración de la animación i
 								;;y entramos en el loop
 		loop:

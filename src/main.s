@@ -23,9 +23,9 @@
 		name'_sprite:  	.dw spr
 .endm
 
-defineMenu m1, 20, 40, 40, 20, _menu_PRESS
-defineMenu m2, 20, 80, 40, 20, _menu_G
-defineMenu m3, 20, 110, 40, 20, _menu_TO_PLAY
+defineMenu m1, 31, 50, 19, 10, _menu_PRESS
+defineMenu m2, 36, 88, 8, 12, _menu_G
+defineMenu m3, 27, 120, 26, 10, _menu_TO_PLAY
 
 .equ M_x, 0
 .equ M_y, 1

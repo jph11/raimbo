@@ -1,5 +1,8 @@
 .area _DATA
 
+.globl _game_score_life
+.globl _game_flower_100
+
 .area _CODE
 
 .include "hero.h.s"
@@ -9,6 +12,16 @@
 .include "cpctelera.h.s"
 .include "keyboard.s"
 .include "map.h.s"
+
+.equ S_x, 0
+.equ S_y, 1
+.equ S_w, 2
+.equ S_h, 3	
+.equ S_spr_l, 4
+.equ S_spr_h, 5
+
+defineScoreLife score, 0, 183, 80, 17, _game_score_life
+defineScoreLife life, 10, 185, 8, 15, _game_flower_100
 
 ;;===========================================
 ;;===========================================
@@ -36,8 +49,36 @@ game_start::
 ;; ======================
 game_init:
     call hero_init
-    call map_draw
+
+	ld ix, #score_data
+	ld de, #0xFEE0
+	call drawScoreLife
+	ld de, #0xBEE0
+	call drawScoreLife
+
+	ld ix, #life_data
+	ld de, #0xC73A
+	call drawScoreLife
+	ld de, #0x873A
+	call drawScoreLife
+
+	call map_draw
     ret
+ret
+
+drawScoreLife::
+	;; Draw a box
+	ld b, S_h(ix)
+	ld c, S_w(ix)
+	;;Draw sprite
+	ld h, S_spr_h(ix)
+	ld l, S_spr_l(ix)
+	call cpct_drawSpriteMasked_asm
+ret
+
+game_getPointerLife::
+	ld ix, #life_data
+ret
 
 ;; ======================
 ;;	Run the game
