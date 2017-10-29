@@ -8,7 +8,7 @@
 .globl _sprite_hero_back_pistol          
 .globl _sprite_hero_left_pistol
 .globl _sprite_hero_right_pistol         
-
+.globl nEnemyA
 .globl _game_flower_75
 .globl _game_flower_50
 .globl _game_flower_25
@@ -283,6 +283,10 @@ moveHeroRight:
 	ret 
 	
 	d_not_move_right:
+		ld hl, (nEnemyA)
+		ld a, (hl)
+		cp #0
+		 ret nz
 		ld a, #0
 		call map_changeMap
 		cp #-1
@@ -293,7 +297,7 @@ moveHeroRight:
 ;; ======================
 ;; Move hero to the left
 ;; ======================
-moveHeroLeft:
+moveHeroLeft::
 	ld a, (hero_x)	;;A = hero_x
 	cp #0		;;Check against left limit (screen size - hero size)
 	jr z, d_not_move_left	;;Hero_x == Limit, do not move
@@ -303,6 +307,10 @@ moveHeroLeft:
 	ret 
 
 	d_not_move_left:
+		ld hl, (nEnemyA)
+		ld a, (hl)
+		cp #0
+		 ret nz
 		ld a, #1
 		call map_changeMap
 		cp #-1
