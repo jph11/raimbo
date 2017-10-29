@@ -38,6 +38,7 @@ enemy_id:
 .equ EnemyType, 13
 .equ EnemyPatternL, 14
 .equ EnemyPatternH, 15
+.equ EnemyPatternContador, 16
 
 ;;Death Data
 defineObject death 0, 0, 8, 16, _sprite_death
@@ -48,9 +49,11 @@ death_anim2: .db #20		;;Duración de la animación
 death_animState: .db #00	;;Estado actual [0-1]
 
 ;; ========================
-;; Patterns. Cada pattern es un conjunto de tuplas (x,y)
+;; Patterns. Cada pattern es un conjunto de tuplas (número de veces, aumento en x, aumento en y)
 ;; ========================
-_pattern1:: .db #60, #60, #50, #50, #60, #60, #50, #50, #0xFF
+_pattern1:: .db #70, #-1, #0, #30, #1, #-1, #0xFF
+_pattern2:: .db #70, #-1, #0, #30, #1, #1, #0xFF
+_pattern3:: .db #5, #1, #1, #5, #-1, #-1, #0xFF
 
 ;;===========================================
 ;;===========================================
@@ -563,27 +566,149 @@ Algorithm_Pattern::
 
 	push hl
 
+	;; ---------------------------------
+	;; HL = Puntero al patrón
+	;; ---------------------------------
 	ld l, EnemyPatternL(ix)
 	ld h, EnemyPatternH(ix)
 
+	;; ---------------------------------
+	;; IF A == 0xFF
+	;; ---------------------------------
 	ld a, (hl)
 	cp #0xFF
-	jr nz, fin_algorith_pattern
+
+	;; ---------------------------------
+	;; THEN se acabó el patrón
+	;; ---------------------------------
+	jr z, nuevo_enemigo
 	
-	ld Enemy_x(ix), a
+	;; ---------------------------------
+	;; ELSE el patrón no se ha acabado, seguimos haciendo comprobaciones
+	;; ---------------------------------
 
+	;; ---------------------------------
+	;; IF número de veces del movimiento == contador del patrón
+	;; ---------------------------------
+	ld c, EnemyPatternContador(ix)
+	cp c
+	jr nz, actualizar_contador
+
+	;; ---------------------------------
+	;; THEN toca pasar al siguiente movimiento del patrón
+	;; ---------------------------------
 	inc hl
-
-	ld a, (hl)
-	ld Enemy_y(ix), a
-
+	inc hl
 	inc hl
 
 	ld EnemyPatternL(ix), l
 	ld EnemyPatternH(ix), h
+	ld EnemyPatternContador(ix), #0
+	jr fin_algorith_pattern
+
+	;; ---------------------------------
+	;; ELSE nos mantenemos en este movimiento
+	;; ---------------------------------
+	actualizar_contador:
+	ld a, EnemyTemp(ix)  			
+	cp #1
+	jr nz, actualizar_temporizador
+
+	ld EnemyTemp(ix), #0
+
+	;; Guardamos número de veces actualizada
+	inc EnemyPatternContador(ix)
+	
+	;; Guardamos x
+	inc hl
+
+	ld a, Enemy_x(ix)
+	add a, (hl)
+	ld Enemy_x(ix), a
+
+	;; Guardamos y
+	inc hl
+
+	ld a, Enemy_y(ix)
+	add a, (hl)
+	ld Enemy_y(ix), a
+
+	jr fin_algorith_pattern
+
+	actualizar_temporizador:				
+	inc a
+	ld EnemyTemp(ix), a
+
+	jr fin_algorith_pattern
+
+	;; ---------------------------------
+	;; Generación de un nuevo enemigo ya que se ha acabado el patrón o el enemigo ha muerto
+	;; ---------------------------------
+	nuevo_enemigo:
+
+	call generateNewRandomEnemy
 
 	fin_algorith_pattern:
 	pop hl
+ret
+
+generateNewRandomEnemy::
+
+	call cpct_getRandom_lcg_u8_asm
+
+	;; Cosas comunes del nuevo enemigo
+	ld EnemyLives(ix), #1
+	ld EnemyTemp(ix), #0
+	ld EnemyPatternContador(ix), #0
+
+	;; Cosas específicas del nuevo enemigo
+	cp #64
+	jp c, primer_tipo_enemigo
+	cp #128
+	jp c, segundo_tipo_enemigo
+	cp #192
+	jp c, tercer_tipo_enemigo
+
+		;; cuarto_tipo_enemigo
+		ld Enemy_x(ix), #23
+		ld Enemy_y(ix), #23
+
+		ld hl, #_pattern3
+		ld EnemyPatternL(ix), l
+		ld EnemyPatternH(ix), h
+
+		ret
+
+	primer_tipo_enemigo:
+
+		ld Enemy_x(ix), #23
+		ld Enemy_y(ix), #23
+
+		ld hl, #_pattern3
+		ld EnemyPatternL(ix), l
+		ld EnemyPatternH(ix), h
+
+		ret
+
+	segundo_tipo_enemigo:
+
+		ld Enemy_x(ix), #23
+		ld Enemy_y(ix), #23
+
+		ld hl, #_pattern3
+		ld EnemyPatternL(ix), l
+		ld EnemyPatternH(ix), h
+
+		ret
+
+	tercer_tipo_enemigo:
+	
+		ld Enemy_x(ix), #23
+		ld Enemy_y(ix), #23
+
+		ld hl, #_pattern3
+		ld EnemyPatternL(ix), l
+		ld EnemyPatternH(ix), h
 ret
 
 enemyShoot:	

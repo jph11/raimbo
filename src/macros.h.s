@@ -1,9 +1,9 @@
 .macro defineEntity name, x, y, w, h, spr, lives,  temp, lastmovement, ux, pux, uy, puy
     name'_data::
-        name'_x: 	      .db x   ;[0-80]
-        name'_y:	      .db y   ;[0-200]
-        name'_w:	      .db w
-        name'_h:	      .db h
+        name'_x:          .db x   ;[0-80]
+        name'_y:          .db y   ;[0-200]
+        name'_w:          .db w
+        name'_h:          .db h
         name'_sprite:     .dw spr
         name'_lives:      .db lives
         name'_temp:       .db temp
@@ -25,10 +25,10 @@
 
 .macro defineInitEntity name, x, y, w, h
     name'_data:
-        name'_x: 	.db x   ;[0-80]
-        name'_y:	.db y   ;[0-200]
-        name'_w:	.db w
-        name'_h:	.db h
+        name'_x:    .db x   ;[0-80]
+        name'_y:    .db y   ;[0-200]
+        name'_w:    .db w
+        name'_h:    .db h
 .endm
 
 .macro defineMap name, ptilemap, puertaIzquierda, puertaDerecha
@@ -41,7 +41,7 @@
         name'_arrayEnemy:
 .endm
 
-.macro defineEnemy x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern
+.macro defineEnemy x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern, contador
         .db x
         .db y
         .db w
@@ -56,10 +56,10 @@
         .db puy
         .db type
         .dw pattern
-
+        .db contador
 .endm
 
-.macro defineEnemyLastOne x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern
+.macro defineEnemyLastOne x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern, contador
         .db x
         .db y
         .db w
@@ -74,5 +74,6 @@
         .db puy
         .db type
         .dw pattern
+        .db contador
         .db #0x81
 .endm
