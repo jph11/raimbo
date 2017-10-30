@@ -78,7 +78,18 @@ $(eval $(call IMG2SPRITES,assets/Hero/hero_upLeft-diag_pistol.png,0,sprite,18,25
 ##ENEMIES
 $(eval $(call IMG2SPRITES,assets/Enemies/oldMan_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Enemies/oldMan_orange_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
-$(eval $(call IMG2SPRITES,assets/Enemies/oldMan_orange_left_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/ball_bike_left.png,0,sprite,22,30,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/ball_bike_right.png,0,sprite,22,30,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/ball_left.png,0,sprite,22,22,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/ball_right.png,0,sprite,22,22,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/bullet_shooter_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/bullet_shooter_right.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/ghost_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/ghost_right.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/hooded_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/hooded_right.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
+
+
 
 #$(eval $(call IMG2SPRITES,assets/Enemies/octopus_forward.png,0,sprite,18,18,$(PALETTE),mask,src/sprites,))
 #$(eval $(call IMG2SPRITES,assets/Enemies/octopus_back.png,0,sprite,18,18,$(PALETTE),mask,src/sprites,))
