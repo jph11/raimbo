@@ -106,14 +106,14 @@ game_run:
 ;;	DESTROYS:
 ;; ======================
 gameOver:
-		;;Scan the whole keyboard
-		call cpct_scanKeyboard_asm ;;keyboard.s
+		;; Scan the whole keyboard
+		call cpct_scanKeyboard_asm 		;;keyboard.s
 
-		;;Check for key 'Space' being pressed
+		;; Check for key 'Space' being pressed
 		ld hl, #Key_P
-		call cpct_isKeyPressed_asm	;;Check if Key_Space is presed
-		cp #0						;;Check A == 0
-		jr z, gameOver		;;Jump if A==0 (space_not_pressed)
+		call cpct_isKeyPressed_asm		;;Check if Key_Space is presed
+		cp #0							;;Check A == 0
+		jr z, gameOver					;;Jump if A==0 (space_not_pressed)
 
 		;;P is pressed
 		ld a, #03
