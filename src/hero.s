@@ -59,6 +59,9 @@ TablaValoresBullets:
 	valor_abajo_derecha:
 	.db 0x05, 0x10 ; 7
 
+canShoot:
+	.db 0x00
+
 punteroValor::
 	.dw 0x0000
 
@@ -311,6 +314,15 @@ moveHeroRight:
 		ld a, (hl)
 		cp #0
 		 ret nz
+		ld a, (hero_y)
+		cp #90
+		jr nc, change_rightSecond
+			ret 
+		change_rightSecond:
+		cp #100
+		jr c, change_right
+			ret 
+		change_right:
 		ld a, #0
 		call map_changeMap
 		cp #-1
@@ -335,6 +347,15 @@ moveHeroLeft::
 		ld a, (hl)
 		cp #0
 		 ret nz
+		ld a, (hero_y)
+		cp #90
+		jr nc, change_leftSecond
+			ret 
+		change_leftSecond:
+		cp #100
+		jr c, change_left
+			ret 
+		change_left:
 		ld a, #1
 		call map_changeMap
 		cp #-1
@@ -380,19 +401,14 @@ checkUserInput::
 	call cpct_isKeyPressed_asm	;;Check if Key_Space is presed
 	cp #0						;;Check A == 0
 	jr z, space_not_pressed		;;Jump if A==0 (space_not_pressed)
+	
+	ld a, (canShoot)
+	cp #0
+	jr z, next_space
 
-
-	;; Temporizador - Esta primera función guarda una bala cada dos veces y realiza un efecto de temporizador
-	ld hl, #hero_temp 						;; hl <= tempBullets
-	ld a, (hl) 								;; a <= (tempBullets)
-	cp #0x05 								;; a == 0x02
-	jr z, nueva 							;; if(!a==0x02){
-		inc a 								;; 	a++
-		ld (hl), a 							;; 	Actualizamos tempBullets
-		jr space_not_pressed				;; 	Continuamos
-	nueva:									;; }else{
-	ld (hl), #0x00 							;;  Reiniciamos tempBullets y procedemos a guardar la bala
-											;; }
+	ld a, #0
+	ld (canShoot), a
+	
 	ld a, (hero_x)
 	cp #0
 		ret z
@@ -408,7 +424,15 @@ checkUserInput::
 	call entity_setId
 	call bullets_newBullet
 
+	jr next_space
+
 	space_not_pressed:
+
+	ld a, #1
+	ld (canShoot), a
+
+	next_space:
+
 
 	;;Check for key 'A' being pressed
 	ld hl, #Key_A 				;;HL = Key_A
