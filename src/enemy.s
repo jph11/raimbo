@@ -3,6 +3,8 @@
 .globl _sprite_oldMan_left
 .globl _sprite_death
 .globl nEnemyA
+.globl ptilemapA
+
 .area _CODE
 
 ;;===========================================
@@ -841,3 +843,82 @@ enemyShoot:
 	call bullets_newBullet
 
 	ret
+
+enemy_eraseOnDead::
+
+	push af
+	push bc
+	push de
+	push hl
+
+	;; Calculamos y
+	ld b, EnemyPUY(ix)
+	srl b
+	srl b
+
+	;; Calculamos x
+	ld c, EnemyPUX(ix)
+	srl c
+
+	;; Calculamos height
+	ld d, Enemy_h(ix)
+	srl d
+	srl d
+	inc d
+
+	;; Calculamos width
+	ld e, Enemy_w(ix)
+	srl e
+	inc e
+
+	;; Set Parameters on the stack
+	ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
+	push hl              ;; Push ptilemap to the stack
+	ld   hl, #0xC000  ;; HL = Pointer to video memory location where tilemap is drawn
+	push hl              ;; Push pvideomem to the stack
+	;; Set Paramters on registers
+	ld    a, #40 ;; A = map_width
+	;;ld    b, #0          ;; B = y tile-coordinate
+	;;ld    c, #0          ;; C = x tile-coordinate
+	;;ld    d, #46          ;; H = height in tiles of the tile-box
+	;;ld    e, #40          ;; L =  width in tiles of the tile-box
+	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
+
+	;; Calculamos y
+	ld b, EnemyPUY(ix)
+	srl b
+	srl b
+
+	;; Calculamos x
+	ld c, EnemyPUX(ix)
+	srl c
+
+	;; Calculamos height
+	ld d, Enemy_h(ix)
+	srl d
+	srl d
+	inc d
+
+	;; Calculamos width
+	ld e, Enemy_w(ix)
+	srl e
+	inc e
+
+	;; Set Parameters on the stack
+	ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
+	push hl              ;; Push ptilemap to the stack
+	ld   hl, #0x8000  ;; HL = Pointer to video memory location where tilemap is drawn
+	push hl              ;; Push pvideomem to the stack
+	;; Set Paramters on registers
+	ld    a, #40 ;; A = map_width
+	;;ld    b, #0          ;; B = y tile-coordinate
+	;;ld    c, #0          ;; C = x tile-coordinate
+	;;ld    d, #46          ;; H = height in tiles of the tile-box
+	;;ld    e, #40          ;; L =  width in tiles of the tile-box
+	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
+
+	pop hl
+	pop de
+	pop bc
+	pop af
+ret

@@ -501,7 +501,8 @@ bullet_checkCollision::
 				dec a
 				ld (nBullets), a
 
-				call enemy_erase
+				;;call enemy_erase
+				call enemy_eraseOnDead
 				call enemy_enemyKill
 
 				call map_addScore
