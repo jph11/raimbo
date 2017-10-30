@@ -54,6 +54,8 @@ isr::
 	push hl
 	push iy
 
+	call cpct_scanKeyboard_if_asm
+
 	ld a, (unavariable)
 	dec a
 	ld (unavariable), a
@@ -125,7 +127,7 @@ drawMenu::
 		
 		loop:
 			;;Scan the whole keyboard
-			call cpct_scanKeyboard_asm ;;keyboard.s
+			;;call cpct_scanKeyboard_asm ;;keyboard.s
 
 			;;Check for key 'Enter' being pressed
 			ld hl, #Key_G

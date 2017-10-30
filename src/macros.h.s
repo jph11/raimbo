@@ -82,7 +82,7 @@
         .db #0x81
 .endm
 
-.macro definePatternAction numero_veces, aumento_x, aumento_y, sprite, disparo1, disparo2, disparo3
+.macro definePatternAction numero_veces, aumento_x, aumento_y, sprite, disparo1, disparo2, disparo3, velocidad
         .db numero_veces
         .db aumento_x
         .db aumento_y
@@ -90,9 +90,10 @@
         .db disparo1
         .db disparo2
         .db disparo3
+        .db velocidad
 .endm
 
-.macro definePatternLastAction numero_veces, aumento_x, aumento_y, sprite, disparo1, disparo2, disparo3
+.macro definePatternLastAction numero_veces, aumento_x, aumento_y, sprite, disparo1, disparo2, disparo3, velocidad
         .db numero_veces
         .db aumento_x
         .db aumento_y
@@ -100,6 +101,7 @@
         .db disparo1
         .db disparo2
         .db disparo3
+        .db velocidad
         .db #0xFF
 .endm
 

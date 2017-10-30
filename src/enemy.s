@@ -1,7 +1,7 @@
 .area _DATA
 
 .globl _sprite_oldMan_left
-.globl _sprite_death
+;.globl _sprite_oldMan_left
 .globl nEnemyA
 .globl ptilemapA
 
@@ -20,6 +20,8 @@
 .include "macros.h.s"
 .include "bullets.h.s"
 .include "map.h.s"
+
+
 
 shootTemp:
 	.db #0x00
@@ -49,31 +51,31 @@ enemy_id:
 .equ EnemyPatternContador, 18
 
 ;;Death Data
-defineObject death 0, 0, 8, 16, _sprite_death
-death_isDraw: .db #00
+;defineObject death 0, 0, 8, 16, _sprite_oldMan_left
+;death_isDraw: .db #00
 ;;Death Data Animation
-death_anim: .db #10			;;Número de animaciones de pintar-no_pintar
-death_anim2: .db #20		;;Duración de la animación
-death_animState: .db #00	;;Estado actual [0-1]
+;death_anim: .db #10			;;Número de animaciones de pintar-no_pintar
+;death_anim2: .db #20		;;Duración de la animación
+;death_animState: .db #00	;;Estado actual [0-1]
 
 ;; ========================
-;; Patterns. Cada pattern es un conjunto de tuplas (número de veces, aumento en x, aumento en y, sprite, disparo1, disparo2, disparo3)
+;; Patterns. Cada pattern es un conjunto de tuplas (número de veces, aumento en x, aumento en y, sprite, disparo1, disparo2, disparo3, velocidad)
 ;; ========================
 pattern1::
-definePatternAction #1, #-1, #-1, #_sprite_death, #5, #0xFF, #0xFF
-definePatternLastAction #30, #0, #0, #_sprite_death, #0xFF, #0xFF, #0xFF
+definePatternAction #1, #-1, #-1, #_sprite_oldMan_left, #5, #0xFF, #0xFF, #0
+definePatternLastAction #30, #0, #0, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #0
 
 pattern2::
-definePatternAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
-definePatternAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
-definePatternLastAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
+definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
+definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
+definePatternLastAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
 
 pattern3::
-definePatternAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
-definePatternAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
-definePatternLastAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
+definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
+definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
+definePatternLastAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
 
-;;_pattern1:: .dw #70, #-1, #0, #_sprite_death, #0xFF
+;;_pattern1:: .dw #70, #-1, #0, #_sprite_oldMan_left, #0xFF
 ;;_pattern2:: .dw #70, #-1, #0, #30, #1, #1, #0xFF
 ;;_pattern3:: .dw #5, #1, #1, #5, #-1, #-1, #0xFF
 
@@ -85,6 +87,7 @@ definePatternLastAction #5, #5, #5, #_sprite_death, #0xFF, #0xFF, #0xFF
 .equ Pattern_Disparo1, 5
 .equ Pattern_Disparo2, 6
 .equ Pattern_Disparo3, 7
+.equ Pattern_Velocidad, 8
 
 
 ;;===========================================
@@ -187,10 +190,10 @@ enemy_enemyKill::
 		ret
 
 	death:
-		ld a, Enemy_x(ix)
-		ld (death_x), a
-		ld a, Enemy_y(ix)
-		ld (death_y), a
+		;ld a, Enemy_x(ix)
+		;ld (death_x), a
+		;ld a, Enemy_y(ix)
+		;ld (death_y), a
 
 		ld hl, (nEnemyA)
 		ld a, (hl)
@@ -207,66 +210,66 @@ enemy_enemyKill::
 ;; ======================
 ;; Enemy was killed
 ;; ======================
-enemyOver:
-	ld a, (death_isDraw)	;;Si la calavera se ha pintado
-	cp #01					;;y animado ya una vez,
-	jr z, draw				;;no se hace más
+;enemyOver:
+;	ld a, (death_isDraw)	;;Si la calavera se ha pintado
+;	cp #01					;;y animado ya una vez,
+;	jr z, draw				;;no se hace más
+;
+;		ld a, (death_anim)		;;Cargamos nº alteraciones
+;		cp #0				
+;		jr z, end				;;Si nº alteraciones==0 terminamos ==> end
+;		ld a, (death_anim2)		;;sino cargamos la duración de la animación i
+;								;;y entramos en el loop
+;		loop:
+;			cp #0						;;Si la duración de la animación es 0,
+;			jr z, decrement_anim		;;pasamos al siguiente nº de animación
+;
+;				push af					;;Pusheamos A para no perder el estado de duración
+;
+;				ld a, (death_animState)
+;				cp #0		
+;				jr z, dibujar			;;Si es 0-->dibujar / 1-->borrar
+;
+;				ld a, #0x00				;;||
+;				ld ix, #death_data		;;||Borramos
+;				call entity_draw		;;||
+;
+;				ld a, #00				;;Alteramos el estado a 0
+;				ld (death_animState), a
+;				jr decrement_anim2
+;
+;				dibujar:
+;					ld a, #0xFF			;;||
+;					ld ix, #death_data	;;||Dibujamos
+;					call entity_draw	;;||
 
-		ld a, (death_anim)		;;Cargamos nº alteraciones
-		cp #0				
-		jr z, end				;;Si nº alteraciones==0 terminamos ==> end
-		ld a, (death_anim2)		;;sino cargamos la duración de la animación i
-								;;y entramos en el loop
-		loop:
-			cp #0						;;Si la duración de la animación es 0,
-			jr z, decrement_anim		;;pasamos al siguiente nº de animación
+;					ld a, #01			;;Alteramos el estado a 1
+;					ld (death_animState), a
 
-				push af					;;Pusheamos A para no perder el estado de duración
+;				decrement_anim2:
+;					pop af				;;Popeamos el estado de duración en A
+;					dec a				;;death_anim2--
+;					ld (death_anim2), a
+;					jr draw				;;Finalizamos hasta la siguiente llamada a enemyOver
 
-				ld a, (death_animState)
-				cp #0		
-				jr z, dibujar			;;Si es 0-->dibujar / 1-->borrar
+;			decrement_anim:
+;				ld a, #20				;;Volvemos a cargar a 20 la duración de la animación
+;				ld (death_anim2), a		;;para la animación i+1
 
-				ld a, #0x00				;;||
-				ld ix, #death_data		;;||Borramos
-				call entity_draw		;;||
+;				ld a, (death_anim)		;;Decrementamos nº animación
+;				dec a
+;				ld (death_anim), a
 
-				ld a, #00				;;Alteramos el estado a 0
-				ld (death_animState), a
-				jr decrement_anim2
+;				jr draw					;;Finalizamos hasta la siguiente llamada a enemyOver
 
-				dibujar:
-					ld a, #0xFF			;;||
-					ld ix, #death_data	;;||Dibujamos
-					call entity_draw	;;||
+;	end:
+;		ld hl, #death_isDraw	;;Guardamos en isDraw si está dibujada la calavera 
+;		ld a, #01				
+;		ld (hl), a
 
-					ld a, #01			;;Alteramos el estado a 1
-					ld (death_animState), a
+;	draw:
 
-				decrement_anim2:
-					pop af				;;Popeamos el estado de duración en A
-					dec a				;;death_anim2--
-					ld (death_anim2), a
-					jr draw				;;Finalizamos hasta la siguiente llamada a enemyOver
-
-			decrement_anim:
-				ld a, #20				;;Volvemos a cargar a 20 la duración de la animación
-				ld (death_anim2), a		;;para la animación i+1
-
-				ld a, (death_anim)		;;Decrementamos nº animación
-				dec a
-				ld (death_anim), a
-
-				jr draw					;;Finalizamos hasta la siguiente llamada a enemyOver
-
-	end:
-		ld hl, #death_isDraw	;;Guardamos en isDraw si está dibujada la calavera 
-		ld a, #01				
-		ld (hl), a
-
-	draw:
-
-	ret
+;	ret
 
 ;; ======================
 ;; Enemy check collision
@@ -654,7 +657,7 @@ Algorithm_Pattern::
 	;; ---------------------------------
 	ld l, EnemyPatternL(ix)
 	ld h, EnemyPatternH(ix)
-	ld bc, #8
+	ld bc, #9
 	add hl, bc
 
 	ld EnemyPatternL(ix), l
@@ -672,7 +675,7 @@ Algorithm_Pattern::
 	;; ---------------------------------
 	actualizar_contador:
 	ld a, EnemyTemp(ix)  			
-	cp #1
+	cp Pattern_Velocidad(iy)
 	jr nz, actualizar_temporizador
 
 	;; ---------------------------------

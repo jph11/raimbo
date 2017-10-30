@@ -2,6 +2,7 @@
 .globl _sprite_bala
 .globl ptilemapA
 .globl nEnemyA
+.globl punteroValor
 .area _CODE
 
 ;;===========================================
@@ -79,22 +80,12 @@ bullets_newBullet::
 						
 	call entity_getPointer					;; hl <= Entity_data / hl(entity_x)
 	ld a, (hl)								;; a <= Entity_x
-	inc hl
-	inc hl
-	ld b, (hl)								;; b <= Entity_w
-	add b									;; Sumamos para poner la salida de la bala en la pistola de hero
+	ld de, (punteroValor)
+	add a, e
 	ld c, a									;; c <= Entity_x + Entity_w
-
-	dec hl									;; hl++ / hl(entity_y)
+	inc hl									;; hl++ / hl(entity_y)
 	ld a, (hl)								;; a <= Entity_y
-	;========================================================================================================================================
-	; 	Falta:
-	;   inc hl
-	;	inc hl  <= hl = entity_h
-	;	(hl)/2
-	;	add (hl)
-	;========================================================================================================================================
-	add #14
+	add d
 	ld b, a									;; b <= Entity_y + (Entity_h/2)
 	ld hl, #bullets 						;; hl = referencia a memoria a #bullets_x
 	ld iy, #bullets_posiciones
@@ -103,6 +94,7 @@ bullets_newBullet::
 	ld a, (hl)								;; a = hl(bullets_x)
 	cp #0xFF								;; 
 	jr nz, incrementNew						;; if (a != 0xFF){
+
 		ld (hl), c 							;; 	bullet_x <= entity_x
 		inc hl								;;  hl++  hl <= entity_y
 		ld (hl), b 							;; 	bullets_y <= entity_y 
@@ -479,7 +471,7 @@ bullet_checkCollision::
 				ld a, (nBullets)
 				dec a
 				ld (nBullets), a
-
+				
 				call map_substractScore
 				
 				ret
@@ -506,7 +498,6 @@ bullet_checkCollision::
 				call enemy_enemyKill
 
 				call map_addScore
-
 				ret
 
 	not_collision_dec1DE:

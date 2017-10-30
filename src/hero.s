@@ -40,6 +40,28 @@
 ;;	- 7: Down-Right
 
 
+TablaValoresBullets:
+	;; X-Y
+	valor_izquierda:
+	.db 0x00, #14 ; 0
+	valor_derecha:
+	.db #6, #14 ; 1
+	valor_arriba:
+	.db #4, 0xFF ; 2
+	valor_abajo:
+	.db #2, #19 ; 3
+	valor_arriba_izquierda:
+	.db 0x00, 0x08 ; 4
+	valor_arriba_derecha:
+	.db 0x06, 0x08 ; 5
+	valor_abajo_izquierda:
+	.db 0x01, 0x10 ; 6
+	valor_abajo_derecha:
+	.db 0x05, 0x10 ; 7
+
+punteroValor::
+	.dw 0x0000
+
 ;;Hero Data
 ;;===================================================
 ;; ¡Si cambiamos el ancho del hero hay que cambiar
@@ -49,8 +71,8 @@ defineEntity hero, 39, 60, 9, 25, _sprite_hero_right_pistol, 4, 0, 1, 39, 39, 60
 hero_jump: .db #-1
 hero_id: .db #00
 hero_invencibleState: .db #0
-hero_invencibleTransitions: .db #10			;;Número de animaciones de pintar-no_pintar
-hero_invencibleDuration: .db #20			;;Duración de la animación
+hero_invencibleTransitions: .db #05			;;Número de animaciones de pintar-no_pintar
+hero_invencibleDuration: .db #4			;;Duración de la animación
 hero_invencibleAnimState: .db #00			;;Estado actual [0-1]
 
 ;;Jump Table
@@ -332,13 +354,25 @@ cambiarSprite:
 	ld (hl), d
 ret
 
+;; ====
+;;
+;;	INPUT:
+;; 		de: valor de tupla
+;; ====
+cambiarPunteroValor:
+	ld hl, #punteroValor
+	ld (hl), e
+	inc hl 
+	ld (hl), d
+ret
+
 ;; ======================
 ;;	Checks User Input and Reacts
 ;;	DESTROYS:
 ;; ======================
 checkUserInput::
 	;;Scan the whole keyboard
-	call cpct_scanKeyboard_asm ;;keyboard.s
+	;;call cpct_scanKeyboard_asm ;;keyboard.s
 
 
 	;;Check for key 'Space' being pressed
@@ -362,7 +396,7 @@ checkUserInput::
 	ld a, (hero_x)
 	cp #0
 		ret z
-	cp #80-9
+	cp #80-10
 		ret z
 
 	;;Space is pressed
@@ -384,6 +418,9 @@ checkUserInput::
 
 	;;A is pressed
 
+	ld de, (valor_izquierda)
+	call cambiarPunteroValor
+
 	call moveHeroLeft
 	ld hl, #hero_directionBullet
 	ld a, #0
@@ -397,6 +434,9 @@ checkUserInput::
 	call cpct_isKeyPressed_asm	;;Check if Key_D is presed
 	cp #0						;;Check A == 0
 	jr z, d_not_pressed			;;Jump if A==0 (d_not_pressed)
+
+	ld de, (valor_derecha)
+	call cambiarPunteroValor
 
 	;;D is pressed
 	call moveHeroRight
@@ -414,6 +454,9 @@ checkUserInput::
 	cp #0						;;Check W == 0
 	jr z, w_not_pressed			;;Jump if W==0 (w_not_pressed)
 
+	ld de, (valor_arriba)
+	call cambiarPunteroValor
+
 	;;W is pressed
 	call moveHeroUp
 	ld hl, #hero_directionBullet
@@ -428,6 +471,9 @@ checkUserInput::
 	call cpct_isKeyPressed_asm	;;Check if Key_S is presed
 	cp #0						;;Check S == 0
 	jr z, s_not_pressed			;;Jump if S==0 (s_not_pressed)
+
+	ld de, (valor_abajo)
+	call cambiarPunteroValor
 
 	;;S is pressed	
 	call moveHeroBottom
@@ -471,6 +517,10 @@ checkUserInput::
 		ld (hl), a
 		ld de, #_sprite_hero_upRight_diag_pistol
 		call cambiarSprite
+
+		ld de, (valor_arriba_derecha)
+		call cambiarPunteroValor
+
 		ret
 	leftPressedUp:
 		;; Left pressed too
@@ -479,6 +529,10 @@ checkUserInput::
 		ld hl, #hero_sprite
 		ld de, #_sprite_hero_upLeft_diag_pistol
 		call cambiarSprite
+
+		ld de, (valor_arriba_izquierda)
+		call cambiarPunteroValor
+
 		ret
 	;; Only up arrow pressed
 	up_arrow_pressed:
@@ -486,6 +540,10 @@ checkUserInput::
 		ld (hl), a
 		ld de, #_sprite_hero_back_pistol
 		call cambiarSprite
+
+		ld de, (valor_arriba)
+		call cambiarPunteroValor
+
 		ret
 
 	up_arrow_not_pressed:
@@ -510,6 +568,10 @@ checkUserInput::
 		ld (hl), a
 		ld de, #_sprite_hero_downRight_diag_pistol
 		call cambiarSprite
+
+		ld de, (valor_abajo_derecha)
+		call cambiarPunteroValor
+
 		ret
 	leftPressedDown:
 		;; Left pressed too
@@ -517,6 +579,10 @@ checkUserInput::
 		ld (hl), a
 		ld de, #_sprite_hero_downLeft_diag_pistol
 		call cambiarSprite
+
+		ld de, (valor_abajo_izquierda)
+		call cambiarPunteroValor
+
 		ret
 	;; Only down pressed
 	down_arrow_pressed:
@@ -524,6 +590,10 @@ checkUserInput::
 		ld (hl), a
 		ld de, #_sprite_hero_forward_pistol
 		call cambiarSprite
+
+		ld de, (valor_abajo)
+		call cambiarPunteroValor
+
 		ret
 	down_arrow_not_pressed:
 
@@ -539,6 +609,10 @@ checkUserInput::
 		ld (hl), a
 		ld de, #_sprite_hero_right_pistol
 		call cambiarSprite
+
+		ld de, (valor_derecha)
+		call cambiarPunteroValor
+
 		ret
 	leftPressedOnly:
 		;; Left pressed only
@@ -546,6 +620,10 @@ checkUserInput::
 		ld (hl), a
 		ld de, #_sprite_hero_left_pistol
 		call cambiarSprite
+		
+		ld de, (valor_izquierda)
+		call cambiarPunteroValor
+
 	nothing_pressed:
 	ret
 
@@ -717,7 +795,7 @@ hero_heroDamage:
 					jr draw				;;Finalizamos hasta la siguiente llamada a enemyOver
 
 			decrement_anim:
-				ld a, #20				;;Volvemos a cargar a 20 la duración de la animación
+				ld a, #4				;;Volvemos a cargar a 20 la duración de la animación
 				ld (hero_invencibleDuration), a		;;para la animación i+1
 
 				ld a, (hero_invencibleTransitions)		;;Decrementamos nº animación
@@ -729,9 +807,9 @@ hero_heroDamage:
 	end: 
 		ld a, #00				
 		ld (hero_invencibleState), a
-		ld a, #10
+		ld a, #5
 		ld (hero_invencibleTransitions), a
-		ld a, #20
+		ld a, #4
 		ld (hero_invencibleDuration), a
 		ld a, #0
 		ld (hero_invencibleAnimState), a
