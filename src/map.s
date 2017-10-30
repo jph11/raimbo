@@ -2,7 +2,8 @@
 
 .globl _sprite_oldMan_left
 .globl _sprite_ball_bike_left
-
+.globl _sprite_ball_left
+.globl _sprite_bullet_shooter_left
 .globl _g_tilemap
 
 score_char: .db #48, #48, #48, #0
@@ -55,7 +56,7 @@ puntero_video:: .dw #0x8000
 .equ score_tercer_digito_menos_significativo, 0
 
 NextEnemy:
-	.dw #19
+	.dw #21
 nEnemyA::
 	.dw #M1_nEnemyMap
 ptilemapA::
@@ -82,34 +83,34 @@ arrayEnemyA::
 
 M1:
 	defineMap M1 #_g_tilemap, -1, M2, 2
-	defineEnemy 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
-	defineEnemyLastOne 70, 120, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
+	defineEnemy 30, 100, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 30, 30, 100, 100, 3, pattern2, pattern2, 0, 0, 0
+	defineEnemyLastOne 50, 30, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 50, 50, 30, 30, 3, pattern2, pattern2, 0, 0, 0
 
 M2:
 	defineMap M2 #_g_tilemap1, M1, M3, 2
-	defineEnemy 30, 100, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
+	defineEnemy 30, 100, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
+	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
 
 M3:
 	defineMap M3 #_g_tilemap1, M2, M4, 3
-	defineEnemy 60, 87, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
-	defineEnemy 54, 124, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
+	defineEnemy 60, 87, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
+	defineEnemy 54, 124, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
+	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
 
 M4:
 	defineMap M4 #_g_tilemap1, M3, M5, 3
-	defineEnemy 20, 140, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
-	defineEnemy 60, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
+	defineEnemy 20, 140, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
+	defineEnemy 60, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
+	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
 
 M5:
 	defineMap M5 #_g_tilemap1, M4, M6, 2
-	defineEnemy 50, 50, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
+	defineEnemy 50, 50, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
+	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
 
 M6:
 	defineMap M6 #_g_tilemap3, M5, -1, 1
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
+	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
 
 ;;========================
 ;;========================
