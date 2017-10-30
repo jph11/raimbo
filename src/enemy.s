@@ -63,7 +63,7 @@ enemy_id:
 ;; ========================
 pattern1::
 definePatternAction #1, #-1, #-1, #_sprite_oldMan_left, #5, #0xFF, #0xFF, #0
-definePatternLastAction #30, #-1, #-1, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #0
+definePatternLastAction #30, #0, #0, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #0
 
 pattern2::
 definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
