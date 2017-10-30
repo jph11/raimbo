@@ -147,9 +147,9 @@ hero_erase::
 ;;  Start hero values
 ;; ======================
 hero_init::
-	ld a, #39
+	ld a, #0
 	ld (hero_x), a
-	ld a, #20
+	ld a, #90
 	ld (hero_y), a
 	ld a, #-1
 	ld (hero_jump), a
@@ -283,7 +283,7 @@ moveHeroUp:
 ;; ======================
 moveHeroBottom:
 	ld a, (hero_y)	;;A = hero_y
-	cp #200-28-18		;;Check against right limit (screen size - hero size)
+	cp #200-29-18		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
 	jr nc, d_not_move_bottom
 
