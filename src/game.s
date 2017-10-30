@@ -1,6 +1,18 @@
 .area _DATA
 
 .globl _game_flower_100
+.globl M1_aux
+.globl M1
+.globl nEnemyA
+.globl ptilemapA
+.globl puertaIzquierdaA
+.globl puertaDerechaA
+.globl arrayEnemyA
+.globl _g_tilemap
+.globl M1_nEnemyMap
+.globl M2
+.globl M1_arrayEnemy
+
 
 .area _CODE
 
@@ -33,8 +45,7 @@ defineScoreLife life, 20, 185, 8, 15, _game_flower_100
 game_start::
     call game_init
 	call game_run
-
-    ret
+ret
 
 ;;===========================================
 ;;===========================================
@@ -141,7 +152,7 @@ game_run:
 	call hero_getPointerLife
 	ld a, (hl)
 	cp #0
-	jr z, gameOver
+	jr z, llamada_a_gameover
 
     call engine_drawAll
 
@@ -149,6 +160,10 @@ game_run:
 	call map_switchBuffers
 	
     jr game_run
+
+    llamada_a_gameover:
+    call gameOver
+ret
 
 ;; ======================
 ;;	Checks User Input and Reacts
@@ -158,14 +173,54 @@ gameOver:
 		;; Scan the whole keyboard
 		;;call cpct_scanKeyboard_asm 		;;keyboard.s
 
-		;; Check for key 'Space' being pressed
+		;; Check for key 'P' being pressed
 		ld hl, #Key_P
 		call cpct_isKeyPressed_asm		;;Check if Key_Space is presed
 		cp #0							;;Check A == 0
 		jr z, gameOver					;;Jump if A==0 (space_not_pressed)
 
 		;;P is pressed
-		ld a, #03
+		;; Fórmula: Número de enemigos * Tamaño en bytes de un enemigo + Número de mapas * tamaño en bytes de un mapa + Número de enemigos
+		;; Fórmula: 
+		ld bc, #12 * 19 + 6 * 7 + 12
+		ld hl, #M1_aux
+		ld de, #M1
+		ldir
+
+		;; Resetear score
+		call map_resetScore
+
+		;; Resear punteros map
+		ld ix, #nEnemyA
+		ld de, #M1_nEnemyMap
+
+		ld 0(ix), e
+		ld 1(ix), d
+
+		ld ix, #ptilemapA
+		ld de, #_g_tilemap
+
+		ld 0(ix), e
+		ld 1(ix), d
+
+		ld ix, #puertaIzquierdaA
+		ld 0(ix), #0xFF
+		ld 1(ix), #0xFF
+
+		ld ix, #puertaDerechaA
+		ld de, #M2
+
+		ld 0(ix), e
+		ld 1(ix), d
+
+		ld ix, #arrayEnemyA
+		ld de, #M1_arrayEnemy
+
+		ld 0(ix), e
+		ld 1(ix), d
+
+
+		ld a, #04
 		call hero_getPointerLife
 		ld (hl), a
-		call game_start
+ret

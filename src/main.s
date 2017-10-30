@@ -205,4 +205,7 @@ _main::
 	ld sp, #0x8000
 	call settings
 	call drawMenu
+
+	ad_infinitum:
 	call game_start
+	jr ad_infinitum

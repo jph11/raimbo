@@ -38,9 +38,9 @@
             .dw puertaIzquierda
         name'_puertaDerecha:
             .dw puertaDerecha
-        name'_nEnemyMap:
+        name'_nEnemyMap::
             .db nEnemy
-        name'_arrayEnemy:
+        name'_arrayEnemy::
 .endm
 
 .macro defineEnemy x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern, pattern_antiguo, contador
