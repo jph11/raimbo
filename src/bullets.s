@@ -472,6 +472,8 @@ bullet_checkCollision::
 				dec a
 				ld (nBullets), a
 				
+				call map_substractScore
+				
 				ret
 
 			;;Enemy es la víctima
@@ -494,6 +496,8 @@ bullet_checkCollision::
 				;;call enemy_erase
 				call enemy_eraseOnDead
 				call enemy_enemyKill
+
+				call map_addScore
 				ret
 
 	not_collision_dec1DE:
@@ -569,7 +573,7 @@ drawBullet::
 			;;Draw sprite
 			ld c, #3
 			ld b, #5
-			call cpct_drawSprite_asm
+			call cpct_drawSpriteMasked_asm
 
 			pop de
 			pop bc

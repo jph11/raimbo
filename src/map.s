@@ -1,9 +1,7 @@
 .area _DATA
 
 .globl _sprite_oldMan_left
-.globl _sprite_death
-.globl _sprite_oldMan_orange_left
-.globl _sprite_oldMan_orange_left_pistol
+.globl _sprite_ball_bike_left
 
 .globl _g_tilemap
 
@@ -85,7 +83,7 @@ arrayEnemyA::
 M1:
 	defineMap M1 #_g_tilemap, -1, M2, 2
 	defineEnemy 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
+	defineEnemyLastOne 70, 120, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
 
 M2:
 	defineMap M2 #_g_tilemap1, M1, M3, 2

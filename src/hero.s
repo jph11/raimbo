@@ -43,21 +43,21 @@
 TablaValoresBullets:
 	;; X-Y
 	valor_izquierda:
-	.db 0xFF, #14 ; 0
+	.db 0x00, #14 ; 0
 	valor_derecha:
-	.db #10, #14 ; 1
+	.db #6, #14 ; 1
 	valor_arriba:
 	.db #4, 0xFF ; 2
 	valor_abajo:
-	.db #4, #26 ; 3
+	.db #2, #19 ; 3
 	valor_arriba_izquierda:
-	.db 0x01, 0x14 ; 4
+	.db 0x00, 0x08 ; 4
 	valor_arriba_derecha:
-	.db 0x01, 0x14 ; 5
+	.db 0x06, 0x08 ; 5
 	valor_abajo_izquierda:
-	.db 0x01, 0x14 ; 6
+	.db 0x01, 0x10 ; 6
 	valor_abajo_derecha:
-	.db 0x01, 0x14 ; 7
+	.db 0x05, 0x10 ; 7
 
 punteroValor::
 	.dw 0x0000
@@ -71,8 +71,8 @@ defineEntity hero, 39, 60, 9, 25, _sprite_hero_right_pistol, 4, 0, 1, 39, 39, 60
 hero_jump: .db #-1
 hero_id: .db #00
 hero_invencibleState: .db #0
-hero_invencibleTransitions: .db #10			;;Número de animaciones de pintar-no_pintar
-hero_invencibleDuration: .db #20			;;Duración de la animación
+hero_invencibleTransitions: .db #05			;;Número de animaciones de pintar-no_pintar
+hero_invencibleDuration: .db #4			;;Duración de la animación
 hero_invencibleAnimState: .db #00			;;Estado actual [0-1]
 
 ;;Jump Table
@@ -786,7 +786,7 @@ hero_heroDamage:
 					jr draw				;;Finalizamos hasta la siguiente llamada a enemyOver
 
 			decrement_anim:
-				ld a, #20				;;Volvemos a cargar a 20 la duración de la animación
+				ld a, #4				;;Volvemos a cargar a 20 la duración de la animación
 				ld (hero_invencibleDuration), a		;;para la animación i+1
 
 				ld a, (hero_invencibleTransitions)		;;Decrementamos nº animación
@@ -798,9 +798,9 @@ hero_heroDamage:
 	end: 
 		ld a, #00				
 		ld (hero_invencibleState), a
-		ld a, #10
+		ld a, #5
 		ld (hero_invencibleTransitions), a
-		ld a, #20
+		ld a, #4
 		ld (hero_invencibleDuration), a
 		ld a, #0
 		ld (hero_invencibleAnimState), a
