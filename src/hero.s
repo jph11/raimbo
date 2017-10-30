@@ -79,7 +79,7 @@ hero_invencibleDuration: .db #4			;;Duración de la animación
 hero_invencibleAnimState: .db #00			;;Estado actual [0-1]
 
 ;;Jump Table
-jumptable:
+jumptable::
 	.db #-5, #-4, #-2, #-1
 	.db #-1, #00, #00, #00
 	.db #00, #00,#00, #01

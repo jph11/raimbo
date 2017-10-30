@@ -43,7 +43,7 @@
         name'_arrayEnemy::
 .endm
 
-.macro defineEnemy x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern, pattern_antiguo, contador
+.macro defineEnemy x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern, pattern_antiguo, contador, bulletContador, salto
         .db x
         .db y
         .db w
@@ -60,9 +60,11 @@
         .dw pattern
         .dw pattern_antiguo
         .db contador
+        .db bulletContador
+        .db salto
 .endm
 
-.macro defineEnemyLastOne x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern, pattern_antiguo, contador
+.macro defineEnemyLastOne x,  y,  w,  h, sprite, lives,  temp, lastmovement, ux, pux, uy, puy, type, pattern, pattern_antiguo, contador, bulletContador, salto
         .db x
         .db y
         .db w
@@ -79,10 +81,12 @@
         .dw pattern
         .dw pattern_antiguo
         .db contador
+        .db bulletContador
+        .db salto
         .db #0x81
 .endm
 
-.macro definePatternAction numero_veces, aumento_x, aumento_y, sprite, disparo1, disparo2, disparo3, velocidad
+.macro definePatternAction numero_veces, aumento_x, aumento_y, sprite, disparo1, disparo2, disparo3, velocidad, jumps
         .db numero_veces
         .db aumento_x
         .db aumento_y
@@ -91,9 +95,10 @@
         .db disparo2
         .db disparo3
         .db velocidad
+        .db jumps
 .endm
 
-.macro definePatternLastAction numero_veces, aumento_x, aumento_y, sprite, disparo1, disparo2, disparo3, velocidad
+.macro definePatternLastAction numero_veces, aumento_x, aumento_y, sprite, disparo1, disparo2, disparo3, velocidad, jumps
         .db numero_veces
         .db aumento_x
         .db aumento_y
@@ -102,6 +107,7 @@
         .db disparo2
         .db disparo3
         .db velocidad
+        .db jumps
         .db #0xFF
 .endm
 

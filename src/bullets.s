@@ -79,6 +79,25 @@ bullets_newBullet::
 
 						
 	call entity_getPointer					;; hl <= Entity_data / hl(entity_x)
+	ld bc, #0x0005
+	add hl, bc
+	ld a, (hl)
+	ld bc, #0xFFFB
+	add hl, bc
+	cp #0
+	jr z, hero
+
+	ld a, (hl)
+	add #2
+	ld c, a
+	inc hl
+	ld a, (hl)
+	add #14
+	ld b, a
+
+	jr direccionInicioBullet
+
+	hero:
 	ld a, (hl)								;; a <= Entity_x
 	ld de, (punteroValor)
 	add a, e
@@ -87,6 +106,8 @@ bullets_newBullet::
 	ld a, (hl)								;; a <= Entity_y
 	add d
 	ld b, a									;; b <= Entity_y + (Entity_h/2)
+
+	direccionInicioBullet:
 	ld hl, #bullets 						;; hl = referencia a memoria a #bullets_x
 	ld iy, #bullets_posiciones
 

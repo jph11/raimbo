@@ -3,7 +3,12 @@
 .globl _sprite_oldMan_left
 ;.globl _sprite_oldMan_left
 .globl nEnemyA
+.globl _sprite_ball_bike_right
+.globl _sprite_ball_bike_left
+.globl _sprite_ball_left
 .globl ptilemapA
+.globl _sprite_bullet_shooter_left
+.globl jumptable
 
 .area _CODE
 
@@ -49,6 +54,8 @@ enemy_id:
 .equ EnemyPatternAntiguoL, 16
 .equ EnemyPatternAntiguoH, 17
 .equ EnemyPatternContador, 18
+.equ EnemyBulletsContador, 19
+.equ EnemyJump, 20
 
 ;;Death Data
 ;defineObject death 0, 0, 8, 16, _sprite_oldMan_left
@@ -61,19 +68,22 @@ enemy_id:
 ;; ========================
 ;; Patterns. Cada pattern es un conjunto de tuplas (número de veces, aumento en x, aumento en y, sprite, disparo1, disparo2, disparo3, velocidad)
 ;; ========================
-pattern1::
-definePatternAction #1, #-1, #-1, #_sprite_oldMan_left, #5, #0xFF, #0xFF, #0
-definePatternLastAction #30, #0, #0, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #0
 
+;; Saltarín
+pattern1::
+definePatternAction #30, #-1, #1, #_sprite_ball_bike_left, #0, #4, #6, #0, #1
+definePatternAction #30, #0, #-1, #_sprite_ball_bike_left, #0, #0xFF, #0xFF, #0, #1
+definePatternAction #30, #1, #1, #_sprite_ball_bike_right, #1, #5, #7, #0, #1
+definePatternLastAction #30, #0, #-1, #_sprite_ball_bike_right, #1, #0xFF, #0xFF, #0, #1
+
+;; Balín
 pattern2::
-definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
-definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
-definePatternLastAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
+definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #0xFF, #0xFF, #1, #1
 
 pattern3::
-definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
-definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
-definePatternLastAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
+definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1, #0
+definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1, #0
+definePatternLastAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1, #0
 
 ;;_pattern1:: .dw #70, #-1, #0, #_sprite_oldMan_left, #0xFF
 ;;_pattern2:: .dw #70, #-1, #0, #30, #1, #1, #0xFF
@@ -88,6 +98,7 @@ definePatternLastAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #
 .equ Pattern_Disparo2, 6
 .equ Pattern_Disparo3, 7
 .equ Pattern_Velocidad, 8
+.equ Pattern_Jump, 9
 
 
 ;;===========================================
@@ -638,7 +649,7 @@ Algorithm_Pattern::
 
 	ld EnemyPatternContador(ix), #0
 	ld EnemyTemp(ix), #0
-	jr fin_algorith_pattern
+	jp fin_algorith_pattern
 	
 	;; ---------------------------------
 	;; ELSE el patrón no se ha acabado, seguimos haciendo comprobaciones
@@ -657,14 +668,14 @@ Algorithm_Pattern::
 	;; ---------------------------------
 	ld l, EnemyPatternL(ix)
 	ld h, EnemyPatternH(ix)
-	ld bc, #9
+	ld bc, #10
 	add hl, bc
 
 	ld EnemyPatternL(ix), l
 	ld EnemyPatternH(ix), h
 	ld EnemyPatternContador(ix), #0
 	ld EnemyTemp(ix), #0
-	jr fin_algorith_pattern
+	jp fin_algorith_pattern
 
 	;; ---------------------------------
 	;; ELSE nos mantenemos en este movimiento
@@ -676,7 +687,7 @@ Algorithm_Pattern::
 	actualizar_contador:
 	ld a, EnemyTemp(ix)  			
 	cp Pattern_Velocidad(iy)
-	jr nz, actualizar_temporizador
+	jp nz, actualizar_temporizador
 
 	;; ---------------------------------
 	;; THEN Lo realizamos
@@ -698,11 +709,66 @@ Algorithm_Pattern::
 	ld Enemy_y(ix), a
 
 	;; Cargamos el sprite
-	;;ld a, Pattern_SpriteL(iy)
-	;;ld Enemy_spriteL(ix), a
+	ld a, Pattern_SpriteL(iy)
+	ld Enemy_spriteL(ix), a
 
-	;;ld a, Pattern_SpriteH(iy)
-	;;ld Enemy_spriteH(ix), a
+	ld a, Pattern_SpriteH(iy)
+	ld Enemy_spriteH(ix), a
+
+
+
+
+
+	ld a, Pattern_Jump(iy)
+	cp #1
+	jr nz, endJump
+	ld a, EnemyJump(ix)
+	;;Get Jump Value
+	ld hl, #jumptable	;;HL Points
+	ld c, a 			;;|
+	ld b, #0			;;\ BC = A (Offset)
+	add hl, bc			;;HL += BC
+
+	ld a, EnemyJump(ix)	;;A = Hero_jump
+	cp #0x10
+	jp z, reset
+
+	;;Do Jump Movement
+	ld b, (hl)			;;B = Jump Movement
+	ld a, Enemy_y(ix)		;;A = Hero_y
+	add b 				;;A += B (Add jump)
+	ld Enemy_y(ix), a 		;; Update Hero Jump
+
+	;;Increment Hero_jump Index
+	ld a, EnemyJump(ix)	;;A = Hero_jump
+	cp #0x10 			;;Check if is latest vallue
+	jr nz, continue_jump ;;Not latest value, continue
+
+		;;End jump
+		ld a, #-1
+
+	continue_jump:
+	inc a 				;;|
+	ld EnemyJump(ix), a 	;;\ Hero_jump++
+	jr endJump
+	reset:
+	ld a, #0
+	ld EnemyJump(ix), a
+
+	endJump:
+
+	ld a, EnemyBulletsContador(ix)  			
+	cp #0x10 			
+	jr z, plusPattern 			
+		inc a 			
+		ld EnemyBulletsContador(ix), a
+		pop bc
+		pop iy
+		pop hl	
+		ret 			
+	plusPattern:		
+	ld a, #0		
+	ld EnemyBulletsContador(ix), a
 
 	;; ---------------------------------
 	;; y además hacemos comprobaciones de si tenemos que disparar
@@ -751,6 +817,7 @@ Algorithm_Pattern::
 	pop iy
 	pop hl
 ret
+
 
 generateNewRandomEnemy::
 
@@ -812,6 +879,7 @@ generateNewRandomEnemy::
 ret
 
 enemyShootParametrizada:
+
 	call entity_setPointer
 
 	ld a, c
