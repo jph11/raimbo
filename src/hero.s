@@ -690,7 +690,7 @@ hero_decreaseLife::
 
 	draw75:
 		ld hl, (petalo75)
-		ld c, #24	
+		ld c, #32	
 		ld b, #190
 
 		call changeLife
@@ -699,7 +699,7 @@ hero_decreaseLife::
 
 	draw50:
 		ld hl, (petalo50)
-		ld c, #22	
+		ld c, #30	
 		ld b, #194
 		
 		call changeLife
@@ -708,7 +708,7 @@ hero_decreaseLife::
 
 	draw25:
 		ld hl, (petalo25)
-		ld c, #20	
+		ld c, #28	
 		ld b, #190
 
 		call changeLife

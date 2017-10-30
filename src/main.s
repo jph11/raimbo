@@ -8,6 +8,23 @@
 .globl _menu_G
 .globl _menu_TO_PLAY
 .globl _song_ingame
+
+press: .db #80,#82,#69,#83,#83,#0
+g: .db #71,#0
+to: .db #84,#79,#0
+play: .db #80,#76,#65,#89,#0
+w: .db #87,#0
+a: .db #65,#0
+s: .db #83,#0
+d: .db #68,#0
+up: .db #240,#0
+left: .db #242,#0
+right: .db #243,#0
+down: .db #241,#0
+space: .db #83,#80,#65,#67,#69,#0
+to2: .db #116,#111,#0
+shoot: .db #115,#104,#111,#111,#116,#0
+
 .area _CODE
 
 .include "game.h.s"
@@ -16,36 +33,50 @@
 .include "keyboard.s"
 .include "macros.h.s"
 
-defineMenu m1, 31, 50, 19, 10, _menu_PRESS
-defineMenu m2, 36, 88, 8, 12, _menu_G
-defineMenu m3, 27, 120, 26, 10, _menu_TO_PLAY
+.equ L_x, 0
+.equ L_y, 1
+.equ L_c, 2
+.equ L_b, 3
 
-.equ M_x, 0
-.equ M_y, 1
-.equ M_w, 2
-.equ M_h, 3	
-.equ M_spr_l, 4
-.equ M_spr_h, 5
+defineWord pressL, 31, 60, 5, 13
+
+defineWord gL, 38, 75, 5, 9
+
+defineWord toL, 28, 90, 5, 13
+
+defineWord playL, 38, 90, 5, 13
+
+;;===================================
+
+defineWord wL, 10, 130, 5, 2
+
+defineWord aL, 2, 145, 5, 2
+
+defineWord sL, 10, 145, 5, 2
+
+defineWord dL, 18, 145, 5, 2
+
+;;===================================
+
+defineWord upL, 66, 130, 5, 2
+
+defineWord leftL, 58, 145, 5, 2
+
+defineWord rightL, 74, 145, 5, 2
+
+defineWord downL, 66, 145, 5, 2
+
+;;===================================
+
+defineWord spaceL, 31, 160, 5, 2
+
+defineWord to2L, 26, 175, 5, 13
+
+defineWord shootL, 36, 175, 5, 13
 
 unavariable: .db #12
 
 isr::
-
-	;;ld l, #16
-	;;ld a, (unavariable)
-	;;ld h, a
-	;;call cpct_setPALColour_asm
-
-	;;ld a, (unavariable)
-	;;inc a
-	;;cp #0x16
-	;;jr nz, continue
-
-		;;ld a, #0x10
-
-	;;continue:
-	;;ld (unavariable), a
-
 	ex af, af'
 	exx
 	push af
@@ -116,48 +147,194 @@ ret
 ;;	Menú principal
 ;; =================================
 drawMenu::
-		call drawBackground
+	call drawBackground
+	call drawPressToPlay
+	call drawWASD
+	call drawArrows
+	call drawSpace
 
-		ld ix, #m1_data
-		call drawSprite
-		ld ix, #m2_data
-		call drawSprite
-		ld ix, #m3_data
-		call drawSprite
-		
-		loop:
-			;;Scan the whole keyboard
-			;;call cpct_scanKeyboard_asm ;;keyboard.s
+	loop:
+		;;Scan the whole keyboard
+		;;call cpct_scanKeyboard_asm ;;keyboard.s
 
-			;;Check for key 'Enter' being pressed
-			ld hl, #Key_G
-			call cpct_isKeyPressed_asm	;;Check if Key_Enter is presed
-			cp #0						;;Check A == 0
-			jr z, loop					;;Jump if A==0 (space_not_pressed)
+		;;Check for key 'Enter' being pressed
+		ld hl, #Key_G
+		call cpct_isKeyPressed_asm	;;Check if Key_Enter is presed
+		cp #0						;;Check A == 0
+		jr z, loop					;;Jump if A==0 (space_not_pressed)
 
-			;;Enter is pressed
-			ret
+		;;Enter is pressed
+		ret
 
-;; =================================
-;;	Draw Sprite
-;; =================================
-drawSprite:
-	ld de, #0xC000			;;Video memory
+drawPressToPlay:
+	ld ix, #pressL_data
+	ld de, #0xC000
+	ld hl, #press
+	call drawWord
 
-	ld c, M_x(ix)			;;\ C=entity_x
-	ld b, M_y(ix)			;;\ B=entity_y
+	ld ix, #pressL_data
+	ld de, #0x8000
+	ld hl, #press
+	call drawWord
 
-	call cpct_getScreenPtr_asm	;;Get pointer to screen
+	ld ix, #gL_data
+	ld de, #0xC000
+	ld hl, #g
+	call drawWord
+
+	ld ix, #gL_data
+	ld de, #0x8000
+	ld hl, #g
+	call drawWord
+
+	ld ix, #toL_data
+	ld de, #0xC000
+	ld hl, #to
+	call drawWord
+
+	ld ix, #toL_data
+	ld de, #0x8000
+	ld hl, #to
+	call drawWord
+
+	ld ix, #playL_data
+	ld de, #0xC000
+	ld hl, #play
+	call drawWord
+
+	ld ix, #playL_data
+	ld de, #0x8000
+	ld hl, #play
+	call drawWord
+ret
+
+drawWASD:
+	ld ix, #wL_data
+	ld de, #0xC000
+	ld hl, #w
+	call drawWord
+
+	ld ix, #wL_data
+	ld de, #0x8000
+	ld hl, #w
+	call drawWord
+
+	ld ix, #aL_data
+	ld de, #0xC000
+	ld hl, #a
+	call drawWord
+
+	ld ix, #aL_data
+	ld de, #0x8000
+	ld hl, #a
+	call drawWord
+
+	ld ix, #sL_data
+	ld de, #0xC000
+	ld hl, #s
+	call drawWord
+
+	ld ix, #sL_data
+	ld de, #0x8000
+	ld hl, #s
+	call drawWord
+
+	ld ix, #dL_data
+	ld de, #0xC000
+	ld hl, #d
+	call drawWord
+
+	ld ix, #dL_data
+	ld de, #0x8000
+	ld hl, #d
+	call drawWord
+ret	
+
+drawArrows:
+	ld ix, #upL_data
+	ld de, #0xC000
+	ld hl, #up
+	call drawWord
+
+	ld ix, #upL_data
+	ld de, #0x8000
+	ld hl, #up
+	call drawWord
+
+	ld ix, #leftL_data
+	ld de, #0xC000
+	ld hl, #left
+	call drawWord
+
+	ld ix, #leftL_data
+	ld de, #0x8000
+	ld hl, #left
+	call drawWord
+
+	ld ix, #rightL_data
+	ld de, #0xC000
+	ld hl, #right
+	call drawWord
+
+	ld ix, #rightL_data
+	ld de, #0x8000
+	ld hl, #right
+	call drawWord
+
+	ld ix, #downL_data
+	ld de, #0xC000
+	ld hl, #down
+	call drawWord
+
+	ld ix, #downL_data
+	ld de, #0x8000
+	ld hl, #down
+	call drawWord
+ret
+
+drawSpace:
+	ld ix, #spaceL_data
+	ld de, #0xC000
+	ld hl, #space
+	call drawWord
+
+	ld ix, #spaceL_data
+	ld de, #0x8000
+	ld hl, #space
+	call drawWord
+
+	ld ix, #to2L_data
+	ld de, #0xC000
+	ld hl, #to2
+	call drawWord
+
+	ld ix, #to2L_data
+	ld de, #0x8000
+	ld hl, #to2
+	call drawWord
+
+	ld ix, #shootL_data
+	ld de, #0xC000
+	ld hl, #shoot
+	call drawWord
+
+	ld ix, #shootL_data
+	ld de, #0x8000
+	ld hl, #shoot
+	call drawWord
+ret
+
+drawWord:
+	push hl
+	ld c, L_x(ix)
+	ld b, L_y(ix)
+	call cpct_getScreenPtr_asm
 	ex de, hl
 
-	;; Draw a box
-	ld b, M_h(ix)
-	ld c, M_w(ix)
-	;;Draw sprite
-	ld h, M_spr_h(ix)
-	ld l, M_spr_l(ix)
-	call cpct_drawSpriteMasked_asm
-
+	pop hl
+	ld b, L_c(ix)
+	ld c, L_b(ix)
+	call cpct_drawStringM0_asm
 ret
 
 ;; =================================
