@@ -86,7 +86,7 @@ M1:
 	defineEnemy 30, 100, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 30, 30, 100, 100, 3, pattern2, pattern2, 0, 0, 0
 	defineEnemyLastOne 50, 30, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 50, 50, 30, 30, 3, pattern2, pattern2, 0, 0, 0
 
-M2:
+M2::
 	defineMap M2 #_g_tilemap1, M1, M3, 2
 	defineEnemy 30, 100, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
@@ -114,7 +114,51 @@ M6:
 
 ;;========================
 ;;========================
-;
+
+;;========================
+;;========================
+;; MAPS DATA AUXILIAR. Estos serán los que se guarden en ROM y los valores a los que se reiniciará en Game over
+; 	Map:
+; 		name, ptilemap, puertaIzquierda, puertaDerecha
+; 	Enemy:
+;		x,  y,  w,  h, sprite, lives,  temp, lastmovement, type 
+;;========================
+;;========================
+
+M1_aux::
+	defineMap M1_aux #_g_tilemap, -1, M2, 1
+	;;defineEnemy 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
+	defineEnemyLastOne 70, 120, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
+
+M2_aux:
+	defineMap M2_aux #_g_tilemap1, M1, M3, 2
+	defineEnemy 30, 100, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
+	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
+
+M3_aux:
+	defineMap M3_aux #_g_tilemap1, M2, M4, 3
+	defineEnemy 60, 87, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
+	defineEnemy 54, 124, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
+	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
+
+M4_aux:
+	defineMap M4_aux #_g_tilemap1, M3, M5, 3
+	defineEnemy 20, 140, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
+	defineEnemy 60, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
+	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
+
+M5_aux:
+	defineMap M5_aux #_g_tilemap1, M4, M6, 2
+	defineEnemy 50, 50, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
+	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
+
+M6_aux:
+	defineMap M6_aux #_g_tilemap3, M5, -1, 1
+	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
+
+;;========================
+;;========================
+
 ;;========================
 ;;========================
 map_updateAllEnemiesAndBullets::
@@ -234,27 +278,27 @@ map_drawScore::
 	push hl
 
 	ld de, #0xC000
-	ld c, #60
-	ld b, #188
+	ld c, #64
+	ld b, #189
 	call cpct_getScreenPtr_asm
 
 	ex de, hl
 
 	ld hl, #score_char
-	ld b, #0
-	ld c, #13
+	ld b, #2
+	ld c, #15
 	call cpct_drawStringM0_asm
 
 	ld de, #0x8000
-	ld c, #60
-	ld b, #188
+	ld c, #64
+	ld b, #189
 	call cpct_getScreenPtr_asm
 
 	ex de, hl
 
 	ld hl, #score_char
-	ld b, #0
-	ld c, #13
+	ld b, #2
+	ld c, #15
 	call cpct_drawStringM0_asm
 
 	pop hl
@@ -335,6 +379,23 @@ map_substractScore::
 
 	substract_score_fin:
 	call map_drawScore
+
+	pop ix
+ret
+
+map_resetScore::
+
+	push ix
+
+	ld ix, #score
+	ld a, #0
+	ld (ix), a
+
+	ld ix, #score_char
+	ld a, #48
+	ld score_digito_menos_significativo(ix), a
+	ld score_segundo_digito_menos_significativo(ix), a
+	ld score_tercer_digito_menos_significativo(ix), a
 
 	pop ix
 ret
