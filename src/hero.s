@@ -311,6 +311,15 @@ moveHeroRight:
 		ld a, (hl)
 		cp #0
 		 ret nz
+		ld a, (hero_y)
+		cp #90
+		jr nc, change_rightSecond
+			ret 
+		change_rightSecond:
+		cp #100
+		jr c, change_right
+			ret 
+		change_right:
 		ld a, #0
 		call map_changeMap
 		cp #-1
@@ -335,6 +344,15 @@ moveHeroLeft::
 		ld a, (hl)
 		cp #0
 		 ret nz
+		ld a, (hero_y)
+		cp #90
+		jr nc, change_leftSecond
+			ret 
+		change_leftSecond:
+		cp #100
+		jr c, change_left
+			ret 
+		change_left:
 		ld a, #1
 		call map_changeMap
 		cp #-1
