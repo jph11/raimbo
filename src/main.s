@@ -7,6 +7,7 @@
 .globl _menu_PRESS
 .globl _menu_G
 .globl _menu_TO_PLAY
+.globl _song_ingame
 .area _CODE
 
 .include "game.h.s"
@@ -32,7 +33,54 @@ defineMenu m3, 27, 120, 26, 10, _menu_TO_PLAY
 .equ M_w, 2
 .equ M_h, 3	
 .equ M_spr_l, 4
-.equ M_spr_h, 5	
+.equ M_spr_h, 5
+
+unavariable: .db #12
+
+isr::
+
+	;;ld l, #16
+	;;ld a, (unavariable)
+	;;ld h, a
+	;;call cpct_setPALColour_asm
+
+	;;ld a, (unavariable)
+	;;inc a
+	;;cp #0x16
+	;;jr nz, continue
+
+		;;ld a, #0x10
+
+	;;continue:
+	;;ld (unavariable), a
+
+	ex af, af'
+	exx
+	push af
+	push bc
+	push de
+	push hl
+	push iy
+
+	ld a, (unavariable)
+	dec a
+	ld (unavariable), a
+	jr nz, return
+
+		call cpct_akp_musicPlay_asm
+		ld a, #12
+		ld (unavariable), a
+
+	return:
+	pop iy
+	pop hl
+	pop de
+	pop bc
+	pop af
+	exx
+	ex af, af'
+	
+ret
 
 
 ;; =================================
@@ -61,6 +109,12 @@ settings::
 	ld a, #0x00
 	ld bc, #0x4000
 	call cpct_memset_asm
+
+	ld de, #_song_ingame
+	call cpct_akp_musicInit_asm
+
+	ld hl, #isr
+	call cpct_setInterruptHandler_asm
 
 ret
 
