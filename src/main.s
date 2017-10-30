@@ -4,9 +4,6 @@
 .globl _g_tileset
 .globl _sprite_bala
 .globl ptilemapA
-.globl _menu_PRESS
-.globl _menu_G
-.globl _menu_TO_PLAY
 .globl _song_ingame
 
 press: .db #80,#82,#69,#83,#83,#0
