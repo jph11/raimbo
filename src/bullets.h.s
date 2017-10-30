@@ -3,7 +3,6 @@
 ;; BULLETS PUBLIC FUNCTIONS
 ;;========================
 ;;========================
-
 .globl bullets_updateBullets
 .globl bullet_checkCollision
 .globl bullets_draw
