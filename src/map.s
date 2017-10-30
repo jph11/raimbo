@@ -277,27 +277,27 @@ map_drawScore::
 	push hl
 
 	ld de, #0xC000
-	ld c, #60
-	ld b, #188
+	ld c, #64
+	ld b, #189
 	call cpct_getScreenPtr_asm
 
 	ex de, hl
 
 	ld hl, #score_char
-	ld b, #0
-	ld c, #13
+	ld b, #2
+	ld c, #15
 	call cpct_drawStringM0_asm
 
 	ld de, #0x8000
-	ld c, #60
-	ld b, #188
+	ld c, #64
+	ld b, #189
 	call cpct_getScreenPtr_asm
 
 	ex de, hl
 
 	ld hl, #score_char
-	ld b, #0
-	ld c, #13
+	ld b, #2
+	ld c, #15
 	call cpct_drawStringM0_asm
 
 	pop hl

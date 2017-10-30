@@ -14,6 +14,9 @@
 .globl M1_arrayEnemy
 
 
+score_title: .db #83,#67,#79,#82,#69,#0
+lives_title: .db #76,#73,#86,#69,#83,#0
+
 .area _CODE
 
 .include "hero.h.s"
@@ -31,7 +34,7 @@
 .equ S_spr_l, 4
 .equ S_spr_h, 5
 
-defineScoreLife life, 20, 185, 8, 15, _game_flower_100
+defineScoreLife life, 28, 185, 8, 15, _game_flower_100
 
 ;;===========================================
 ;;===========================================
@@ -68,13 +71,13 @@ game_putScore::
 	ld c, #0
 	ld b, #184
 	call cpct_getScreenPtr_asm
-	call drawScore
+	call drawBackgroundScore
 
 	ld de, #0x8000
 	ld c, #0
 	ld b, #184
 	call cpct_getScreenPtr_asm
-	call drawScore
+	call drawBackgroundScore
 
 	ld ix, #life_data
 	ld de, #0xC000
@@ -91,9 +94,11 @@ game_putScore::
 	ex de, hl
 	call drawLife
 
+	call game_drawScore
+
 ret
 
-drawScore:
+drawBackgroundScore:
 	push hl
 	ld de, #0x0800
  	ld c, #8
@@ -101,7 +106,7 @@ drawScore:
  	 	oneFor:
  	  		ld b, #80	
 		twoFor:
-			ld (hl), #0x03
+			ld (hl), #0x0C
 			inc hl		
 			dec b		
 			jr nz, twoFor
@@ -127,7 +132,6 @@ drawScore:
 	pop hl
 ret
 
-
 drawLife::
 	;; Draw a box
 	ld b, S_h(ix)
@@ -136,6 +140,59 @@ drawLife::
 	ld h, S_spr_h(ix)
 	ld l, S_spr_l(ix)
 	call cpct_drawSpriteMasked_asm
+ret
+
+game_drawScore:
+
+	ld de, #0xC000
+	ld c, #40
+	ld b, #189
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #score_title
+	ld b, #2
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+	ld de, #0x8000
+	ld c, #40
+	ld b, #189
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #score_title
+	ld b, #2
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+
+	ld de, #0xC000
+	ld c, #4
+	ld b, #189
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #lives_title
+	ld b, #2
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+	ld de, #0x8000
+	ld c, #4
+	ld b, #189
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #lives_title
+	ld b, #2
+	ld c, #13
+	call cpct_drawStringM0_asm
+
 ret
 
 game_getPointerLife::
