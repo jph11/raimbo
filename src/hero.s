@@ -61,9 +61,11 @@ jumptable:
 	.db #01, #02, #04, #05
 	.db #0x80
 
-life_sprites:
+petalo75:
 	.dw _game_flower_75
+petalo50:
 	.dw _game_flower_50
+petalo25:	
 	.dw _game_flower_25
 
 .equ S_spr_l, 4
@@ -588,30 +590,10 @@ checkLeftRight:
 ;;	Hero is death
 ;; ======================
 
-hero_drawLife:
-	ld a, (hl)
-	ld S_spr_l(ix), a
-	inc hl
-	ld a, (hl)
-	ld S_spr_h(ix), a
-
-	ld de, #0xC746
-	call drawScoreLife
-	ld de, #0x8746
-	call drawScoreLife
-
-ret
-
-
 hero_decreaseLife::
 	push DE
 	push HL
-	push IX
 	push AF
-	
-	call game_getPointerLife
-
-	ld hl, #life_sprites
 
 	ld a, (hero_lives)
 	dec a
@@ -626,36 +608,63 @@ hero_decreaseLife::
 	cp #1
 	jr z, draw25
 
-		jr endDraw
+		jp endDraw
 
 	draw75:
-		call hero_drawLife
+		ld hl, (petalo75)
+		ld c, #24	
+		ld b, #190
+
+		call changeLife
+
 		jr endDraw
 
 	draw50:
-		push BC
-		ld bc, #0x0002
-		add hl, bc
-		call hero_drawLife
-		pop BC
+		ld hl, (petalo50)
+		ld c, #22	
+		ld b, #194
+		
+		call changeLife
+		
 		jr endDraw
 
 	draw25:
-		push BC
-		ld bc, #0x0004
-		add hl, bc
-		call hero_drawLife
-		pop BC
+		ld hl, (petalo25)
+		ld c, #20	
+		ld b, #190
+
+		call changeLife
 
 	endDraw:
-		pop AF 
-		pop IX 
+		pop AF
 		pop HL
 		pop DE
 ret
 
 
+changeLife:
+	push hl
+	push bc
+	push hl
 
+	ld de, #0xC000
+	call cpct_getScreenPtr_asm
+	ex de, hl
+	pop hl
+	ld b, #5
+	ld c, #3
+	call cpct_drawSpriteMasked_asm
+
+	ld de, #0x8000
+	pop bc
+	call cpct_getScreenPtr_asm
+	ex de, hl
+	pop hl 
+	ld b, #5
+	ld c, #3
+	call cpct_drawSpriteMasked_asm
+
+ret
 
 hero_heroDamage:
 	ld a, (hero_invencibleState)

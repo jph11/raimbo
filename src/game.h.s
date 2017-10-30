@@ -5,6 +5,6 @@
 ;;========================
 
 .globl game_start
-.globl drawScoreLife
+.globl drawLife
 .globl game_getPointerLife
-.globl drawScore
+.globl game_putScore

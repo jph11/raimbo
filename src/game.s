@@ -1,6 +1,5 @@
 .area _DATA
 
-.globl _game_score_life
 .globl _game_flower_100
 
 .area _CODE
@@ -20,8 +19,7 @@
 .equ S_spr_l, 4
 .equ S_spr_h, 5
 
-defineScoreLife score, 0, 183, 80, 17, _game_score_life
-defineScoreLife life, 10, 185, 8, 15, _game_flower_100
+defineScoreLife life, 20, 185, 8, 15, _game_flower_100
 
 ;;===========================================
 ;;===========================================
@@ -50,25 +48,75 @@ game_start::
 game_init:
     call hero_init
 	call map_draw
-	call drawScore
+	call game_putScore
 ret
 
-drawScore::
-	ld ix, #score_data
-	ld de, #0xFEE0
-	call drawScoreLife
-	ld de, #0xBEE0
-	call drawScoreLife
+game_putScore::
+	ld de, #0xC000
+	ld c, #0
+	ld b, #184
+	call cpct_getScreenPtr_asm
+	call drawScore
+
+	ld de, #0x8000
+	ld c, #0
+	ld b, #184
+	call cpct_getScreenPtr_asm
+	call drawScore
 
 	ld ix, #life_data
-	ld de, #0xC746
-	call drawScoreLife
-	ld de, #0x8746
-	call drawScoreLife
+	ld de, #0xC000
+	ld c, S_x(ix)
+	ld b, S_y(ix)
+	call cpct_getScreenPtr_asm
+	ex de, hl
+	call drawLife
+
+	ld de, #0x8000
+	ld c, S_x(ix)
+	ld b, S_y(ix)
+	call cpct_getScreenPtr_asm
+	ex de, hl
+	call drawLife
 
 ret
 
-drawScoreLife::
+drawScore:
+	push hl
+	ld de, #0x0800
+ 	ld c, #8
+	ld a, #2
+ 	 	oneFor:
+ 	  		ld b, #80	
+		twoFor:
+			ld (hl), #0x03
+			inc hl		
+			dec b		
+			jr nz, twoFor
+			
+			add hl, de	
+			push de		
+			ld de, #0xFFB0
+			add hl, de	
+			pop de		
+			dec c		
+ 	  	jr nz, oneFor
+
+		ld c, #8
+		pop hl
+		push de
+		ld de, #0x050
+		add hl, de
+		pop de
+		push hl
+		dec a
+		cp #0
+		jr nz, oneFor
+	pop hl
+ret
+
+
+drawLife::
 	;; Draw a box
 	ld b, S_h(ix)
 	ld c, S_w(ix)

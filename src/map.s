@@ -205,7 +205,7 @@ map_draw::
 	ld    a, #40 ;; A = map_width
 	ld    b, #0          ;; B = y tile-coordinate
 	ld    c, #0          ;; C = x tile-coordinate
-	ld    d, #50          ;; H = height in tiles of the tile-box
+	ld    d, #46          ;; H = height in tiles of the tile-box
 	ld    e, #40          ;; L =  width in tiles of the tile-box
 	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
 
@@ -219,11 +219,11 @@ map_draw::
 	ld    a, #40 			;; A = map_width
 	ld    b, #0          	;; B = y tile-coordinate
 	ld    c, #0          	;; C = x tile-coordinate
-	ld    d, #50          	;; H = height in tiles of the tile-box
+	ld    d, #46          	;; H = height in tiles of the tile-box
 	ld    e, #40          	;; L =  width in tiles of the tile-box
 	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
 
-	call drawScore
+	call game_putScore
 	call map_drawScore
 ret
 
@@ -235,7 +235,7 @@ map_drawScore::
 	push hl
 
 	ld de, #0xC000
-	ld c, #68
+	ld c, #60
 	ld b, #188
 	call cpct_getScreenPtr_asm
 
@@ -247,7 +247,7 @@ map_drawScore::
 	call cpct_drawStringM0_asm
 
 	ld de, #0x8000
-	ld c, #68
+	ld c, #60
 	ld b, #188
 	call cpct_getScreenPtr_asm
 

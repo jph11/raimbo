@@ -14,15 +14,7 @@
 .include "cpctelera.h.s"
 .include "map.h.s"
 .include "keyboard.s"
-
-.macro defineMenu name, x, y, w, h, spr
-	name'_data::
-		name'_x: 	  	.db x
-		name'_y:	    .db y  
-		name'_w:	    .db w
-		name'_h:	    .db h
-		name'_sprite:  	.dw spr
-.endm
+.include "macros.h.s"
 
 defineMenu m1, 31, 50, 19, 10, _menu_PRESS
 defineMenu m2, 36, 88, 8, 12, _menu_G
