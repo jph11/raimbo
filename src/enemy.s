@@ -59,21 +59,21 @@ enemy_id:
 ;death_animState: .db #00	;;Estado actual [0-1]
 
 ;; ========================
-;; Patterns. Cada pattern es un conjunto de tuplas (número de veces, aumento en x, aumento en y, sprite, disparo1, disparo2, disparo3)
+;; Patterns. Cada pattern es un conjunto de tuplas (número de veces, aumento en x, aumento en y, sprite, disparo1, disparo2, disparo3, velocidad)
 ;; ========================
 pattern1::
-definePatternAction #1, #-1, #-1, #_sprite_oldMan_left, #5, #0xFF, #0xFF
-definePatternLastAction #30, #0, #0, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF
+definePatternAction #1, #-1, #-1, #_sprite_oldMan_left, #5, #0xFF, #0xFF, #0
+definePatternLastAction #30, #-1, #-1, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #0
 
 pattern2::
-definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF
-definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF
-definePatternLastAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF
+definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
+definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
+definePatternLastAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
 
 pattern3::
-definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF
-definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF
-definePatternLastAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF
+definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
+definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
+definePatternLastAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1
 
 ;;_pattern1:: .dw #70, #-1, #0, #_sprite_oldMan_left, #0xFF
 ;;_pattern2:: .dw #70, #-1, #0, #30, #1, #1, #0xFF
@@ -87,6 +87,7 @@ definePatternLastAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF
 .equ Pattern_Disparo1, 5
 .equ Pattern_Disparo2, 6
 .equ Pattern_Disparo3, 7
+.equ Pattern_Velocidad, 8
 
 
 ;;===========================================
@@ -656,7 +657,7 @@ Algorithm_Pattern::
 	;; ---------------------------------
 	ld l, EnemyPatternL(ix)
 	ld h, EnemyPatternH(ix)
-	ld bc, #8
+	ld bc, #9
 	add hl, bc
 
 	ld EnemyPatternL(ix), l
@@ -674,7 +675,7 @@ Algorithm_Pattern::
 	;; ---------------------------------
 	actualizar_contador:
 	ld a, EnemyTemp(ix)  			
-	cp #1
+	cp Pattern_Velocidad(iy)
 	jr nz, actualizar_temporizador
 
 	;; ---------------------------------
