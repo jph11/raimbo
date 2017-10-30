@@ -370,7 +370,7 @@ ret
 ;; ======================
 checkUserInput::
 	;;Scan the whole keyboard
-	call cpct_scanKeyboard_asm ;;keyboard.s
+	;;call cpct_scanKeyboard_asm ;;keyboard.s
 
 
 	;;Check for key 'Space' being pressed

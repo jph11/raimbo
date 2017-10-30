@@ -292,6 +292,7 @@ map_addScore::
 	inc score_digito_menos_significativo(ix)
 
 	add_score_fin:
+	call map_drawScore
 
 	pop ix
 ret
@@ -332,6 +333,7 @@ map_substractScore::
 	dec score_digito_menos_significativo(ix)
 
 	substract_score_fin:
+	call map_drawScore
 
 	pop ix
 ret
