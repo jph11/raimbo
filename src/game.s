@@ -49,6 +49,7 @@ game_init:
     call hero_init
 	call map_draw
 	call game_putScore
+	call map_drawScore
 ret
 
 game_putScore::
