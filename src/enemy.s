@@ -1,5 +1,4 @@
 .area _DATA
-
 .globl nEnemyA
 .globl _sprite_ball_bike_right
 .globl _sprite_ball_bike_left
@@ -8,7 +7,6 @@
 .globl ptilemapA
 .globl _sprite_bullet_shooter_left
 .globl jumptable
-
 .area _CODE
 
 ;;===========================================
@@ -65,28 +63,32 @@ enemy_id:
 ;death_animState: .db #00	;;Estado actual [0-1]
 
 ;; ========================
-;; Patterns. Cada pattern es un conjunto de tuplas (número de veces, aumento en x, aumento en y, sprite, disparo1, disparo2, disparo3, velocidad)
+;; Patterns. Cada pattern es un conjunto de tuplas (número de veces, aumento en x, aumento en y, sprite, disparo1, disparo2, disparo3, velocidad, salta?)
 ;; ========================
 
 ;; Saltarín
-pattern1::
+saltarin::
 definePatternAction #30, #-1, #1, #_sprite_ball_bike_left, #0, #4, #6, #0, #1
-definePatternAction #30, #0, #-1, #_sprite_ball_bike_left, #0, #0xFF, #0xFF, #0, #1
+definePatternAction #30, #0, #-1, #_sprite_ball_bike_left, #0, #4, #6, #0, #1
 definePatternAction #30, #1, #1, #_sprite_ball_bike_right, #1, #5, #7, #0, #1
 definePatternLastAction #30, #0, #-1, #_sprite_ball_bike_right, #1, #0xFF, #0xFF, #0, #1
 
 ;; Balín
-pattern2::
+balin::
+definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #0xFF, #0xFF, #0, #0
+
+;; Balín cabreado
+balinCabreado::
+definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #6, #0xFF, #0, #0
+
+;; Bolín AbajoDerecha hacia ArribaIzquierda
+bolin::
 definePatternAction #30, #-1, #-2, #_sprite_ball_left, #0, #4, #0xFF, #1, #1
 definePatternAction #10, #0, #-3, #_sprite_ball_left, #0, #0xFF, #0xFF, #1, #1
 definePatternAction #10, #-1, #-2, #_sprite_ball_left, #0, #6, #0xFF, #1, #1
 definePatternAction #10, #-1, #0, #_sprite_ball_left, #2, #6, #0xFF, #1, #1
 definePatternAction #25, #2, #3, #_sprite_ball_right, #1, #5, #0xFF, #1, #1
 definePatternLastAction #7, #0, #5, #_sprite_ball_right, #1, #5, #0xFF, #1, #1
-
-
-pattern3::
-definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #6, #0xFF, #1, #0
 
 
 .equ Pattern_NumeroVeces, 0
