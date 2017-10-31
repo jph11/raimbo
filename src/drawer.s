@@ -23,6 +23,8 @@ score: .db #83,#67,#79,#82,#69,#0
 lives: .db #76,#73,#86,#69,#83,#0
 game: .db #71,#65,#77,#69,#0
 over: .db #79,#86,#69,#82,#0
+you: .db #89, #79, #85, #0
+win: .db #87, #73, #78, #0
 ;;=============================================
 
 .area _CODE
@@ -77,6 +79,11 @@ defineWord livesO, 4, 189, 2, 13
 defineWord GameO, 22, 75, 1, 13
 
 defineWord OverO, 42, 75, 1, 13
+;=================================
+defineWord YouO, 22, 75, 1, 5
+
+defineWord WinO, 42, 75, 1, 5
+
 
 .equ M_x, 0
 .equ M_y, 1
@@ -383,6 +390,82 @@ drawBackground::
 		cp #0
 		jr nz, oneFor
 	pop hl	
+ret
+
+
+writeYouWin::
+	ld ix, #YouO_data
+	ld de, #0xC000
+	ld hl, #you
+	call drawWord
+
+	ld ix, #YouO_data
+	ld de, #0x8000
+	ld hl, #you
+	call drawWord
+
+	ld ix, #WinO_data
+	ld de, #0xC000
+	ld hl, #win
+	call drawWord
+
+	ld ix, #WinO_data
+	ld de, #0x8000
+	ld hl, #win
+	call drawWord
+
+	ld de, #0xC000
+	ld c, #0
+	ld b, #184
+	call cpct_getScreenPtr_asm
+	call drawBackgroundScore
+
+	ld de, #0x8000
+	ld c, #0
+	ld b, #184
+	call cpct_getScreenPtr_asm
+	call drawBackgroundScore
+
+	ld ix, #pressO_data
+	ld de, #0xC000
+	ld hl, #press
+	call drawWord
+
+	ld ix, #pressO_data
+	ld de, #0x8000
+	ld hl, #press
+	call drawWord
+
+	ld ix, #rO_data
+	ld de, #0xC000
+	ld hl, #r
+	call drawWord
+
+	ld ix, #rO_data
+	ld de, #0x8000
+	ld hl, #r
+	call drawWord
+
+	ld ix, #toO_data
+	ld de, #0xC000
+	ld hl, #to
+	call drawWord
+
+	ld ix, #toO_data
+	ld de, #0x8000
+	ld hl, #to
+	call drawWord
+
+	ld ix, #resetO_data
+	ld de, #0xC000
+	ld hl, #reset
+	call drawWord
+
+	ld ix, #resetO_data
+	ld de, #0x8000
+	ld hl, #reset
+	call drawWord
+
 ret
 
 writeGameOver::
