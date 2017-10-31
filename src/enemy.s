@@ -8,6 +8,7 @@
 .globl _sprite_bullet_shooter_left
 .globl _sprite_bullet_shooter_forward
 .globl _sprite_spider_forward
+.globl _sprite_spider_back
 .globl jumptable
 .area _CODE
 
@@ -99,11 +100,16 @@ definePatternAction #10, #0, #-3, #_sprite_ball_left, #0, #0xFF, #0xFF, #1, #1
 definePatternAction #10, #-1, #-2, #_sprite_ball_left, #0, #6, #0xFF, #1, #1
 definePatternAction #10, #-1, #0, #_sprite_ball_left, #3, #6, #0xFF, #1, #1
 definePatternAction #25, #2, #3, #_sprite_ball_right, #1, #5, #0xFF, #1, #1
-definePatternLastAction #7, #0, #5, #_sprite_ball_right, #1, #5, #0xFF, #1, #1
+definePatternLastAction #7, #0, #5, #_sprite_ball_left, #0, #4, #0xFF, #1, #1
 
-araña::
-definePatternAction #30, #-2, #0, #_sprite_spider_forward, #6, #7, #3, #1, #0
-definePatternLastAction #30, #2, #0, #_sprite_spider_forward, #6, #7, #3, #1, #0
+spider::
+definePatternAction #60, #-1, #0, #_sprite_spider_forward, #6, #7, #3, #1, #0
+definePatternLastAction #60, #1, #0, #_sprite_spider_forward, #6, #7, #3, #1, #0
+
+spiderBottom::
+definePatternAction #60, #-1, #0, #_sprite_spider_forward, #5, #4, #2, #1, #0
+definePatternLastAction #60, #1, #0, #_sprite_spider_forward, #5, #4, #2, #1, #0
+
 
 .equ Pattern_NumeroVeces, 0
 .equ Pattern_AumentoEnX, 1
@@ -219,6 +225,7 @@ enemy_enemyKill::
 		;ld (death_x), a
 		;ld a, Enemy_y(ix)
 		;ld (death_y), a
+		call map_addScore
 
 		ld hl, (nEnemyA)
 		ld a, (hl)

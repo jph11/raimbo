@@ -82,6 +82,8 @@ $(eval $(call IMG2SPRITES,assets/Enemies/ball_bike_left.png,0,sprite,22,30,$(PAL
 $(eval $(call IMG2SPRITES,assets/Enemies/ball_bike_right.png,0,sprite,22,30,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Enemies/ball_left.png,0,sprite,22,22,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Enemies/ball_right.png,0,sprite,22,22,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/spider_forward.png,0,sprite,10,10,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/spider_back.png,0,sprite,10,10,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Enemies/bullet_shooter_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Enemies/bullet_shooter_forward.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Enemies/bullet_shooter_right.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))

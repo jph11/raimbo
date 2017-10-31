@@ -529,8 +529,6 @@ bullet_checkCollision::
 				;;call enemy_erase
 				call enemy_eraseOnDead
 				call enemy_enemyKill
-
-				call map_addScore
 				ret
 
 	not_collision_dec1DE:
