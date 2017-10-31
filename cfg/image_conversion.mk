@@ -88,6 +88,7 @@ $(eval $(call IMG2SPRITES,assets/Enemies/ghost_left.png,0,sprite,14,25,$(PALETTE
 $(eval $(call IMG2SPRITES,assets/Enemies/ghost_right.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Enemies/hooded_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Enemies/hooded_right.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
+$(eval $(call IMG2SPRITES,assets/Enemies/ghost_forward.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
 
 
 

@@ -3,8 +3,13 @@
 .globl _sprite_ball_bike_left
 .globl _sprite_bullet_shooter_left
 .globl _sprite_hooded_left
-.globl _sprite_ball_left
+.globl _g_tilemap
+.globl _sprite_ghost_forward
 .globl _sprite_ghost_left
+.globl _sprite_ghost_right
+.globl _sprite_ball_left
+score_char: .db #48, #48, #48, #0
+score: .db #0
 .globl pattern1
 .globl pattern2
 .globl pattern3
