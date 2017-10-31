@@ -68,27 +68,29 @@ enemy_id:
 
 ;; Saltarín
 saltarin::
-definePatternAction #30, #-1, #1, #_sprite_ball_bike_left, #0, #4, #6, #0, #1
-definePatternAction #30, #0, #-1, #_sprite_ball_bike_left, #0, #4, #6, #0, #1
-definePatternAction #30, #1, #1, #_sprite_ball_bike_right, #1, #5, #7, #0, #1
-definePatternLastAction #30, #0, #-1, #_sprite_ball_bike_right, #1, #0xFF, #0xFF, #0, #1
+definePatternAction #30, #-1, #1, #_sprite_ball_bike_left, #0, #4, #6, #2, #1
+definePatternAction #30, #0, #-1, #_sprite_ball_bike_left, #0, #4, #6, #2, #1
+definePatternAction #30, #1, #1, #_sprite_ball_bike_right, #1, #5, #7, #2, #1
+definePatternLastAction #30, #0, #-1, #_sprite_ball_bike_right, #1, #0xFF, #0xFF, #2, #1
 
 ;; Balín
 balin::
 definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #0xFF, #0xFF, #0, #0
 
+
 ;; Balín cabreado
 balinCabreado::
-definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #6, #0xFF, #0, #0
+definePatternLastAction #1, #0, #0, #_sprite_bullet_shooter_left, #0, #6, #0xFF, #0, #0
 
 ;; Bolín AbajoDerecha hacia ArribaIzquierda
 bolin::
 definePatternAction #30, #-1, #-2, #_sprite_ball_left, #0, #4, #0xFF, #1, #1
 definePatternAction #10, #0, #-3, #_sprite_ball_left, #0, #0xFF, #0xFF, #1, #1
 definePatternAction #10, #-1, #-2, #_sprite_ball_left, #0, #6, #0xFF, #1, #1
-definePatternAction #10, #-1, #0, #_sprite_ball_left, #2, #6, #0xFF, #1, #1
+definePatternAction #10, #-1, #0, #_sprite_ball_left, #3, #6, #0xFF, #1, #1
 definePatternAction #25, #2, #3, #_sprite_ball_right, #1, #5, #0xFF, #1, #1
 definePatternLastAction #7, #0, #5, #_sprite_ball_right, #1, #5, #0xFF, #1, #1
+
 
 
 .equ Pattern_NumeroVeces, 0
@@ -683,41 +685,11 @@ Algorithm_Pattern::
 	;; ---------------------------------
 	;; IF es hora de realizar movimiento por el temporizador
 	;; ---------------------------------
+
+
+
 	actualizar_contador:
-	ld a, EnemyTemp(ix)  			
-	cp Pattern_Velocidad(iy)
-	jp nz, actualizar_temporizador
-
-	;; ---------------------------------
-	;; THEN Lo realizamos
-	;; ---------------------------------
-	;; Restauramos el temporizador
-	ld EnemyTemp(ix), #0
-
-	;; Guardamos número de veces actualizada
-	inc EnemyPatternContador(ix)
 	
-	;; Guardamos x
-	ld a, Enemy_x(ix)
-	add a, Pattern_AumentoEnX(iy)
-	ld Enemy_x(ix), a
-
-	;; Guardamos y
-	ld a, Enemy_y(ix)
-	add a, Pattern_AumentoEnY(iy)
-	ld Enemy_y(ix), a
-
-	;; Cargamos el sprite
-	ld a, Pattern_SpriteL(iy)
-	ld Enemy_spriteL(ix), a
-
-	ld a, Pattern_SpriteH(iy)
-	ld Enemy_spriteH(ix), a
-
-
-
-
-
 	ld a, Pattern_Jump(iy)
 	cp #1
 	jr nz, endJump
@@ -755,6 +727,37 @@ Algorithm_Pattern::
 	ld EnemyJump(ix), a
 
 	endJump:
+
+
+	ld a, EnemyTemp(ix)  			
+	cp Pattern_Velocidad(iy)
+	jp nz, actualizar_temporizador
+
+	;; ---------------------------------
+	;; THEN Lo realizamos
+	;; ---------------------------------
+	;; Restauramos el temporizador
+	ld EnemyTemp(ix), #0
+
+	;; Guardamos número de veces actualizada
+	inc EnemyPatternContador(ix)
+	
+	;; Guardamos x
+	ld a, Enemy_x(ix)
+	add a, Pattern_AumentoEnX(iy)
+	ld Enemy_x(ix), a
+
+	;; Guardamos y
+	ld a, Enemy_y(ix)
+	add a, Pattern_AumentoEnY(iy)
+	ld Enemy_y(ix), a
+
+	;; Cargamos el sprite
+	ld a, Pattern_SpriteL(iy)
+	ld Enemy_spriteL(ix), a
+
+	ld a, Pattern_SpriteH(iy)
+	ld Enemy_spriteH(ix), a
 
 	ld a, EnemyBulletsContador(ix)  			
 	cp #0x10 			
