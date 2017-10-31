@@ -76,7 +76,7 @@ $(eval $(call IMG2SPRITES,assets/Hero/hero_upRight-diag_pistol.png,0,sprite,18,2
 $(eval $(call IMG2SPRITES,assets/Hero/hero_upLeft-diag_pistol.png,0,sprite,18,25,$(PALETTE),mask,src/sprites,))
 
 ##ENEMIES
-$(eval $(call IMG2SPRITES,assets/Enemies/oldMan_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
+#$(eval $(call IMG2SPRITES,assets/Enemies/oldMan_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
 #$(eval $(call IMG2SPRITES,assets/Enemies/oldMan_orange_left.png,0,sprite,14,25,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Enemies/ball_bike_left.png,0,sprite,22,30,$(PALETTE),mask,src/sprites,))
 $(eval $(call IMG2SPRITES,assets/Enemies/ball_bike_right.png,0,sprite,22,30,$(PALETTE),mask,src/sprites,))

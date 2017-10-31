@@ -9,3 +9,4 @@
 .globl map_drawScore
 .globl map_addScore
 .globl map_substractScore
+.globl map_resetScore

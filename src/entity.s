@@ -241,7 +241,8 @@ entity_draw::
 		srl d
 		srl d
 		inc d
-
+		inc d
+		
 		ld e, Ent_w(ix)
 		srl e
 		inc e

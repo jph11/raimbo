@@ -9,6 +9,7 @@
 .globl _sprite_hero_left_pistol
 .globl _sprite_hero_right_pistol         
 .globl nEnemyA
+.globl maxYA
 .globl _game_flower_75
 .globl _game_flower_50
 .globl _game_flower_25
@@ -79,7 +80,7 @@ hero_invencibleDuration: .db #4			;;Duración de la animación
 hero_invencibleAnimState: .db #00			;;Estado actual [0-1]
 
 ;;Jump Table
-jumptable:
+jumptable::
 	.db #-5, #-4, #-2, #-1
 	.db #-1, #00, #00, #00
 	.db #00, #00,#00, #01
@@ -147,9 +148,9 @@ hero_erase::
 ;;  Start hero values
 ;; ======================
 hero_init::
-	ld a, #39
+	ld a, #0
 	ld (hero_x), a
-	ld a, #20
+	ld a, #90
 	ld (hero_y), a
 	ld a, #-1
 	ld (hero_jump), a
@@ -265,8 +266,12 @@ startJump:
 ;; Move hero to up
 ;; ======================
 moveHeroUp:
+	
+	ld hl, (maxYA)
+	ld a, (hl)
+	ld b, a
 	ld a, (hero_y)	;;A = hero_y
-	cp #3		;;Check against right limit (screen size - hero size)
+	cp b		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_up	;;Hero_y == Limit, do not move
 	jr c, d_not_move_up	
 	
@@ -283,7 +288,7 @@ moveHeroUp:
 ;; ======================
 moveHeroBottom:
 	ld a, (hero_y)	;;A = hero_y
-	cp #200-28-18		;;Check against right limit (screen size - hero size)
+	cp #200-29-18		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_bottom	;;Hero_y == Limit, do not move
 	jr nc, d_not_move_bottom
 

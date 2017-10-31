@@ -405,4 +405,7 @@ _main::
 	
 	call settings
 	call drawMenu
+
+	ad_infinitum:
 	call game_start
+	jr ad_infinitum

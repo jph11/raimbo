@@ -1,6 +1,19 @@
 .area _DATA
 
 .globl _game_flower_100
+.globl M1_aux
+.globl M1
+.globl nEnemyA
+.globl ptilemapA
+.globl puertaIzquierdaA
+.globl puertaDerechaA
+.globl arrayEnemyA
+.globl _g_tilemap
+.globl M1_nEnemyMap
+.globl M2
+.globl M1_arrayEnemy
+.globl maxYA
+.globl M1_maxY
 
 score_title: .db #83,#67,#79,#82,#69,#0
 lives_title: .db #76,#73,#86,#69,#83,#0
@@ -38,8 +51,7 @@ defineScoreLife life, 28, 185, 8, 15, _game_flower_100
 game_start::
     call game_init
 	call game_run
-
-    ret
+ret
 
 ;;===========================================
 ;;===========================================
@@ -196,7 +208,7 @@ game_run:
 	call hero_getPointerLife
 	ld a, (hl)
 	cp #0
-	jr z, gameOver
+	jr z, llamada_a_gameover
 
     call engine_drawAll
 
@@ -257,6 +269,10 @@ game_writeGameOver:
 	ld c, #13
 	call cpct_drawStringM0_asm
 
+ret	
+
+llamada_a_gameover:
+	call gameOver
 ret
 
 ;; ======================
@@ -267,15 +283,63 @@ gameOver:
 		call game_writeGameOver
 		;; Scan the whole keyboard
 		;;call cpct_scanKeyboard_asm 		;;keyboard.s
+		
 		gOver:
-			;; Check for key 'Space' being pressed
-			ld hl, #Key_P
-			call cpct_isKeyPressed_asm		;;Check if Key_Space is presed
-			cp #0							;;Check A == 0
-			jr z, gOver					;;Jump if A==0 (space_not_pressed)
+		;; Check for key 'P' being pressed
+		ld hl, #Key_P
+		call cpct_isKeyPressed_asm		;;Check if Key_Space is presed
+		cp #0							;;Check A == 0
+		jr z, gameOver					;;Jump if A==0 (space_not_pressed)
 
-			;;P is pressed
-			ld a, #03
-			call hero_getPointerLife
-			ld (hl), a
-			call game_start
+		;;P is pressed
+		;; Fórmula: Número de enemigos * Tamaño en bytes de un enemigo + Número de mapas * tamaño en bytes de un mapa + Número de enemigos
+		;; Fórmula: 
+		ld bc, #12 * 19 + 6 * 8 + 12
+		ld hl, #M1_aux
+		ld de, #M1
+		ldir
+
+		;; Resetear score
+		call map_resetScore
+
+		ld ix, #maxYA
+		ld de, #M1_maxY
+
+
+		ld 0(ix), e
+		ld 1(ix), d
+
+		;; Resear punteros map
+		ld ix, #nEnemyA
+		ld de, #M1_nEnemyMap
+
+		ld 0(ix), e
+		ld 1(ix), d
+
+		ld ix, #ptilemapA
+		ld de, #_g_tilemap
+
+		ld 0(ix), e
+		ld 1(ix), d
+
+		ld ix, #puertaIzquierdaA
+		ld 0(ix), #0xFF
+		ld 1(ix), #0xFF
+
+		ld ix, #puertaDerechaA
+		ld de, #M2
+
+		ld 0(ix), e
+		ld 1(ix), d
+
+		ld ix, #arrayEnemyA
+		ld de, #M1_arrayEnemy
+
+		ld 0(ix), e
+		ld 1(ix), d
+
+
+		ld a, #04
+		call hero_getPointerLife
+		ld (hl), a
+ret
