@@ -9,6 +9,7 @@
 .globl _sprite_hero_left_pistol
 .globl _sprite_hero_right_pistol         
 .globl nEnemyA
+.globl maxYA
 .globl _game_flower_75
 .globl _game_flower_50
 .globl _game_flower_25
@@ -265,8 +266,12 @@ startJump:
 ;; Move hero to up
 ;; ======================
 moveHeroUp:
+	
+	ld hl, (maxYA)
+	ld a, (hl)
+	ld b, a
 	ld a, (hero_y)	;;A = hero_y
-	cp #3		;;Check against right limit (screen size - hero size)
+	cp b		;;Check against right limit (screen size - hero size)
 	jr z, d_not_move_up	;;Hero_y == Limit, do not move
 	jr c, d_not_move_up	
 	

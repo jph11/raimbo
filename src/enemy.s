@@ -78,7 +78,7 @@ definePatternLastAction #30, #0, #-1, #_sprite_ball_bike_right, #1, #0xFF, #0xFF
 
 ;; Balín
 pattern2::
-definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #0xFF, #0xFF, #1, #1
+definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #6, #0xFF, #1, #0
 
 pattern3::
 definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1, #0
@@ -490,12 +490,10 @@ Algorithm_Teletransport::
 			ld Enemy_y(ix), a
 			ret
 	
-		
-
 Algorithm_FetchHero:
 	
 	ld a, EnemyTemp(ix)  								
-	cp #0x04 								
+	cp #0x02 								
 	jr z, resetFetch							
 		inc a 								
 		ld EnemyTemp(ix), a 							
@@ -555,7 +553,6 @@ Algorithm_FetchHero:
 
 	samePosition:
 	ret
-
 
 Algorithm_Random:
 						
@@ -819,64 +816,64 @@ Algorithm_Pattern::
 ret
 
 
-generateNewRandomEnemy::
+;generateNewRandomEnemy::
 
-	call cpct_getRandom_lcg_u8_asm
+;	call cpct_getRandom_lcg_u8_asm
 
 	;; Cosas comunes del nuevo enemigo
-	ld EnemyLives(ix), #1
-	ld EnemyTemp(ix), #0
-	ld EnemyPatternContador(ix), #0
+;	ld EnemyLives(ix), #1
+;	ld EnemyTemp(ix), #0
+;	ld EnemyPatternContador(ix), #0
 
 	;; Cosas específicas del nuevo enemigo
-	cp #64
-	jp c, primer_tipo_enemigo
-	cp #128
-	jp c, segundo_tipo_enemigo
-	cp #192
-	jp c, tercer_tipo_enemigo
+;	cp #64
+;	jp c, primer_tipo_enemigo
+;	cp #128
+;	jp c, segundo_tipo_enemigo
+;	cp #192
+;	jp c, tercer_tipo_enemigo
 
 		;; cuarto_tipo_enemigo
-		ld Enemy_x(ix), #23
-		ld Enemy_y(ix), #23
+;		ld Enemy_x(ix), #23
+;		ld Enemy_y(ix), #23
 
-		ld hl, #pattern3
-		ld EnemyPatternL(ix), l
-		ld EnemyPatternH(ix), h
+;		ld hl, #pattern3
+;		ld EnemyPatternL(ix), l
+;		ld EnemyPatternH(ix), h
 
-		ret
+;		ret
 
-	primer_tipo_enemigo:
+;	primer_tipo_enemigo:
 
-		ld Enemy_x(ix), #23
-		ld Enemy_y(ix), #23
+;		ld Enemy_x(ix), #23
+;		ld Enemy_y(ix), #23
 
-		ld hl, #pattern3
-		ld EnemyPatternL(ix), l
-		ld EnemyPatternH(ix), h
+;		ld hl, #pattern3
+;		ld EnemyPatternL(ix), l
+;		ld EnemyPatternH(ix), h
 
-		ret
+;		ret
 
-	segundo_tipo_enemigo:
+;	segundo_tipo_enemigo:
 
-		ld Enemy_x(ix), #23
-		ld Enemy_y(ix), #23
+;		ld Enemy_x(ix), #23
+;		ld Enemy_y(ix), #23
 
-		ld hl, #pattern3
-		ld EnemyPatternL(ix), l
-		ld EnemyPatternH(ix), h
+;		ld hl, #pattern3
+;		ld EnemyPatternL(ix), l
+;		ld EnemyPatternH(ix), h
 
-		ret
+;		ret
 
-	tercer_tipo_enemigo:
+;	tercer_tipo_enemigo:
 	
-		ld Enemy_x(ix), #23
-		ld Enemy_y(ix), #23
+;		ld Enemy_x(ix), #23
+;		ld Enemy_y(ix), #23
 
-		ld hl, #pattern3
-		ld EnemyPatternL(ix), l
-		ld EnemyPatternH(ix), h
-ret
+;		ld hl, #pattern3
+;		ld EnemyPatternL(ix), l
+;		ld EnemyPatternH(ix), h
+;ret
 
 enemyShootParametrizada:
 

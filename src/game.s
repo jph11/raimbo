@@ -12,7 +12,8 @@
 .globl M1_nEnemyMap
 .globl M2
 .globl M1_arrayEnemy
-
+.globl maxYA
+.globl M1_maxY
 
 score_title: .db #83,#67,#79,#82,#69,#0
 lives_title: .db #76,#73,#86,#69,#83,#0
@@ -239,13 +240,20 @@ gameOver:
 		;;P is pressed
 		;; Fórmula: Número de enemigos * Tamaño en bytes de un enemigo + Número de mapas * tamaño en bytes de un mapa + Número de enemigos
 		;; Fórmula: 
-		ld bc, #12 * 19 + 6 * 7 + 12
+		ld bc, #12 * 19 + 6 * 8 + 12
 		ld hl, #M1_aux
 		ld de, #M1
 		ldir
 
 		;; Resetear score
 		call map_resetScore
+
+		ld ix, #maxYA
+		ld de, #M1_maxY
+
+
+		ld 0(ix), e
+		ld 1(ix), d
 
 		;; Resear punteros map
 		ld ix, #nEnemyA

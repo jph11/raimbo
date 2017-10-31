@@ -31,7 +31,7 @@
         name'_h:    .db h
 .endm
 
-.macro defineMap name, ptilemap, puertaIzquierda, puertaDerecha, nEnemy
+.macro defineMap name, ptilemap, puertaIzquierda, puertaDerecha, nEnemy, maxY
         name'_ptilemap:
             .dw ptilemap
         name'_puertaIzquierda:
@@ -40,6 +40,8 @@
             .dw puertaDerecha
         name'_nEnemyMap::
             .db nEnemy
+        name'_maxY::
+            .db maxY
         name'_arrayEnemy::
 .endm
 
