@@ -109,5 +109,7 @@ $(eval $(call IMG2SPRITES,assets/Objects/flower_25.png,0,game,6,5,$(PALETTE),mas
 
 $(eval $(call IMG2SPRITES,assets/Objects/bala.png,0,sprite,6,5,$(PALETTE),mask,src/sprites,))
 
+$(eval $(call IMG2SPRITES,assets/Objects/title.png,0,menu,100,20,$(PALETTE),mask,src/sprites,))
+
 ##MAP
 $(eval $(call IMG2SPRITES,assets/Maps/tiles.png,0,g,4,4,$(PALETTE),tileset,src/sprites,))

@@ -3,8 +3,6 @@
 .globl _sprite_oldMan_left
 .globl _sprite_ball_bike_left
 
-.globl _g_tilemap
-
 score_char: .db #48, #48, #48, #0
 score: .db #0
 
@@ -12,6 +10,7 @@ score: .db #0
 .globl pattern2
 .globl pattern3
 .globl _g_tilemap1
+.globl _g_tilemap2
 .globl _g_tilemap3
 
 .area _CODE
@@ -59,7 +58,7 @@ NextEnemy:
 nEnemyA::
 	.dw #M1_nEnemyMap
 ptilemapA::
-	.dw #_g_tilemap ;Cambiar al mapa correspondiente
+	.dw #_g_tilemap1 ;Cambiar al mapa correspondiente
 puertaIzquierdaA::
 	.dw 0xFFFF
 puertaDerechaA::
@@ -81,34 +80,34 @@ arrayEnemyA::
 ;;========================
 
 M1:
-	defineMap M1 #_g_tilemap, -1, M2, 2
+	defineMap M1 #_g_tilemap1, -1, M2, 2
 	defineEnemy 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
 	defineEnemyLastOne 70, 120, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
 
 M2:
-	defineMap M2 #_g_tilemap1, M1, M3, 2
+	defineMap M2 #_g_tilemap2, M1, M3, 2
 	defineEnemy 30, 100, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
 
 M3:
-	defineMap M3 #_g_tilemap1, M2, M4, 3
+	defineMap M3 #_g_tilemap3, M2, M4, 3
 	defineEnemy 60, 87, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
 	defineEnemy 54, 124, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
 
 M4:
-	defineMap M4 #_g_tilemap1, M3, M5, 3
+	defineMap M4 #_g_tilemap2, M3, M5, 3
 	defineEnemy 20, 140, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
 	defineEnemy 60, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
 
 M5:
-	defineMap M5 #_g_tilemap1, M4, M6, 2
+	defineMap M5 #_g_tilemap3, M4, M6, 2
 	defineEnemy 50, 50, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0
 
 M6:
-	defineMap M6 #_g_tilemap3, M5, -1, 1
+	defineMap M6 #_g_tilemap1, M5, -1, 1
 	defineEnemyLastOne 70, 120, 7, 25, _sprite_oldMan_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0
 
 ;;========================
@@ -122,7 +121,7 @@ map_updateAllEnemiesAndBullets::
 	loopMapUpdate:
 	ld a, Enemy_x(ix)
 	cp #0x81
-	 ret z
+	 	ret z
 	call enemy_update
 	ld hl, #arrayEnemyA
 	push ix
@@ -142,7 +141,7 @@ map_drawAllEnemiesAndBullets::
 	loopMapDraw:
 	ld a, Enemy_x(ix)
 	cp #0x81
-	 ret z
+	 	ret z
 	call enemy_draw
 	call bullets_draw
 	ld de, (NextEnemy)
@@ -159,7 +158,7 @@ map_eraseAllEnemiesAndBullets::
 	loopMapErase:
 	ld a, Enemy_x(ix)
 	cp #0x81
-	 ret z
+	 	ret z
 	call enemy_erase
 	call bullets_erase
 	ld de, (NextEnemy)
@@ -195,30 +194,30 @@ ret
 map_draw::
 
 	;; Set Parameters on the stack
-	ld   hl, (ptilemapA)   ;; HL = pointer to the tilemap
-	push hl              ;; Push ptilemap to the stack
-	ld   hl, #0xC000  ;; HL = Pointer to video memory location where tilemap is drawn
-	push hl              ;; Push pvideomem to the stack
+	ld   hl, (ptilemapA)   		;; HL = pointer to the tilemap
+	push hl              		;; Push ptilemap to the stack
+	ld   hl, #0xC000  			;; HL = Pointer to video memory location where tilemap is drawn
+	push hl              		;; Push pvideomem to the stack
 	;; Set Paramters on registers
-	ld    a, #40 ;; A = map_width
-	ld    b, #0          ;; B = y tile-coordinate
-	ld    c, #0          ;; C = x tile-coordinate
-	ld    d, #46          ;; H = height in tiles of the tile-box
-	ld    e, #40          ;; L =  width in tiles of the tile-box
+	ld    a, #40 				;; A = map_width
+	ld    b, #0          		;; B = y tile-coordinate
+	ld    c, #0          		;; C = x tile-coordinate
+	ld    d, #46          		;; H = height in tiles of the tile-box
+	ld    e, #40          		;; L =  width in tiles of the tile-box
 	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
 
 
 	;; Set Parameters on the stack
 	ld   hl, (ptilemapA)   		;; HL = pointer to the tilemap
-	push hl              	;; Push ptilemap to the stack
-	ld   hl, #0x8000  		;; HL = Pointer to video memory location where tilemap is drawn
-	push hl              	;; Push pvideomem to the stack
+	push hl              		;; Push ptilemap to the stack
+	ld   hl, #0x8000  			;; HL = Pointer to video memory location where tilemap is drawn
+	push hl              		;; Push pvideomem to the stack
 	;; Set Paramters on registers
-	ld    a, #40 			;; A = map_width
-	ld    b, #0          	;; B = y tile-coordinate
-	ld    c, #0          	;; C = x tile-coordinate
-	ld    d, #46          	;; H = height in tiles of the tile-box
-	ld    e, #40          	;; L =  width in tiles of the tile-box
+	ld    a, #40 				;; A = map_width
+	ld    b, #0          		;; B = y tile-coordinate
+	ld    c, #0          		;; C = x tile-coordinate
+	ld    d, #46          		;; H = height in tiles of the tile-box
+	ld    e, #40          		;; L =  width in tiles of the tile-box
 	call  cpct_etm_drawTileBox2x4_asm ;; Call the function
 
 	call game_putScore

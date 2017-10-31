@@ -4,6 +4,8 @@
 
 score_title: .db #83,#67,#79,#82,#69,#0
 lives_title: .db #76,#73,#86,#69,#83,#0
+game: .db #71,#65,#77,#69,#0
+over: .db #79,#86,#69,#82,#0
 
 .area _CODE
 
@@ -83,7 +85,7 @@ game_putScore::
 	ex de, hl
 	call drawLife
 
-	call game_drawScore
+	call game_writeScore
 
 ret
 
@@ -131,7 +133,7 @@ drawLife::
 	call cpct_drawSpriteMasked_asm
 ret
 
-game_drawScore:
+game_writeScore:
 
 	ld de, #0xC000
 	ld c, #40
@@ -182,10 +184,6 @@ game_drawScore:
 	ld c, #13
 	call cpct_drawStringM0_asm
 
-ret
-
-game_getPointerLife::
-	ld ix, #life_data
 ret
 
 ;; ======================
@@ -207,22 +205,77 @@ game_run:
 	
     jr game_run
 
+game_writeGameOver:
+
+	ld de, #0xC000
+	ld c, #21
+	ld b, #65
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #game
+	ld b, #1
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+	ld de, #0x8000
+	ld c, #21
+	ld b, #65
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #game
+	ld b, #1
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+
+
+	ld de, #0xC000
+	ld c, #41
+	ld b, #65
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #over
+	ld b, #1
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+	ld de, #0x8000
+	ld c, #41
+	ld b, #65
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #over
+	ld b, #1
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+ret
+
 ;; ======================
 ;;	Checks User Input and Reacts
 ;;	DESTROYS:
 ;; ======================
 gameOver:
+		call game_writeGameOver
 		;; Scan the whole keyboard
 		;;call cpct_scanKeyboard_asm 		;;keyboard.s
+		gOver:
+			;; Check for key 'Space' being pressed
+			ld hl, #Key_P
+			call cpct_isKeyPressed_asm		;;Check if Key_Space is presed
+			cp #0							;;Check A == 0
+			jr z, gOver					;;Jump if A==0 (space_not_pressed)
 
-		;; Check for key 'Space' being pressed
-		ld hl, #Key_P
-		call cpct_isKeyPressed_asm		;;Check if Key_Space is presed
-		cp #0							;;Check A == 0
-		jr z, gameOver					;;Jump if A==0 (space_not_pressed)
-
-		;;P is pressed
-		ld a, #03
-		call hero_getPointerLife
-		ld (hl), a
-		call game_start
+			;;P is pressed
+			ld a, #03
+			call hero_getPointerLife
+			ld (hl), a
+			call game_start
