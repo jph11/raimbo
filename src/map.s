@@ -106,9 +106,9 @@ M4:
   defineEnemyLastOne 50, 120, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 50, 50, 120, 120, 3, saltarin, saltarin, 0, 0, 0
 
 M5:
-  defineMap M5 #_g_tilemap3, M4, M6, 3, 3
+  defineMap M5 #_g_tilemap3, M4, M6, 2, 3
   defineEnemy 50, 50, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 50, 50, 50, 50, 3, saltarin, saltarin, 0, 0, 0
-  defineEnemy 50, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 50, 50, 50, 50, 3, balin, balin, 0, 0, 0
+  defineEnemy 50, 120, 7, 25, _sprite_bullet_shooter_left, 0xFF, 0, 0, 50, 50, 50, 50, 3, balin, balin, 0, 0, 0
   defineEnemyLastOne 30, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 2, noPattern, noPattern, 0, 0, 0
 
 M6:
