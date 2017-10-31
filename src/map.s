@@ -15,6 +15,7 @@
 .globl balinCentro
 .globl bolin
 .globl spider
+.globl youWon
 
 .globl _g_tilemap1
 .globl _g_tilemap2
@@ -122,7 +123,7 @@ M6:
   defineEnemy 50, 120, 7, 25, _sprite_bullet_shooter_left, 0xFF, 0, 0, 50, 50, 50, 50, 3, balin, balin, 0, 0, 0
   defineEnemyLastOne 30, 120, 7, 25, _sprite_ghost_forward, 8, 0, 0, 70, 70, 120, 120, 2, noPattern, noPattern, 0, 0, 0
 
-M7:
+M7::
   defineMap M7 #_g_tilemap3, M6, M8, 2, 3
   defineEnemy 5, 20, 7, 25, _sprite_ghost_forward, 10, 0, 0, 5, 5, 20, 20, 2, noPattern, noPattern, 0, 0, 0
   defineEnemy 60, 140, 7, 25, _sprite_ghost_forward, 10, 0, 0, 60, 60, 140, 140, 2, noPattern, noPattern, 0, 0, 0
@@ -134,7 +135,7 @@ M8:
   defineEnemyLastOne 35, 80, 7, 25, _sprite_bullet_shooter_forward, 0xFF, 0, 0, 32, 32, 80, 80, 3, balinCentro, balinCentro, 0, 0, 0
 
 M9:
-  defineMap M9 #_g_tilemap2, M8, 0xFEFE, 2, 3
+  defineMap M9 #_g_tilemap2, M8, -1, 2, 3
   defineEnemy 71, 160, 5, 10, _sprite_spider_back, 4, 0, 0, 71, 71, 160, 160, 3, spiderBottom, spiderBottom, 0, 0, 0
   defineEnemyLastOne 71, 20, 5, 10, _sprite_spider_forward, 4, 0, 0, 71, 71, 20, 20, 3, spider, spider, 0, 0, 0
 
@@ -154,34 +155,50 @@ M9:
 ;;========================
 
 M1_aux::
-	defineMap M1_aux #_g_tilemap1, -1, M2, 2, 50
- 	defineEnemy 65, 140, 7, 25, _sprite_hooded_left, 5, 0, 0, 65, 65, 140, 140, 2, noPattern, noPattern, 0, 0, 0
-  	defineEnemyLastOne 50, 50, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 50, 50, 50, 50, 3, balin, balin, 0, 0, 0
+  defineMap M1_aux #_g_tilemap1, -1, M2, 1, 50
+  defineEnemy 65, 120, 7, 25, _sprite_hooded_left, 7, 0, 0, 65, 65, 20, 20, 2, noPattern, noPattern, 0, 0, 0
+  defineEnemyLastOne 50, 50, 7, 25, _sprite_bullet_shooter_left, 0xFF, 0, 0, 50, 50, 50, 50, 3, balinCabreado, balinCabreado, 0, 0, 0
 
 M2_aux::
-  defineMap M2_aux #_g_tilemap2, M1, M3, 1, 3
-  defineEnemyLastOne 65, 140, 11, 22, _sprite_ball_left, 15, 0, 0, 65, 65, 140, 140, 3, bolin, bolin, 0, 0, 0
+  defineMap M2_aux #_g_tilemap3, M1, M3, 1, 3
+  defineEnemyLastOne 71, 160, 5, 10, _sprite_spider_back, 4, 0, 0, 8, 8, 20, 20, 3, spiderBottom, spiderBottom, 0, 0, 0	
 
 M3_aux:
-  defineMap M3_aux #_g_tilemap3, M2, M4, 3, 3
-  defineEnemy 10, 20, 7, 25, _sprite_ghost_forward, 5, 0, 0, 10, 10, 20, 20, 2, noPattern, noPattern, 0, 0, 0
-  defineEnemy 54, 124, 7, 25, _sprite_ghost_forward, 5, 0, 0, 54, 54, 124, 124, 2, noPattern, noPattern, 0, 0, 0
-  defineEnemyLastOne 70, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 2, noPattern, noPattern, 0, 0, 0
+  defineMap M3_aux #_g_tilemap2, M2, M4, 1, 3
+  defineEnemyLastOne 65, 140, 11, 22, _sprite_ball_left, 20, 0, 0, 65, 65, 140, 140, 3, bolin, bolin, 0, 0, 0
 
 M4_aux:
-  defineMap M4_aux #_g_tilemap2, M3, M5, 2, 3
-  defineEnemy 60, 30, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 60, 60, 30, 30, 3, saltarin, saltarin, 0, 0, 0
-  defineEnemyLastOne 50, 120, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 50, 50, 120, 120, 3, saltarin, saltarin, 0, 0, 0
+  defineMap M4_aux #_g_tilemap2, M3, M5, 3, 3
+  defineEnemy 10, 20, 7, 25, _sprite_ghost_forward, 8, 0, 0, 10, 10, 20, 20, 2, noPattern, noPattern, 0, 0, 0
+  defineEnemy 54, 124, 7, 25, _sprite_ghost_forward, 8, 0, 0, 54, 54, 124, 124, 2, noPattern, noPattern, 0, 0, 0
+  defineEnemyLastOne 70, 120, 7, 25, _sprite_ghost_forward, 8, 0, 0, 70, 70, 120, 120, 2, noPattern, noPattern, 0, 0, 0
 
 M5_aux:
-  defineMap M5_aux #_g_tilemap3, M4, M6, 3, 3
-  defineEnemy 50, 50, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 50, 50, 50, 50, 3, saltarin, saltarin, 0, 0, 0
-  defineEnemy 50, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 50, 50, 50, 50, 3, balin, balin, 0, 0, 0
-  defineEnemyLastOne 30, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 2, noPattern, noPattern, 0, 0, 0
+  defineMap M5_aux #_g_tilemap3, M4, M6, 2, 3
+  defineEnemy 60, 30, 11, 30, _sprite_ball_bike_left, 7, 0, 0, 60, 60, 30, 30, 3, saltarin, saltarin, 0, 0, 0
+  defineEnemyLastOne 50, 120, 11, 30, _sprite_ball_bike_left, 7, 0, 0, 50, 50, 120, 120, 3, saltarin, saltarin, 0, 0, 0
 
 M6_aux:
-  defineMap M6_aux #_g_tilemap2, M5, -1, 1, 3
-  defineEnemyLastOne 70, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 3, saltarin, saltarin, 0, 0, 0
+  defineMap M6_aux #_g_tilemap3, M5, M7, 2, 3
+  defineEnemy 50, 50, 11, 30, _sprite_ball_bike_left, 10, 0, 0, 50, 50, 50, 50, 3, saltarin, saltarin, 0, 0, 0
+  defineEnemy 50, 120, 7, 25, _sprite_bullet_shooter_left, 0xFF, 0, 0, 50, 50, 50, 50, 3, balin, balin, 0, 0, 0
+  defineEnemyLastOne 30, 120, 7, 25, _sprite_ghost_forward, 8, 0, 0, 70, 70, 120, 120, 2, noPattern, noPattern, 0, 0, 0
+
+M7_aux::
+  defineMap M7_aux #_g_tilemap3, M6, M8, 2, 3
+  defineEnemy 5, 20, 7, 25, _sprite_ghost_forward, 10, 0, 0, 5, 5, 20, 20, 2, noPattern, noPattern, 0, 0, 0
+  defineEnemy 60, 140, 7, 25, _sprite_ghost_forward, 10, 0, 0, 60, 60, 140, 140, 2, noPattern, noPattern, 0, 0, 0
+  defineEnemyLastOne 35, 80, 7, 25, _sprite_bullet_shooter_forward, 0xFF, 0, 0, 32, 32, 80, 80, 3, balinCentro, balinCentro, 0, 0, 0
+
+M8_aux:
+  defineMap M8_aux #_g_tilemap3, M7, M9, 1, 3
+  defineEnemy 71, 20, 5, 10, _sprite_spider_forward, 4, 0, 0, 71, 71, 20, 20, 3, spider, spider, 0, 0, 0
+  defineEnemyLastOne 35, 80, 7, 25, _sprite_bullet_shooter_forward, 0xFF, 0, 0, 32, 32, 80, 80, 3, balinCentro, balinCentro, 0, 0, 0
+
+M9_aux:
+  defineMap M9_aux #_g_tilemap2, M8, -1, 2, 3
+  defineEnemy 71, 160, 5, 10, _sprite_spider_back, 4, 0, 0, 71, 71, 160, 160, 3, spiderBottom, spiderBottom, 0, 0, 0
+  defineEnemyLastOne 71, 20, 5, 10, _sprite_spider_forward, 4, 0, 0, 71, 71, 20, 20, 3, spider, spider, 0, 0, 0
 
 ;;========================
 ;;========================
@@ -453,14 +470,18 @@ ret
 ;;		A = 80-9: Move hero to the end of the map
 ;; 		A = -1: Do not move
 ;; ======================
+	
 
 map_changeMap::
-	
 	;Comprobamos si vamos para adelante o para detrás y cargamos los datos correspodientes datos
 	ld b, a
 	cp #1
 		jr z, previousMap
 	ld de, (puertaDerechaA)
+
+	ld a, d
+	cp #0xFF
+		jr z, endMap2
 	jr startChange
 
 	previousMap:
@@ -530,3 +551,8 @@ map_changeMap::
 		;; Cargamoso el valor, para que NO se reinicie la posición del hero.
 		ld a, #-1
 		ret 
+	endMap2:
+		ld a, #1
+		ld (youWon), a
+		ld a, #-1 
+		ret

@@ -1,5 +1,5 @@
 .area _DATA
-
+.globl writeYouWin
 .globl _game_flower_100
 .globl M1_aux
 .globl M1
@@ -14,6 +14,10 @@
 .globl M1_arrayEnemy
 .globl maxYA
 .globl M1_maxY
+.globl hero_getPointerLife
+.globl M7
+.globl M7_aux
+.globl bullets_deleteAllBullets
 
 .area _CODE
 
@@ -32,7 +36,8 @@
 .equ S_h, 3	
 .equ S_spr_l, 4
 .equ S_spr_h, 5
-
+youWon::
+	.db #0x00
 defineScoreLife life, 28, 185, 8, 15, _game_flower_100
 
 ;;===========================================
@@ -112,12 +117,16 @@ ret
 ;; ======================
 game_run:
 	call engine_eraseAll
-	call engine_updateAll
+	call engine_updateAll 
 
 	call hero_getPointerLife
 	ld a, (hl)
 	cp #0
 	jp z, llamada_a_gameover
+
+	ld a, (youWon)
+	cp #1
+	jp z, llamada_a_youwin
 
     call engine_drawAll
 
@@ -128,29 +137,45 @@ game_run:
 
 llamada_a_gameover:
 	call gameOver
+	ret
+llamada_a_youwin::
+	ld a, #0
+	ld (youWon), a
+	call game_youWin
 ret
 
-;; ======================
-;;	Checks User Input and Reacts
-;;	DESTROYS:
-;; ======================
-gameOver:
-		call writeGameOver
-		;; Scan the whole keyboard
-		;;call cpct_scanKeyboard_asm 		;;keyboard.s
 
-		gOver:
+game_youWin::
+
+	call writeYouWin
+	call bullets_deleteAllBullets
+	gWin:
 		ld hl, #Key_R
 		call cpct_isKeyPressed_asm		;;Check if Key_Space is presed
 		cp #0								;;Check A == 0
-		jr z, gOver							;;Jump if A==0 (space_not_pressed)
+		jr z, gWin							;;Jump if A==0 (space_not_pressed)
+		
 
 		;;P is pressed
 		;; Fórmula: Número de enemigos * Tamaño en bytes de un enemigo + Número de mapas * tamaño en bytes de un mapa + Número de enemigos
 		;; Fórmula: 
-		ld bc, #12 * 19 + 6 * 8 + 12
+		ld bc, #12 * 21  + 6 * 8 + 12
 		ld hl, #M1_aux
 		ld de, #M1
+		call reInitilize
+
+		
+		;; Fórmula: Número de enemigos * Tamaño en bytes de un enemigo + Número de mapas * tamaño en bytes de un mapa + Número de enemigos
+		;; Fórmula: 
+		ld bc, #7 * 21  + 3 * 8 + 7
+		ld hl, #M7_aux
+		ld de, #M7
+		call reInitilize
+ret
+
+
+reInitilize:
+
 		ldir
 
 		;; Resetear score
@@ -196,4 +221,35 @@ gameOver:
 		ld a, #04
 		call hero_getPointerLife
 		ld (hl), a
+
+ret
+
+;; ======================
+;;	Checks User Input and Reacts
+;;	DESTROYS:
+;; ======================
+gameOver:
+		call writeGameOver
+		call bullets_deleteAllBullets
+		;; Scan the whole keyboard
+		;;call cpct_scanKeyboard_asm 		;;keyboard.s
+
+		gOver:
+		ld hl, #Key_R
+		call cpct_isKeyPressed_asm		;;Check if Key_Space is presed
+		cp #0								;;Check A == 0
+		jr z, gOver							;;Jump if A==0 (space_not_pressed)
+
+		;;P is pressed
+		;; Fórmula: Número de enemigos * Tamaño en bytes de un enemigo + Número de mapas * tamaño en bytes de un mapa + Número de enemigos
+		;; Fórmula: 
+		ld bc, #12 * 21  + 6 * 8 + 12
+		ld hl, #M1_aux
+		ld de, #M1
+		call reInitilize
+
+		ld bc, #7 * 21  + 3 * 8 + 7
+		ld hl, #M7_aux
+		ld de, #M7
+		call reInitilize
 ret
