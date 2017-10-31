@@ -34,6 +34,12 @@ bullets_posiciones:
 	.db #0x00, #0x00, #0x00, #0x00
 	.db #0x00, #0x00, #0x00, #0x00
 	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+	.db #0x00, #0x00, #0x00, #0x00
+
 
 bullet_w: .db #03
 bullet_h: .db #05
@@ -421,7 +427,7 @@ bullet_checkCollision::
 	ld a, (bullet_w)	 		;; | bullet_w
 	add c 						;; | -
 	sub Enemy_x(ix)				;; | enemy_x			
-	jr z, not_collision 		;; | if(==0)
+	jp z, not_collision 		;; | if(==0)
 	jp m, not_collision 		;; | if(<0)
 
 	;;
@@ -499,11 +505,13 @@ bullet_checkCollision::
 
 			;;Enemy es la víctima
 			enemyVictim:
+
 				ld a, EnemyLives(ix)	;;|| Si el enemigo ya está muerto finalizamos
 				cp #0					;;||
 				ret z
 
 				call bullets_eraseBulletOnCollisionWithEntity
+
 
 				ld a, #0xFF				;;||
 				ld (de), a				;;|| Borramos la bala 
@@ -513,6 +521,10 @@ bullet_checkCollision::
 				ld a, (nBullets)
 				dec a
 				ld (nBullets), a
+
+				ld a, EnemyLives(ix)	;;|| Si el enemigo ya está muerto finalizamos
+				cp #0xFF					;;||
+				ret z
 
 				;;call enemy_erase
 				call enemy_eraseOnDead

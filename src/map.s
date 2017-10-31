@@ -5,9 +5,10 @@
 .globl _sprite_hooded_left
 .globl _sprite_ghost_forward
 .globl _sprite_ball_left
-.globl pattern1
-.globl pattern2
-.globl pattern3
+.globl saltarin
+.globl balin
+.globl balinCabreado
+.globl bolin
 .globl _g_tilemap1
 .globl _g_tilemap2
 .globl _g_tilemap3
@@ -26,7 +27,7 @@
 ;;========================
 ;;========================
 puntero_video:: .dw #0x8000
-
+noPattern:
 score_char: .db #48, #48, #48, #0
 score: .db #0
 
@@ -85,34 +86,34 @@ maxYA::
 ;;========================
 
 M1::
-  defineMap M1 #_g_tilemap1, -1, M2, 2, 50
-  defineEnemy 65, 140, 7, 25, _sprite_hooded_left, 5, 0, 0, 65, 65, 140, 140, 2, pattern2, pattern2, 0, 0, 0
-  defineEnemyLastOne 50, 50, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 50, 50, 50, 50, 3, pattern2, pattern2, 0, 0, 0
+  defineMap M1 #_g_tilemap1, -1, M2, 1, 50
+  defineEnemy 65, 140, 7, 25, _sprite_hooded_left, 5, 0, 0, 65, 65, 140, 140, 2, noPattern, noPattern, 0, 0, 0
+  defineEnemyLastOne 50, 50, 7, 25, _sprite_bullet_shooter_left, 0xFF, 0, 0, 50, 50, 50, 50, 3, balinCabreado, balinCabreado, 0, 0, 0
 
 M2::
   defineMap M2 #_g_tilemap2, M1, M3, 1, 3
-  defineEnemyLastOne 65, 140, 11, 22, _sprite_ball_left, 5, 0, 0, 65, 65, 140, 140, 3, pattern3, pattern3, 0, 0, 0
+  defineEnemyLastOne 65, 140, 11, 22, _sprite_ball_left, 15, 0, 0, 65, 65, 140, 140, 3, bolin, bolin, 0, 0, 0
 
 M3:
-  defineMap M3 #_g_tilemap2, M2, M4, 3, 3
-  defineEnemy 10, 20, 7, 25, _sprite_ghost_forward, 5, 0, 0, 10, 10, 20, 20, 2, pattern1, pattern1, 0, 0, 0
-  defineEnemy 54, 124, 7, 25, _sprite_ghost_forward, 5, 0, 0, 54, 54, 124, 124, 2, pattern1, pattern1, 0, 0, 0
-  defineEnemyLastOne 70, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
+  defineMap M3 #_g_tilemap3, M2, M4, 3, 3
+  defineEnemy 10, 20, 7, 25, _sprite_ghost_forward, 5, 0, 0, 10, 10, 20, 20, 2, noPattern, noPattern, 0, 0, 0
+  defineEnemy 54, 124, 7, 25, _sprite_ghost_forward, 5, 0, 0, 54, 54, 124, 124, 2, noPattern, noPattern, 0, 0, 0
+  defineEnemyLastOne 70, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 2, noPattern, noPattern, 0, 0, 0
 
 M4:
-  defineMap M4 #_g_tilemap3, M3, M5, 3, 3
-  defineEnemy 20, 140, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
-  defineEnemy 60, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
-  defineEnemyLastOne 70, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
+  defineMap M4 #_g_tilemap2, M3, M5, 2, 3
+  defineEnemy 60, 30, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 60, 60, 30, 30, 3, saltarin, saltarin, 0, 0, 0
+  defineEnemyLastOne 50, 120, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 50, 50, 120, 120, 3, saltarin, saltarin, 0, 0, 0
 
 M5:
-  defineMap M5 #_g_tilemap3, M4, M6, 2, 3
-  defineEnemy 50, 50, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
-  defineEnemyLastOne 70, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
+  defineMap M5 #_g_tilemap3, M4, M6, 3, 3
+  defineEnemy 50, 50, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 50, 50, 50, 50, 3, saltarin, saltarin, 0, 0, 0
+  defineEnemy 50, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 50, 50, 50, 50, 3, balin, balin, 0, 0, 0
+  defineEnemyLastOne 30, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 2, noPattern, noPattern, 0, 0, 0
 
 M6:
-  defineMap M6 #_g_tilemap1, M5, -1, 1, 3
-  defineEnemyLastOne 70, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
+  defineMap M6 #_g_tilemap2, M5, -1, 1, 3
+  defineEnemyLastOne 70, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 3, saltarin, saltarin, 0, 0, 0
 
 ;;========================
 ;;========================
@@ -128,35 +129,34 @@ M6:
 ;;========================
 
 M1_aux::
-	defineMap M1_aux #_g_tilemap1, -1, M2, 2, 30
-	defineEnemy 65, 140, 7, 25, _sprite_hooded_left, 5, 0, 0, 30, 30, 100, 100, 2, pattern2, pattern2, 0, 0, 0
-	defineEnemyLastOne 55, 30, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 50, 50, 30, 30, 3, pattern2, pattern2, 0, 0, 0
+	defineMap M1_aux #_g_tilemap1, -1, M2, 2, 50
+ 	defineEnemy 65, 140, 7, 25, _sprite_hooded_left, 5, 0, 0, 65, 65, 140, 140, 2, noPattern, noPattern, 0, 0, 0
+  	defineEnemyLastOne 50, 50, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 50, 50, 50, 50, 3, balin, balin, 0, 0, 0
 
-M2_aux:
-	defineMap M2_aux #_g_tilemap2, M1, M3, 2, 3
-	defineEnemy 30, 100, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
+M2_aux::
+  defineMap M2_aux #_g_tilemap2, M1, M3, 1, 3
+  defineEnemyLastOne 65, 140, 11, 22, _sprite_ball_left, 15, 0, 0, 65, 65, 140, 140, 3, bolin, bolin, 0, 0, 0
 
 M3_aux:
-	defineMap M3_aux #_g_tilemap2, M2, M4, 3, 3
-	defineEnemy 60, 87, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
-	defineEnemy 54, 124, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
+  defineMap M3_aux #_g_tilemap3, M2, M4, 3, 3
+  defineEnemy 10, 20, 7, 25, _sprite_ghost_forward, 5, 0, 0, 10, 10, 20, 20, 2, noPattern, noPattern, 0, 0, 0
+  defineEnemy 54, 124, 7, 25, _sprite_ghost_forward, 5, 0, 0, 54, 54, 124, 124, 2, noPattern, noPattern, 0, 0, 0
+  defineEnemyLastOne 70, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 2, noPattern, noPattern, 0, 0, 0
 
 M4_aux:
-	defineMap M4_aux #_g_tilemap3, M3, M5, 3, 3
-	defineEnemy 20, 140, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
-	defineEnemy 60, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
+  defineMap M4_aux #_g_tilemap2, M3, M5, 2, 3
+  defineEnemy 60, 30, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 60, 60, 30, 30, 3, saltarin, saltarin, 0, 0, 0
+  defineEnemyLastOne 50, 120, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 50, 50, 120, 120, 3, saltarin, saltarin, 0, 0, 0
 
 M5_aux:
-	defineMap M5_aux #_g_tilemap3, M4, M6, 2, 3
-	defineEnemy 50, 50, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
+  defineMap M5_aux #_g_tilemap3, M4, M6, 3, 3
+  defineEnemy 50, 50, 11, 30, _sprite_ball_bike_left, 5, 0, 0, 50, 50, 50, 50, 3, saltarin, saltarin, 0, 0, 0
+  defineEnemy 50, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 50, 50, 50, 50, 3, balin, balin, 0, 0, 0
+  defineEnemyLastOne 30, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 2, noPattern, noPattern, 0, 0, 0
 
 M6_aux:
-	defineMap M6_aux #_g_tilemap1, M5, -1, 1, 3
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
+  defineMap M6_aux #_g_tilemap2, M5, -1, 1, 3
+  defineEnemyLastOne 70, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 3, saltarin, saltarin, 0, 0, 0
 
 ;;========================
 ;;========================
