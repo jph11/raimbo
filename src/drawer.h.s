@@ -1,0 +1,10 @@
+.globl writePressToPlay
+.globl writeWASD
+.globl writeArrows
+.globl writeSpace
+.globl drawWord
+.globl drawSprite
+.globl drawBackground
+.globl drawBackgroundScore
+.globl writeScore
+.globl writeGameOver

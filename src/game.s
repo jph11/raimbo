@@ -15,15 +15,6 @@
 .globl maxYA
 .globl M1_maxY
 
-score: .db #83,#67,#79,#82,#69,#0
-lives: .db #76,#73,#86,#69,#83,#0
-game: .db #71,#65,#77,#69,#0
-over: .db #79,#86,#69,#82,#0
-press: .db #80,#82,#69,#83,#83,#0
-p: .db #71,#0
-to: .db #84,#79,#0
-play: .db #80,#76,#65,#89,#0
-
 .area _CODE
 
 .include "hero.h.s"
@@ -33,28 +24,7 @@ play: .db #80,#76,#65,#89,#0
 .include "cpctelera.h.s"
 .include "keyboard.s"
 .include "map.h.s"
-
-;==================================
-defineWord pressO, 12, 189, 2, 13
-
-defineWord gO, 35, 189, 2, 9
-
-defineWord toO, 42, 189, 2, 13
-
-defineWord playO, 52, 189, 2, 13
-;==================================
-defineWord scoreO, 40, 189, 2, 13
-
-defineWord livesO, 4, 189, 2, 13
-;==================================
-defineWord GameO, 22, 75, 1, 13
-
-defineWord OverO, 42, 75, 1, 13
-
-.equ O_x, 0
-.equ O_y, 1
-.equ O_c, 2
-.equ O_b, 3
+.include "drawer.h.s"
 
 .equ S_x, 0
 .equ S_y, 1
@@ -123,42 +93,8 @@ game_putScore::
 	ex de, hl
 	call drawLife
 
-	call game_writeScore
+	call writeScore
 
-ret
-
-drawBackgroundScore:
-	push hl
-	ld de, #0x0800
- 	ld c, #8
-	ld a, #2
- 	 	oneFor:
- 	  		ld b, #80	
-		twoFor:
-			ld (hl), #0x0C
-			inc hl		
-			dec b		
-			jr nz, twoFor
-			
-			add hl, de	
-			push de		
-			ld de, #0xFFB0
-			add hl, de	
-			pop de		
-			dec c		
- 	  	jr nz, oneFor
-
-		ld c, #8
-		pop hl
-		push de
-		ld de, #0x050
-		add hl, de
-		pop de
-		push hl
-		dec a
-		cp #0
-		jr nz, oneFor
-	pop hl
 ret
 
 drawLife::
@@ -169,43 +105,6 @@ drawLife::
 	ld h, S_spr_h(ix)
 	ld l, S_spr_l(ix)
 	call cpct_drawSpriteMasked_asm
-ret
-
-game_writeScore:
-
-	ld ix, #scoreO_data
-	ld de, #0xC000
-	ld hl, #score
-	call game_writeWord
-
-	ld ix, #scoreO_data
-	ld de, #0x8000
-	ld hl, #score
-	call game_writeWord
-
-	ld ix, #livesO_data
-	ld de, #0xC000
-	ld hl, #lives
-	call game_writeWord
-
-	ld ix, #livesO_data
-	ld de, #0x8000
-	ld hl, #lives
-	call game_writeWord
-
-ret
-
-game_writeWord:
-	push hl
-	ld c, O_x(ix)
-	ld b, O_y(ix)
-	call cpct_getScreenPtr_asm
-	ex de, hl
-
-	pop hl
-	ld b, O_c(ix)
-	ld c, O_b(ix)
-	call cpct_drawStringM0_asm
 ret
 
 ;; ======================
@@ -227,81 +126,6 @@ game_run:
 	
     jr game_run
 
-game_writeGameOver:
-	ld ix, #GameO_data
-	ld de, #0xC000
-	ld hl, #game
-	call game_writeWord
-
-	ld ix, #GameO_data
-	ld de, #0x8000
-	ld hl, #game
-	call game_writeWord
-
-	ld ix, #OverO_data
-	ld de, #0xC000
-	ld hl, #over
-	call game_writeWord
-
-	ld ix, #OverO_data
-	ld de, #0x8000
-	ld hl, #over
-	call game_writeWord
-
-	ld de, #0xC000
-	ld c, #0
-	ld b, #184
-	call cpct_getScreenPtr_asm
-	call drawBackgroundScore
-
-	ld de, #0x8000
-	ld c, #0
-	ld b, #184
-	call cpct_getScreenPtr_asm
-	call drawBackgroundScore
-
-	ld ix, #pressO_data
-	ld de, #0xC000
-	ld hl, #press
-	call game_writeWord
-
-	ld ix, #pressO_data
-	ld de, #0x8000
-	ld hl, #press
-	call game_writeWord
-
-	ld ix, #gO_data
-	ld de, #0xC000
-	ld hl, #p
-	call game_writeWord
-
-	ld ix, #gO_data
-	ld de, #0x8000
-	ld hl, #p
-	call game_writeWord
-
-	ld ix, #toO_data
-	ld de, #0xC000
-	ld hl, #to
-	call game_writeWord
-
-	ld ix, #toO_data
-	ld de, #0x8000
-	ld hl, #to
-	call game_writeWord
-
-	ld ix, #playO_data
-	ld de, #0xC000
-	ld hl, #play
-	call game_writeWord
-
-	ld ix, #playO_data
-	ld de, #0x8000
-	ld hl, #play
-	call game_writeWord
-
-ret	
-
 llamada_a_gameover:
 	call gameOver
 ret
@@ -311,7 +135,7 @@ ret
 ;;	DESTROYS:
 ;; ======================
 gameOver:
-		call game_writeGameOver
+		call writeGameOver
 		;; Scan the whole keyboard
 		;;call cpct_scanKeyboard_asm 		;;keyboard.s
 
