@@ -140,7 +140,7 @@ gameOver:
 		;;call cpct_scanKeyboard_asm 		;;keyboard.s
 
 		gOver:
-		ld hl, #Key_P
+		ld hl, #Key_R
 		call cpct_isKeyPressed_asm		;;Check if Key_Space is presed
 		cp #0								;;Check A == 0
 		jr z, gOver							;;Jump if A==0 (space_not_pressed)

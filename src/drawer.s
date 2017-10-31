@@ -3,8 +3,10 @@
 ;;=============================================
 press: .db #80,#82,#69,#83,#83,#0
 g: .db #71,#0
+r: .db #82,#0
 to: .db #84,#79,#0
 play: .db #80,#76,#65,#89,#0
+reset: .db #82, #69, #83, #69, #84, #0
 w: .db #87,#0
 a: .db #65,#0
 s: .db #83,#0
@@ -62,11 +64,11 @@ defineWord shootL, 36, 175, 5, 13
 ;==================================
 defineWord pressO, 12, 189, 2, 13
 
-defineWord gO, 35, 189, 2, 9
+defineWord rO, 35, 189, 2, 9
 
 defineWord toO, 42, 189, 2, 13
 
-defineWord playO, 52, 189, 2, 13
+defineWord resetO, 52, 189, 2, 13
 ;==================================
 defineWord scoreO, 40, 189, 2, 13
 
@@ -426,14 +428,14 @@ writeGameOver::
 	ld hl, #press
 	call drawWord
 
-	ld ix, #gO_data
+	ld ix, #rO_data
 	ld de, #0xC000
-	ld hl, #p
+	ld hl, #r
 	call drawWord
 
-	ld ix, #gO_data
+	ld ix, #rO_data
 	ld de, #0x8000
-	ld hl, #p
+	ld hl, #r
 	call drawWord
 
 	ld ix, #toO_data
@@ -446,14 +448,14 @@ writeGameOver::
 	ld hl, #to
 	call drawWord
 
-	ld ix, #playO_data
+	ld ix, #resetO_data
 	ld de, #0xC000
-	ld hl, #play
+	ld hl, #reset
 	call drawWord
 
-	ld ix, #playO_data
+	ld ix, #resetO_data
 	ld de, #0x8000
-	ld hl, #play
+	ld hl, #reset
 	call drawWord
 
 ret	

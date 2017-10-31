@@ -34,7 +34,7 @@ isr::
 	ld (unavariable), a
 	jr nz, return
 
-		call cpct_akp_musicPlay_asm
+		;call cpct_akp_musicPlay_asm
 		ld a, #12
 		ld (unavariable), a
 
