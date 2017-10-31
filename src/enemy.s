@@ -1,7 +1,5 @@
 .area _DATA
 
-;.globl _sprite_oldMan_left
-;.globl _sprite_oldMan_left
 .globl nEnemyA
 .globl _sprite_ball_bike_right
 .globl _sprite_ball_bike_left

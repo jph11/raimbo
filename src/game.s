@@ -8,7 +8,7 @@
 .globl puertaIzquierdaA
 .globl puertaDerechaA
 .globl arrayEnemyA
-.globl _g_tilemap
+.globl _g_tilemap1
 .globl M1_nEnemyMap
 .globl M2
 .globl M1_arrayEnemy
@@ -17,6 +17,8 @@
 
 score_title: .db #83,#67,#79,#82,#69,#0
 lives_title: .db #76,#73,#86,#69,#83,#0
+game: .db #71,#65,#77,#69,#0
+over: .db #79,#86,#69,#82,#0
 
 .area _CODE
 
@@ -95,7 +97,7 @@ game_putScore::
 	ex de, hl
 	call drawLife
 
-	call game_drawScore
+	call game_writeScore
 
 ret
 
@@ -143,7 +145,7 @@ drawLife::
 	call cpct_drawSpriteMasked_asm
 ret
 
-game_drawScore:
+game_writeScore:
 
 	ld de, #0xC000
 	ld c, #40
@@ -194,10 +196,6 @@ game_drawScore:
 	ld c, #13
 	call cpct_drawStringM0_asm
 
-ret
-
-game_getPointerLife::
-	ld ix, #life_data
 ret
 
 ;; ======================
@@ -219,8 +217,62 @@ game_run:
 	
     jr game_run
 
-    llamada_a_gameover:
-    call gameOver
+game_writeGameOver:
+
+	ld de, #0xC000
+	ld c, #21
+	ld b, #65
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #game
+	ld b, #1
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+	ld de, #0x8000
+	ld c, #21
+	ld b, #65
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #game
+	ld b, #1
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+
+
+	ld de, #0xC000
+	ld c, #41
+	ld b, #65
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #over
+	ld b, #1
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+	ld de, #0x8000
+	ld c, #41
+	ld b, #65
+	call cpct_getScreenPtr_asm
+
+	ex de, hl
+
+	ld hl, #over
+	ld b, #1
+	ld c, #13
+	call cpct_drawStringM0_asm
+
+ret	
+
+llamada_a_gameover:
+	call gameOver
 ret
 
 ;; ======================
@@ -228,14 +280,16 @@ ret
 ;;	DESTROYS:
 ;; ======================
 gameOver:
+		call game_writeGameOver
 		;; Scan the whole keyboard
 		;;call cpct_scanKeyboard_asm 		;;keyboard.s
 
+		gOver:
 		;; Check for key 'P' being pressed
 		ld hl, #Key_P
 		call cpct_isKeyPressed_asm		;;Check if Key_Space is presed
 		cp #0							;;Check A == 0
-		jr z, gameOver					;;Jump if A==0 (space_not_pressed)
+		jr z, gOver					;;Jump if A==0 (space_not_pressed)
 
 		;;P is pressed
 		;; Fórmula: Número de enemigos * Tamaño en bytes de un enemigo + Número de mapas * tamaño en bytes de un mapa + Número de enemigos
@@ -263,7 +317,7 @@ gameOver:
 		ld 1(ix), d
 
 		ld ix, #ptilemapA
-		ld de, #_g_tilemap
+		ld de, #_g_tilemap1
 
 		ld 0(ix), e
 		ld 1(ix), d

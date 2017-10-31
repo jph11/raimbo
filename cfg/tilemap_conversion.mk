@@ -65,6 +65,6 @@
 
 #$(eval $(call TMX2C,img/level0b.tmx,g_level0_4bit,src/levels/,4))
 
-$(eval $(call TMX2C,assets/Maps/tilemap.tmx,g_tilemap,src/sprites))
 $(eval $(call TMX2C,assets/Maps/tilemap1.tmx,g_tilemap1,src/sprites))
+$(eval $(call TMX2C,assets/Maps/tilemap2.tmx,g_tilemap2,src/sprites))
 $(eval $(call TMX2C,assets/Maps/tilemap3.tmx,g_tilemap3,src/sprites))

@@ -2,8 +2,7 @@
 
 .globl _sprite_palette
 .globl _g_tileset
-.globl _sprite_bala
-.globl ptilemapA
+.globl _menu_title
 .globl _song_ingame
 
 press: .db #80,#82,#69,#83,#83,#0
@@ -35,13 +34,20 @@ shoot: .db #115,#104,#111,#111,#116,#0
 .equ L_c, 2
 .equ L_b, 3
 
-defineWord pressL, 31, 60, 5, 13
+.equ M_x, 0
+.equ M_y, 1
+.equ M_w, 2
+.equ M_h, 3	
+.equ M_spr_l, 4
+.equ M_spr_h, 5	
 
-defineWord gL, 38, 75, 5, 9
+defineWord pressL, 31, 65, 5, 13
 
-defineWord toL, 28, 90, 5, 13
+defineWord gL, 38, 80, 5, 9
 
-defineWord playL, 38, 90, 5, 13
+defineWord toL, 28, 95, 5, 13
+
+defineWord playL, 38, 95, 5, 13
 
 ;;===================================
 
@@ -70,6 +76,8 @@ defineWord spaceL, 31, 160, 5, 2
 defineWord to2L, 26, 175, 5, 13
 
 defineWord shootL, 36, 175, 5, 13
+
+defineMenu title, 16, 15, 50, 20, _menu_title
 
 unavariable: .db #12
 
@@ -145,6 +153,8 @@ ret
 ;; =================================
 drawMenu::
 	call drawBackground
+	ld ix, #title_data
+	call drawSprite
 	call drawPressToPlay
 	call drawWASD
 	call drawArrows
@@ -334,6 +344,21 @@ drawWord:
 	call cpct_drawStringM0_asm
 ret
 
+drawSprite:
+	ld de, #0xC000				;;Video memory
+	ld c, M_x(ix)				;;\ C=entity_x
+	ld b, M_y(ix)				;;\ B=entity_y
+	call cpct_getScreenPtr_asm	;;Get pointer to screen
+	ex de, hl
+	;; Draw a box
+	ld b, M_h(ix)
+	ld c, M_w(ix)
+	;;Draw sprite
+	ld h, M_spr_h(ix)
+	ld l, M_spr_l(ix)
+	call cpct_drawSpriteMasked_asm
+ret
+
 ;; =================================
 ;;	Draw background
 ;; =================================
@@ -377,6 +402,7 @@ ret
 ;; ======================
 _main::
 	ld sp, #0x8000
+	
 	call settings
 	call drawMenu
 

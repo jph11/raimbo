@@ -129,3 +129,12 @@
         name'_c:	    .db c
         name'_bg:	    .db b
 .endm
+
+.macro defineMenu name, x, y, w, h, spr
+	name'_data::
+		name'_x: 	  	.db x
+		name'_y:	    .db y  
+		name'_w:	    .db w
+		name'_h:	    .db h
+		name'_sprite:  	.dw spr
+.endm
