@@ -15,10 +15,14 @@
 .globl maxYA
 .globl M1_maxY
 
-score_title: .db #83,#67,#79,#82,#69,#0
-lives_title: .db #76,#73,#86,#69,#83,#0
+score: .db #83,#67,#79,#82,#69,#0
+lives: .db #76,#73,#86,#69,#83,#0
 game: .db #71,#65,#77,#69,#0
 over: .db #79,#86,#69,#82,#0
+press: .db #80,#82,#69,#83,#83,#0
+p: .db #71,#0
+to: .db #84,#79,#0
+play: .db #80,#76,#65,#89,#0
 
 .area _CODE
 
@@ -29,6 +33,28 @@ over: .db #79,#86,#69,#82,#0
 .include "cpctelera.h.s"
 .include "keyboard.s"
 .include "map.h.s"
+
+;==================================
+defineWord pressO, 12, 189, 2, 13
+
+defineWord gO, 35, 189, 2, 9
+
+defineWord toO, 42, 189, 2, 13
+
+defineWord playO, 52, 189, 2, 13
+;==================================
+defineWord scoreO, 40, 189, 2, 13
+
+defineWord livesO, 4, 189, 2, 13
+;==================================
+defineWord GameO, 22, 75, 1, 13
+
+defineWord OverO, 42, 75, 1, 13
+
+.equ O_x, 0
+.equ O_y, 1
+.equ O_c, 2
+.equ O_b, 3
 
 .equ S_x, 0
 .equ S_y, 1
@@ -147,55 +173,39 @@ ret
 
 game_writeScore:
 
+	ld ix, #scoreO_data
 	ld de, #0xC000
-	ld c, #40
-	ld b, #189
-	call cpct_getScreenPtr_asm
+	ld hl, #score
+	call game_writeWord
 
-	ex de, hl
-
-	ld hl, #score_title
-	ld b, #2
-	ld c, #13
-	call cpct_drawStringM0_asm
-
+	ld ix, #scoreO_data
 	ld de, #0x8000
-	ld c, #40
-	ld b, #189
-	call cpct_getScreenPtr_asm
+	ld hl, #score
+	call game_writeWord
 
-	ex de, hl
-
-	ld hl, #score_title
-	ld b, #2
-	ld c, #13
-	call cpct_drawStringM0_asm
-
-
+	ld ix, #livesO_data
 	ld de, #0xC000
-	ld c, #4
-	ld b, #189
-	call cpct_getScreenPtr_asm
+	ld hl, #lives
+	call game_writeWord
 
-	ex de, hl
-
-	ld hl, #lives_title
-	ld b, #2
-	ld c, #13
-	call cpct_drawStringM0_asm
-
+	ld ix, #livesO_data
 	ld de, #0x8000
-	ld c, #4
-	ld b, #189
-	call cpct_getScreenPtr_asm
+	ld hl, #lives
+	call game_writeWord
 
+ret
+
+game_writeWord:
+	push hl
+	ld c, O_x(ix)
+	ld b, O_y(ix)
+	call cpct_getScreenPtr_asm
 	ex de, hl
 
-	ld hl, #lives_title
-	ld b, #2
-	ld c, #13
+	pop hl
+	ld b, O_c(ix)
+	ld c, O_b(ix)
 	call cpct_drawStringM0_asm
-
 ret
 
 ;; ======================
@@ -208,7 +218,7 @@ game_run:
 	call hero_getPointerLife
 	ld a, (hl)
 	cp #0
-	jr z, llamada_a_gameover
+	jp z, llamada_a_gameover
 
     call engine_drawAll
 
@@ -218,56 +228,77 @@ game_run:
     jr game_run
 
 game_writeGameOver:
+	ld ix, #GameO_data
+	ld de, #0xC000
+	ld hl, #game
+	call game_writeWord
+
+	ld ix, #GameO_data
+	ld de, #0x8000
+	ld hl, #game
+	call game_writeWord
+
+	ld ix, #OverO_data
+	ld de, #0xC000
+	ld hl, #over
+	call game_writeWord
+
+	ld ix, #OverO_data
+	ld de, #0x8000
+	ld hl, #over
+	call game_writeWord
 
 	ld de, #0xC000
-	ld c, #21
-	ld b, #65
+	ld c, #0
+	ld b, #184
 	call cpct_getScreenPtr_asm
-
-	ex de, hl
-
-	ld hl, #game
-	ld b, #1
-	ld c, #13
-	call cpct_drawStringM0_asm
+	call drawBackgroundScore
 
 	ld de, #0x8000
-	ld c, #21
-	ld b, #65
+	ld c, #0
+	ld b, #184
 	call cpct_getScreenPtr_asm
+	call drawBackgroundScore
 
-	ex de, hl
-
-	ld hl, #game
-	ld b, #1
-	ld c, #13
-	call cpct_drawStringM0_asm
-
-
-
+	ld ix, #pressO_data
 	ld de, #0xC000
-	ld c, #41
-	ld b, #65
-	call cpct_getScreenPtr_asm
+	ld hl, #press
+	call game_writeWord
 
-	ex de, hl
-
-	ld hl, #over
-	ld b, #1
-	ld c, #13
-	call cpct_drawStringM0_asm
-
+	ld ix, #pressO_data
 	ld de, #0x8000
-	ld c, #41
-	ld b, #65
-	call cpct_getScreenPtr_asm
+	ld hl, #press
+	call game_writeWord
 
-	ex de, hl
+	ld ix, #gO_data
+	ld de, #0xC000
+	ld hl, #p
+	call game_writeWord
 
-	ld hl, #over
-	ld b, #1
-	ld c, #13
-	call cpct_drawStringM0_asm
+	ld ix, #gO_data
+	ld de, #0x8000
+	ld hl, #p
+	call game_writeWord
+
+	ld ix, #toO_data
+	ld de, #0xC000
+	ld hl, #to
+	call game_writeWord
+
+	ld ix, #toO_data
+	ld de, #0x8000
+	ld hl, #to
+	call game_writeWord
+
+	ld ix, #playO_data
+	ld de, #0xC000
+	ld hl, #play
+	call game_writeWord
+
+	ld ix, #playO_data
+	ld de, #0x8000
+	ld hl, #play
+	call game_writeWord
 
 ret	
 
@@ -285,11 +316,10 @@ gameOver:
 		;;call cpct_scanKeyboard_asm 		;;keyboard.s
 
 		gOver:
-		;; Check for key 'P' being pressed
 		ld hl, #Key_P
 		call cpct_isKeyPressed_asm		;;Check if Key_Space is presed
-		cp #0							;;Check A == 0
-		jr z, gOver					;;Jump if A==0 (space_not_pressed)
+		cp #0								;;Check A == 0
+		jr z, gOver							;;Jump if A==0 (space_not_pressed)
 
 		;;P is pressed
 		;; Fórmula: Número de enemigos * Tamaño en bytes de un enemigo + Número de mapas * tamaño en bytes de un mapa + Número de enemigos
