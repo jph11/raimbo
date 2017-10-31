@@ -16,7 +16,7 @@
 
 defineMenu title, 16, 15, 50, 20, _menu_title
 
-unavariable: .db #12
+unavariable: .db #6
 
 isr::
 	ex af, af'
