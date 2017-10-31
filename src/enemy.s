@@ -6,6 +6,8 @@
 .globl _sprite_ball_right
 .globl ptilemapA
 .globl _sprite_bullet_shooter_left
+.globl _sprite_bullet_shooter_forward
+.globl _sprite_spider_forward
 .globl jumptable
 .area _CODE
 
@@ -75,12 +77,20 @@ definePatternLastAction #30, #0, #-1, #_sprite_ball_bike_right, #1, #0xFF, #0xFF
 
 ;; Balín
 balin::
-definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #0xFF, #0xFF, #0, #0
-
+definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #5, #0xFF, #0, #0
 
 ;; Balín cabreado
 balinCabreado::
-definePatternLastAction #1, #0, #0, #_sprite_bullet_shooter_left, #0, #6, #0xFF, #0, #0
+definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #6, #0xFF, #0, #0
+
+
+;; Balín cabreado
+balinCentro::
+definePatternAction #1, #0, #0, #_sprite_bullet_shooter_forward, #0, #4, #2, #0, #0
+definePatternAction #1, #0, #0, #_sprite_bullet_shooter_forward, #2, #5, #1, #0, #0
+definePatternAction #1, #0, #0, #_sprite_bullet_shooter_forward, #1, #7, #3, #0, #0
+definePatternLastAction #1, #0, #0, #_sprite_bullet_shooter_forward, #3, #6, #0, #0, #0
+
 
 ;; Bolín AbajoDerecha hacia ArribaIzquierda
 bolin::
@@ -91,7 +101,9 @@ definePatternAction #10, #-1, #0, #_sprite_ball_left, #3, #6, #0xFF, #1, #1
 definePatternAction #25, #2, #3, #_sprite_ball_right, #1, #5, #0xFF, #1, #1
 definePatternLastAction #7, #0, #5, #_sprite_ball_right, #1, #5, #0xFF, #1, #1
 
-
+araña::
+definePatternAction #30, #-2, #0, #_sprite_spider_forward, #6, #7, #3, #1, #0
+definePatternLastAction #30, #2, #0, #_sprite_spider_forward, #6, #7, #3, #1, #0
 
 .equ Pattern_NumeroVeces, 0
 .equ Pattern_AumentoEnX, 1
@@ -104,13 +116,11 @@ definePatternLastAction #7, #0, #5, #_sprite_ball_right, #1, #5, #0xFF, #1, #1
 .equ Pattern_Velocidad, 8
 .equ Pattern_Jump, 9
 
-
 ;;===========================================
 ;;===========================================
 ;;PUBLIC FUNTIONS
 ;;===========================================
 ;;===========================================
-
 
 ;; ======================
 ;;	Enemy Update
