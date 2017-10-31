@@ -3,7 +3,10 @@
 .globl _sprite_bullet_shooter_left
 .globl _sprite_hooded_left
 .globl _g_tilemap
-
+.globl _sprite_ghost_forward
+.globl _sprite_ghost_left
+.globl _sprite_ghost_right
+.globl _sprite_ball_left
 score_char: .db #48, #48, #48, #0
 score: .db #0
 
@@ -88,14 +91,14 @@ M1::
 
 M2::
 	defineMap M2 #_g_tilemap1, M1, M3, 2, 3
-	defineEnemy 30, 100, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
+	;defineEnemy 30, 100, 11, 22, _sprite_ball_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern3, pattern3, 0, 0, 0
+	defineEnemyLastOne 65, 140, 11, 22, _sprite_ball_left, 5, 0, 0, 65, 65, 140, 140, 3, pattern3, pattern3, 0, 0, 0
 
 M3:
 	defineMap M3 #_g_tilemap1, M2, M4, 3, 3
-	defineEnemy 60, 87, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
-	defineEnemy 54, 124, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
-	defineEnemyLastOne 70, 120, 7, 25, _sprite_bullet_shooter_left, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
+	defineEnemy 60, 87, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
+	defineEnemy 54, 124, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 3, pattern1, pattern1, 0, 0, 0
+	defineEnemyLastOne 70, 120, 7, 25, _sprite_ghost_forward, 5, 0, 0, 70, 70, 120, 120, 2, pattern1, pattern1, 0, 0, 0
 
 M4:
 	defineMap M4 #_g_tilemap1, M3, M5, 3, 3

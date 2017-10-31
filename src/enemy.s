@@ -1,15 +1,15 @@
 .area _DATA
 
-.globl _sprite_oldMan_left
+;.globl _sprite_oldMan_left
 ;.globl _sprite_oldMan_left
 .globl nEnemyA
 .globl _sprite_ball_bike_right
 .globl _sprite_ball_bike_left
 .globl _sprite_ball_left
+.globl _sprite_ball_right
 .globl ptilemapA
 .globl _sprite_bullet_shooter_left
 .globl jumptable
-
 .area _CODE
 
 ;;===========================================
@@ -78,16 +78,17 @@ definePatternLastAction #30, #0, #-1, #_sprite_ball_bike_right, #1, #0xFF, #0xFF
 
 ;; Balín
 pattern2::
-definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #6, #0xFF, #1, #0
+definePatternLastAction #30, #0, #0, #_sprite_bullet_shooter_left, #0, #6, #0xFF, #0, #0
 
+;; 
 pattern3::
-definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1, #0
-definePatternAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1, #0
-definePatternLastAction #5, #5, #5, #_sprite_oldMan_left, #0xFF, #0xFF, #0xFF, #1, #0
+definePatternAction #30, #-1, #-2, #_sprite_ball_left, #0, #4, #0xFF, #1, #1
+definePatternAction #10, #0, #-3, #_sprite_ball_left, #0, #0xFF, #0xFF, #1, #1
+definePatternAction #10, #-1, #-2, #_sprite_ball_left, #0, #6, #0xFF, #1, #1
+definePatternAction #10, #-1, #0, #_sprite_ball_left, #2, #6, #0xFF, #1, #1
+definePatternAction #25, #2, #3, #_sprite_ball_right, #1, #5, #0xFF, #1, #1
+definePatternLastAction #7, #0, #5, #_sprite_ball_right, #1, #5, #0xFF, #1, #1
 
-;;_pattern1:: .dw #70, #-1, #0, #_sprite_oldMan_left, #0xFF
-;;_pattern2:: .dw #70, #-1, #0, #30, #1, #1, #0xFF
-;;_pattern3:: .dw #5, #1, #1, #5, #-1, #-1, #0xFF
 
 .equ Pattern_NumeroVeces, 0
 .equ Pattern_AumentoEnX, 1
