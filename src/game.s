@@ -8,7 +8,7 @@
 .globl puertaIzquierdaA
 .globl puertaDerechaA
 .globl arrayEnemyA
-.globl _g_tilemap
+.globl _g_tilemap1
 .globl M1_nEnemyMap
 .globl M2
 .globl M1_arrayEnemy
@@ -283,13 +283,13 @@ gameOver:
 		call game_writeGameOver
 		;; Scan the whole keyboard
 		;;call cpct_scanKeyboard_asm 		;;keyboard.s
-		
+
 		gOver:
 		;; Check for key 'P' being pressed
 		ld hl, #Key_P
 		call cpct_isKeyPressed_asm		;;Check if Key_Space is presed
 		cp #0							;;Check A == 0
-		jr z, gameOver					;;Jump if A==0 (space_not_pressed)
+		jr z, gOver					;;Jump if A==0 (space_not_pressed)
 
 		;;P is pressed
 		;; Fórmula: Número de enemigos * Tamaño en bytes de un enemigo + Número de mapas * tamaño en bytes de un mapa + Número de enemigos
@@ -317,7 +317,7 @@ gameOver:
 		ld 1(ix), d
 
 		ld ix, #ptilemapA
-		ld de, #_g_tilemap
+		ld de, #_g_tilemap1
 
 		ld 0(ix), e
 		ld 1(ix), d
