@@ -1,10 +1,8 @@
 .area _DATA
-
 .globl _sprite_palette
 .globl _g_tileset
 .globl _song_ingame
 .globl _menu_title
-
 .area _CODE
 
 .include "game.h.s"

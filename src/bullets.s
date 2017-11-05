@@ -1,8 +1,5 @@
 .area _DATA
 .globl _sprite_bala
-.globl ptilemapA
-.globl nEnemyA
-.globl punteroValor
 .area _CODE
 
 ;;===========================================

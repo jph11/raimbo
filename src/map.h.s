@@ -10,3 +10,16 @@
 .globl map_addScore
 .globl map_substractScore
 .globl map_resetScore
+.globl nEnemyA
+.globl ptilemapA
+.globl M1_aux
+.globl M1
+.globl puertaIzquierdaA
+.globl puertaDerechaA
+.globl M1_nEnemyMap
+.globl M2
+.globl M1_arrayEnemy
+.globl maxYA
+.globl M1_maxY
+.globl M7
+.globl M7_aux

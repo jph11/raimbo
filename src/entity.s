@@ -1,7 +1,4 @@
 .area _DATA
-
-.globl ptilemapA
-
 .area _CODE
 
 .equ Ent_x, 0

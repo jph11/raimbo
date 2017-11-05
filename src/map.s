@@ -8,21 +8,13 @@
 .globl _sprite_bullet_shooter_forward
 .globl _sprite_spider_forward
 .globl _sprite_spider_back
-.globl spiderBottom
-.globl saltarin
-.globl balin
-.globl balinCabreado
-.globl balinCentro
-.globl bolin
-.globl spider
-.globl youWon
-
 .globl _g_tilemap1
 .globl _g_tilemap2
 .globl _g_tilemap3
 
 .area _CODE
 
+.include "drawer.h.s"
 .include "enemy.h.s"
 .include "bullets.h.s"
 .include "cpctelera.h.s"

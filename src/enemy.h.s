@@ -10,3 +10,10 @@
 .globl enemy_getPointer
 .globl enemy_enemyKill
 .globl enemy_eraseOnDead
+.globl spiderBottom
+.globl saltarin
+.globl balin
+.globl balinCabreado
+.globl balinCentro
+.globl bolin
+.globl spider

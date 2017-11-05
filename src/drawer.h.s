@@ -8,3 +8,5 @@
 .globl drawBackgroundScore
 .globl writeScore
 .globl writeGameOver
+.globl youWon
+.globl writeYouWin

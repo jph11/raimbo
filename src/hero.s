@@ -1,5 +1,4 @@
 .area _DATA
-
 .globl _sprite_hero_upLeft_diag_pistol
 .globl _sprite_hero_upRight_diag_pistol
 .globl _sprite_hero_downLeft_diag_pistol
@@ -8,12 +7,9 @@
 .globl _sprite_hero_back_pistol          
 .globl _sprite_hero_left_pistol
 .globl _sprite_hero_right_pistol         
-.globl nEnemyA
-.globl maxYA
 .globl _game_flower_75
 .globl _game_flower_50
 .globl _game_flower_25
-
 .area _CODE
 
 ;;===========================================

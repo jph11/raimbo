@@ -1,15 +1,12 @@
 .area _DATA
-.globl nEnemyA
 .globl _sprite_ball_bike_right
 .globl _sprite_ball_bike_left
 .globl _sprite_ball_left
 .globl _sprite_ball_right
-.globl ptilemapA
 .globl _sprite_bullet_shooter_left
 .globl _sprite_bullet_shooter_forward
 .globl _sprite_spider_forward
 .globl _sprite_spider_back
-.globl jumptable
 .area _CODE
 
 ;;===========================================

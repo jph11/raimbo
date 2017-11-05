@@ -1,24 +1,6 @@
 .area _DATA
-.globl writeYouWin
 .globl _game_flower_100
-.globl M1_aux
-.globl M1
-.globl nEnemyA
-.globl ptilemapA
-.globl puertaIzquierdaA
-.globl puertaDerechaA
-.globl arrayEnemyA
 .globl _g_tilemap1
-.globl M1_nEnemyMap
-.globl M2
-.globl M1_arrayEnemy
-.globl maxYA
-.globl M1_maxY
-.globl hero_getPointerLife
-.globl M7
-.globl M7_aux
-.globl bullets_deleteAllBullets
-
 .area _CODE
 
 .include "hero.h.s"
@@ -28,6 +10,7 @@
 .include "cpctelera.h.s"
 .include "keyboard.s"
 .include "map.h.s"
+.include "bullets.h.s"
 .include "drawer.h.s"
 
 .equ S_x, 0
