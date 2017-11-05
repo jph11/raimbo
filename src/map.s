@@ -1,5 +1,4 @@
 .area _DATA
-
 .globl _sprite_ball_bike_left
 .globl _sprite_bullet_shooter_left
 .globl _sprite_hooded_left
@@ -11,7 +10,6 @@
 .globl _g_tilemap1
 .globl _g_tilemap2
 .globl _g_tilemap3
-
 .area _CODE
 
 .include "drawer.h.s"
